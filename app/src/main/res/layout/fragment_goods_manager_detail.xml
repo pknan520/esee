@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.GoodsManagerDetailVM" />
+    </data>
+
+    <com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWindowBg"
+        android:orientation="vertical">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:orientation="vertical"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="商品图片（最多9张）"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_banner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_space"
+                        app:itemBinding="@{viewModel.itemBannerBinding}"
+                        app:items="@{viewModel.itemBannerVMs}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="标题    "
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <EditText
+                        style="@style/EditNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:hint="请输入商品名称"
+                        android:text="@={viewModel.goodsName}" />
+
+                </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_standard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    app:itemBinding="@{viewModel.itemStandardBinding}"
+                    app:items="@{viewModel.itemStandardVMs}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end">
+
+                    <Button
+                        style="@style/SimpleTextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="@dimen/line_space"
+                        android:drawableStart="@mipmap/fabu_add_green"
+                        android:padding="@dimen/text_padding"
+                        android:text="添加商品规格"
+                        android:textColor="@color/colorComplementaryText"
+                        app:clickCommand="@{viewModel.addStandardClick}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="运费    "
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <EditText
+                        style="@style/EditNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:hint="请填写运费价格"
+                        android:inputType="numberDecimal"
+                        android:text="@={viewModel.transFee}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:orientation="vertical"
+                    android:paddingEnd="@dimen/item_padding"
+                    android:paddingStart="@dimen/item_padding"
+                    android:paddingTop="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="商品详情"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_space"
+                        app:itemBinding="@{viewModel.itemDescBinding}"
+                        app:items="@{viewModel.itemDescVMs}" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/colorDivider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        app:clickCommand="@{viewModel.addDescClick}">
+
+                        <Button
+                            style="@style/SimpleTextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawablePadding="@dimen/line_space"
+                            android:drawableStart="@mipmap/fabu_add_green"
+                            android:text="添加商品描述"
+                            app:clickCommand="@{viewModel.addDescClick}"
+                            android:textColor="@color/colorComplementaryGreen" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBottomTapBg"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:padding="@dimen/item_padding">
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/SimpleOrangeButton"
+                        android:text="保存并上架"
+                        app:clickCommand="@{viewModel.publishClick}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout>
+
+</layout>

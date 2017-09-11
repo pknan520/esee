@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.dynamic.viewModel.DynamicDetailVM" />
+
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
+    </data>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+        app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/root_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            tools:context=".module.dynamic.activity.DynamicDetailActivity">
+
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:fitsSystemWindows="true">
+
+                <android.support.design.widget.CollapsingToolbarLayout
+                    android:id="@+id/collapsing_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:contentScrim="@color/colorPrimary"
+                    app:expandedTitleMarginStart="48dp"
+                    app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                    <com.daimajia.slider.library.SliderLayout
+                        android:id="@+id/slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        app:contentScrim="@android:color/transparent"
+                        app:defaultSliderView="@{viewModel.sliderList}"
+                        app:layout_collapseMode="parallax"
+                        app:layout_collapseParallaxMultiplier="0.5" />
+
+                    <com.daimajia.slider.library.Indicators.PagerIndicator
+                        android:id="@+id/custom_indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="@dimen/vertical_space"
+                        android:gravity="center"
+                        app:selected_color="#ffffff"
+                        app:selected_height="6dp"
+                        app:selected_padding_left="3dp"
+                        app:selected_padding_right="3dp"
+                        app:selected_width="6dp"
+                        app:shape="oval"
+                        app:unselected_color="#33ffffff"
+                        app:unselected_height="6dp"
+                        app:unselected_padding_left="3dp"
+                        app:unselected_padding_right="3dp"
+                        app:unselected_width="6dp" />
+
+                    <android.support.v7.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:layout_collapseMode="pin" />
+
+                </android.support.design.widget.CollapsingToolbarLayout>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/sv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:divider="@drawable/shape_vertical_divider"
+                    android:orientation="vertical"
+                    android:showDividers="middle">
+
+                    <!--作者信息-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/text_padding"
+                        app:clickCommand="@{viewModel.personalHomeClick}">
+
+                        <com.facebook.drawee.view.SimpleDraweeView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="10dp"
+                            app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                            app:uri="@{viewModel.headUri}" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/TextListTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.name}" />
+
+                            <TextView
+                                style="@style/TextListSummary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.summary}" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/text_padding">
+
+                            <com.facebook.drawee.view.SimpleDraweeView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:placeholderImageRes="@{viewModel.unFocus}" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/line_space"
+                                android:text="关注"
+                                android:textColor="@color/colorComplementaryGreen"
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <!--正文-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/white"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <!--标题-->
+                        <TextView
+                            android:id="@+id/tvTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.title}"
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/text_normal" />
+                        <!--图文详情-->
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_detail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/vertical_space"
+                            app:itemBinding="@{viewModel.itemImageTextBinding}"
+                            app:items="@{viewModel.itemImageTextVMs}" />
+                        <!--商品信息-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/vertical_space"
+                            android:background="@drawable/border_gray"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="10dp"
+                            android:visibility="@{viewModel.viewStyle.hasGoodsLink ? View.VISIBLE : View.GONE}"
+                            app:clickCommand="@{viewModel.goodsDetailClick}">
+
+                            <com.facebook.drawee.view.SimpleDraweeView
+                                android:layout_width="70dp"
+                                android:layout_height="70dp"
+                                app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}"
+                                app:uri="@{viewModel.goodsImgUri}" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/vertical_space"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/TextListTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.goodsName}" />
+
+                                <TextView
+                                    style="@style/TextPrice"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:text="@{viewModel.goodsPrice}" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content">
+
+                                    <TextView
+                                        style="@style/TextListSummary"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@{@string/sale_num + ` ` + viewModel.saleNum}" />
+
+                                    <TextView
+                                        style="@style/TextListSummary"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:text="@{@string/stock_num + ` ` + viewModel.stockNum}" />
+
+                                </RelativeLayout>
+
+                            </LinearLayout>
+
+                            <com.facebook.drawee.view.SimpleDraweeView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/vertical_space"
+                                app:placeholderImageRes="@{viewModel.cartPlaceHolder}" />
+
+                        </LinearLayout>
+                        <!--地点、时间、评论按钮-->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/vertical_space"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/tv_city"
+                                style="@style/TextInfo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.city}" />
+
+                            <TextView
+                                style="@style/TextInfo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/vertical_space"
+                                android:layout_toEndOf="@+id/tv_city"
+                                android:text="@{viewModel.time}" />
+
+                            <com.facebook.drawee.view.SimpleDraweeView
+                                android:id="@+id/iv_like"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                app:clickCommand="@{viewModel.likeClick}"
+                                app:placeholderImageRes="@{viewModel.viewStyle.isLike ? viewModel.isLikePlaceHolder : viewModel.unLikePlaceHolder}" />
+
+                        </RelativeLayout>
+                        <!--评论-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="50dp"
+                            android:layout_marginTop="@dimen/vertical_space"
+                            android:background="@color/colorComplementaryTextBg"
+                            android:divider="@drawable/shape_vertical_divider"
+                            android:orientation="vertical"
+                            android:showDividers="middle">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawablePadding="@dimen/line_space"
+                                android:drawableStart="@mipmap/icon_like_blue"
+                                android:padding="@dimen/text_padding"
+                                android:text="@{viewModel.likeName}"
+                                android:textColor="#576b95"
+                                android:textSize="@dimen/text_normal_small" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rv_comment"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:itemBinding="@{viewModel.itemCommentBinding}"
+                                app:items="@{viewModel.itemCommentListVMs}"
+                                app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/colorDivider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBottomTapBg"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <EditText
+                        android:id="@+id/et"
+                        style="@style/EditNormal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint="@{viewModel.hintComment}"
+                        android:text="@={viewModel.editComment}" />
+
+                    <Button
+                        style="@style/SimpleTextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:background="@{TextUtils.isEmpty(viewModel.editComment) ? @drawable/shape_round_disable_button : @drawable/shape_round_primary_button}"
+                        android:clickable="@{!TextUtils.isEmpty(viewModel.editComment)}"
+                        android:text="发送"
+                        android:textColor="@android:color/white"
+                        app:clickCommand="@{viewModel.sendCommentClick}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</layout>

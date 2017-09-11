@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.nong.nongo2o">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 这个权限用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- 这个权限用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <application
+        android:name=".AdventurerApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar">
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="AK" />
+
+        <activity android:name=".module.login.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--Main-->
+        <activity
+            android:name=".module.main.MainActivity"
+            android:launchMode="singleTask" />
+        <!--Dynamic-->
+        <activity android:name=".module.dynamic.activity.DynamicDetailActivity" />
+        <activity android:name=".module.dynamic.activity.DynamicPublishActivity" />
+        <activity android:name=".module.dynamic.activity.DynamicAddFriendsActivity" />
+        <!--Share-->
+        <activity android:name=".module.share.activity.SharePublishActivity" />
+        <activity android:name=".module.share.activity.ShareDetailActivity" />
+        <!--Merchant-->
+        <activity android:name=".module.merchant.activity.MerchantGoodsActivity" />
+        <!--Personal-->
+        <activity android:name=".module.personal.activity.SettingActivity" />
+        <activity android:name=".module.personal.activity.GoodsManagerActivity" />
+        <activity android:name=".module.personal.activity.OrderCenterActivity" />
+        <activity android:name=".module.personal.activity.AddressMgrActivity" />
+        <activity android:name=".module.personal.activity.IdentifyActivity" />
+        <activity android:name=".module.personal.activity.PersonalHomeActivity" />
+        <activity android:name=".module.personal.activity.BillActivity" />
+        <activity android:name=".module.personal.activity.FansMgrActivity" />
+        <activity android:name=".module.common.activity.SelectAreaActivity" />
+        <!--Message-->
+        <activity android:name=".module.message.activity.SysMsgActivity" />
+        <!--Common-->
+        <activity android:name=".module.common.activity.BuyActivity" />
+        <activity android:name=".module.common.activity.AddFocusActivity" />
+        <!--图片选择-->
+        <activity
+            android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait" />
+        <!--百度定位-->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote"/>
+    </application>
+
+</manifest>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.SettingVM"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:divider="@drawable/shape_vertical_divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/item_padding">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="用户头像"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                    app:uri="@{viewModel.headUri}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/item_padding">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="用户昵称"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.nickName}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_space"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:padding="@dimen/item_padding">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="自我简介"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal" />
+
+            <EditText
+                style="@style/EditNormal"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="start"
+                android:layout_marginTop="@dimen/line_space"
+                android:hint="说的什么吧~"
+                android:text="@={viewModel.summary}" />
+
+        </LinearLayout>
+
+        <Button
+            style="@style/SimpleTextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_space"
+            android:background="@android:color/white"
+            android:drawableEnd="@mipmap/right_grey"
+            android:padding="@dimen/item_padding"
+            android:gravity="start"
+            app:clickCommand="@{viewModel.selectCityClick}"
+            android:text="@{viewModel.city}" />
+
+        <Button
+            style="@style/SimpleTextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_space"
+            android:background="@android:color/white"
+            android:drawableEnd="@mipmap/right_grey"
+            android:gravity="start"
+            app:clickCommand="@{viewModel.feedbackClick}"
+            android:padding="@dimen/item_padding"
+            android:text="意见反馈" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/colorDivider" />
+
+        <Button
+            style="@style/SimpleTextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:drawableEnd="@mipmap/right_grey"
+            android:gravity="start"
+            app:clickCommand="@{viewModel.aboutClick}"
+            android:padding="@dimen/item_padding"
+            android:text="关于我们" />
+
+        <Button
+            style="@style/SimpleOrangeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:padding="@dimen/item_padding"
+            app:clickCommand="@{viewModel.logoutClick}"
+            android:text="退出登录"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</layout>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.AddressEditVM" />
+    </data>
+
+    <com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout
+        android:id="@+id/ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWindowBg"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:divider="@drawable/shape_vertical_divider"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="收货人姓名"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <EditText
+                        style="@style/EditNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:hint="请输入收货人姓名"
+                        android:text="@={viewModel.name}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="手机号码    "
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <EditText
+                        style="@style/EditNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:hint="请输入手机号码"
+                        android:inputType="number"
+                        android:text="@={viewModel.phone}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@android:color/white"
+                android:divider="@drawable/shape_vertical_divider"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="所在地区    "
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:drawableEnd="@mipmap/right_grey"
+                        android:text="@{viewModel.city}"
+                        android:textColor="@{viewModel.viewStyle.hasSelectArea ? @color/colorText : @color/colorHintText}"
+                        android:textSize="@dimen/text_normal"
+                        app:clickCommand="@{viewModel.selectCityClick}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="详细地址    "
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <EditText
+                        style="@style/EditNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:hint="请输入街道地址"
+                        android:inputType="textMultiLine"
+                        android:text="@={viewModel.addressStr}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="@dimen/item_padding">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="设为常用地址"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/GreenSwitch"
+                    android:paddingTop="@dimen/item_padding"
+                    android:paddingBottom="@dimen/item_padding"
+                    android:checked="@={viewModel.isDefault}"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="@dimen/item_padding">
+
+            <Button
+                app:clickCommand="@{viewModel.saveClick}"
+                style="@style/SimpleOrangeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="保存" />
+
+        </LinearLayout>
+
+
+    </com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout>
+
+</layout>

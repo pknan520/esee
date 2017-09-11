@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.dynamic.viewModel.DynamicDetailVM.CommentEditPopupVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBottomTapBg"
+        android:padding="@dimen/text_padding"
+        android:orientation="horizontal"
+        android:divider="@drawable/shape_vertical_divider"
+        android:showDividers="beginning">
+
+        <EditText
+            android:id="@+id/et"
+            style="@style/EditNormal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:text="@={viewModel.editComment}" />
+
+        <Button
+            style="@style/SimpleTextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="@dimen/line_space"
+            android:background="@drawable/border_gray"
+            android:text="发送"
+            app:clickCommand="@{viewModel.sendCommentClick}" />
+
+
+    </LinearLayout>
+
+</layout>

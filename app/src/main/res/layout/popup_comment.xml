@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.dynamic.viewModel.DynamicDetailVM.CommentPopupVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_comment_popup"
+        android:divider="@drawable/shape_horizontal_divider"
+        android:orientation="horizontal"
+        android:padding="@dimen/text_padding"
+        android:showDividers="middle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="  赞  "
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_normal_small"
+            app:clickCommand="@{viewModel.likeClick}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="评论"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_normal_small"
+            app:clickCommand="@{viewModel.commentClick}" />
+
+    </LinearLayout>
+
+</layout>

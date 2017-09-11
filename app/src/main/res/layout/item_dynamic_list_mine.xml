@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.main.viewModel.dynamic.DynamicMineVM.ItemDynamicMineVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        app:clickCommand="@{viewModel.detailClick}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <TextView
+                style="@style/TextListTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{viewModel.date}" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@mipmap/my_news_revise"
+                app:clickCommand="@{viewModel.editClick}"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:src="@mipmap/my_news_delete"
+                app:clickCommand="@{viewModel.deleteClick}"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
+                app:uri="@{viewModel.imgUri}" />
+
+            <LinearLayout
+                android:layout_marginStart="@dimen/vertical_space"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextListTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.title}" />
+
+                <TextView
+                    style="@style/TextListSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/line_space"
+                    android:text="@{viewModel.summary}"
+                    android:maxLines="2"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

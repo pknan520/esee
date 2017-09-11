@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.AddressListVM.ItemAddressVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_space"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_padding">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/item_padding"
+            android:paddingStart="5dp"
+            android:visibility="@{viewModel.viewStyle.checkVisi ? View.VISIBLE : View.GONE}"
+            app:placeholderImageRes="@{viewModel.viewStyle.isDef ? viewModel.isDef : viewModel.notDef}"
+            app:clickCommand="@{viewModel.checkClick}"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/receiver + viewModel.receiver}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="@{viewModel.receivePhone}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/line_space"
+                android:text="@{@string/receive_addr + viewModel.receiveAddr}"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="@dimen/text_normal" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding"
+            android:src="@mipmap/address_revise"
+            app:clickCommand="@{viewModel.editClick}" />
+
+    </LinearLayout>
+
+</layout>

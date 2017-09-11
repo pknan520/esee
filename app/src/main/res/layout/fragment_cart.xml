@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.main.viewModel.cart.CartVM" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:theme="@style/ToolbarTheme">
+
+            <TextView
+                style="@style/TextTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="购物车" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:itemBinding="@{viewModel.itemCartMerchantBinding}"
+            app:items="@{viewModel.itemCartMerchantVMs}" />
+        <!--底部操作栏-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center_vertical"
+                android:background="@android:color/white"
+                android:padding="@dimen/text_padding">
+
+                <CheckBox
+                    android:button="@drawable/selector_check_box"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/line_space"
+                    android:text="  全选"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="合计："
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:id="@+id/tv_total_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/tv_total"
+                        android:text="@{viewModel.totalPrice}"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/tv_total_price"
+                        android:layout_below="@+id/tv_total"
+                        android:text="@{viewModel.transFee}"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal_small" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@{viewModel.viewStyle.isEdit ? @color/colorDisableButton : @color/colorComplementaryOrange}"
+                android:clickable="@{!viewModel.viewStyle.isEdit}"
+                android:text="提交订单"
+                app:clickCommand="@{viewModel.submitOrderClick}" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.common.viewModel.ItemTransListVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="@dimen/line_space"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.time}"
+                android:textColor="@color/colorText"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.day}"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="@dimen/text_normal_small" />
+
+        </LinearLayout>
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:placeholderImageRes="@{viewModel.viewStyle.currentStatus ? viewModel.routeBlue : viewModel.routeGrey}"/>
+
+        <TextView
+            android:layout_marginStart="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.content}"
+            android:textColor="@{viewModel.viewStyle.currentStatus ? @color/colorPrimary : @color/colorComplementaryText}"
+            android:textSize="@dimen/text_normal" />
+
+    </LinearLayout>
+
+</layout>

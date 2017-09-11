@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.AddressListVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            style="@style/SimpleTextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:drawableEnd="@mipmap/right_grey"
+            android:gravity="start|center_vertical"
+            android:padding="@dimen/item_padding"
+            android:text="添加新地址"
+            app:clickCommand="@{viewModel.addClick}" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+            app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}"
+                app:itemBinding="@{viewModel.itemAddressBinding}"
+                app:items="@{viewModel.itemAddressVMs}" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+
+</layout>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.message.viewModel.SysMsgListVM.ItemSysMsgListVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/item_padding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/shape_helf_round_grey"
+            android:paddingBottom="3dp"
+            android:paddingEnd="@dimen/item_padding"
+            android:paddingStart="@dimen/item_padding"
+            android:paddingTop="3dp"
+            android:text="@{viewModel.date}"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_normal_small"
+            tools:text="2017-07-19 10:45" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_space"
+            android:background="@android:color/white"
+            android:layout_marginBottom="2dp"
+            app:cardCornerRadius="7dp"
+            app:contentPaddingRight="@dimen/item_padding"
+            app:contentPaddingLeft="@dimen/item_padding"
+            app:contentPaddingTop="@dimen/item_padding"
+            app:contentPaddingBottom="5dp">
+            <!--app:cardElevation="5dp"-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/shape_vertical_divider"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="@dimen/vertical_space">
+
+                    <TextView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@{viewModel.bg}"
+                        android:gravity="center"
+                        android:text="@{viewModel.typeStr}"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        tools:text="订单" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/vertical_space">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.summary}"
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/text_normal"
+                            tools:text="您有新订单" />
+
+                        <TextView
+                            android:id="@+id/tv_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:text="@{viewModel.nameTarget}"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/text_normal"
+                            tools:text="用户名" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="@dimen/line_space"
+                            android:layout_toEndOf="@+id/tv_name"
+                            android:text="@{viewModel.detail}"
+                            android:textColor="@color/colorComplementaryText"
+                            android:textSize="@dimen/text_normal"
+                            tools:text="刚刚购买了你的宝贝" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    app:clickCommand="@{viewModel.detailClick}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:gravity="center">
+
+                    <Button
+                        style="@style/SimpleTextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@mipmap/right_green"
+                        android:drawablePadding="@dimen/line_space"
+                        android:text="查看详情"
+                        android:textColor="@color/colorComplementaryGreen" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+    </LinearLayout>
+
+</layout>

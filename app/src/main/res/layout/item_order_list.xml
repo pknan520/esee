@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.OrderListVM.ItemOrderVM" />
+
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_space"
+        android:background="@android:color/white"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        app:clickCommand="@{viewModel.orderDetailClick}">
+        <!--商家信息-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding"
+            app:clickCommand="@{viewModel.personalHomeClick}">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                app:uri="@{viewModel.headUri}" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextListTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.name}" />
+
+                <TextView
+                    style="@style/TextListSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.summary}" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/line_space"
+                android:text="@{viewModel.status}"
+                android:textColor="@color/colorComplementaryGreen"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+        <!--商品列表-->
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="@{LayoutManagers.linear()}"
+            app:items="@{viewModel.itemOrderGoodsListVMs}"
+            app:itemBinding="@{viewModel.itemOrderGoodsListBinding}"/>
+        <!--订单信息-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:padding="10dp"
+            android:text="@{viewModel.orderInfo}"
+            android:textColor="@color/colorComplementaryText"
+            android:textSize="@dimen/text_normal_small" />
+        <!--操作按钮-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:gravity="end"
+            android:padding="10dp">
+
+            <Button
+                style="@style/SimpleTextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.btnStr}"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                app:clickCommand="@{viewModel.operateClick}"
+                android:background="@drawable/border_green"
+                android:textColor="@color/colorComplementaryGreen"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

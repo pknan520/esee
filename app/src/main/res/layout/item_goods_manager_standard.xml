@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.GoodsManagerDetailVM.ItemStandardVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/text_padding">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:divider="@drawable/shape_vertical_divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/text_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="规格    "
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <EditText
+                    style="@style/EditNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    android:hint="请填写商品规格"
+                    android:maxLines="1"
+                    android:text="@={viewModel.standard}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/text_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="规格    "
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <EditText
+                    style="@style/EditNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    android:hint="请填写商品价格"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:text="@={viewModel.price}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/text_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="规格    "
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <EditText
+                    style="@style/EditNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    android:hint="请填写商品库存"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:text="@={viewModel.num}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding"
+            android:layout_gravity="center_vertical"
+            android:src="@mipmap/close_red"
+            app:clickCommand="@{viewModel.deleteClick}" />
+
+    </LinearLayout>
+
+</layout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.dynamic.viewModel.DynamicPublishVM.ItemDescVM"/>
+
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:src="@mipmap/close_red"
+            app:clickCommand="@{viewModel.deleteDescClick}"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="@{LayoutManagers.grid(4)}"
+            app:items="@{viewModel.itemDescPicVMs}"
+            app:itemBinding="@{viewModel.itemDescPicBinding}"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            style="@style/EditNormal"
+            android:hint="描述一下您的商品"
+            android:layout_marginBottom="@dimen/line_space"
+            android:layout_marginTop="@dimen/line_space"
+            android:text="@={viewModel.desc}"/>
+
+    </LinearLayout>
+
+</layout>

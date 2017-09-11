@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.OrderCenterVM.ItemTabVM" />
+    </data>
+
+    <cn.bingoogolapple.badgeview.BGABadgeLinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="5dp"
+        android:paddingStart="0dp"
+        android:paddingTop="5dp"
+        app:badgeText="@{viewModel.tabBadgeText}"
+        app:badge_gravity="rightTop"
+        app:badge_horizontalMargin="0dp"
+        app:badge_padding="2.5dp"
+        app:badge_verticalMargin="0dp">
+
+        <cn.bingoogolapple.badgeview.BGABadgeTextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@drawable/selector_main_tab_text"
+            android:textSize="@dimen/text_normal" />
+
+    </cn.bingoogolapple.badgeview.BGABadgeLinearLayout>
+
+</layout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.main.viewModel.merchant.MerchantListVM" />
+    </data>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWindowBg"
+        android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+        app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/sv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.daimajia.slider.library.SliderLayout
+                    android:id="@+id/slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:defaultSliderView="@{viewModel.sliderList}" />
+
+                <TextView
+                    style="@style/TextListTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:drawablePadding="@dimen/line_space"
+                    android:drawableStart="@mipmap/activity_notice"
+                    android:padding="@dimen/text_padding"
+                    android:text="@{viewModel.adText}" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:itemBinding="@{viewModel.itemMerchantBinding}"
+                    app:items="@{viewModel.itemMerchantListVMs}"
+                    app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</layout>

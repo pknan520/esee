@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/MVVMLib/MVVMLib.iml" filepath="$PROJECT_DIR$/MVVMLib/MVVMLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NongO2O.iml" filepath="$PROJECT_DIR$/NongO2O.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+    </modules>
+  </component>
+</project>

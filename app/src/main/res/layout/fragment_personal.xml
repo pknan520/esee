@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.main.viewModel.personal.PersonalVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <io.codetail.widget.RevealLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!--头部栏-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
+                android:background="@color/colorPrimary"
+                android:padding="@dimen/activity_margin"
+                app:clickCommand="@{viewModel.toSettingClick}">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/iv_head"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerVertical="true"
+                    app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                    app:uri="@{viewModel.headUri}" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/iv_head"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.name}"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:text="个人主页 >"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/text_normal"
+                        app:clickCommand="@{viewModel.toPersonalHomeClick}" />
+
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/btn_switch"
+                    style="@style/SimpleTextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="@{viewModel.viewStyle.isMerchantMode ? @string/exit_manager : @string/shop_manager}"
+                    android:textColor="@android:color/white"
+                    app:clickCommand="@{viewModel.switchModeClick}" />
+
+            </RelativeLayout>
+            <!--资金栏-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/item_padding"
+                android:visibility="@{viewModel.viewStyle.isMerchantMode ? View.VISIBLE : View.GONE}">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="当前余额"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal_small" />
+
+                    <TextView
+                        android:id="@+id/tv_balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{@string/rmb + ` ` +  String.valueOf(viewModel.balance)}"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_title" />
+
+                </LinearLayout>
+
+                <Button
+                    style="@style/SimpleTextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/item_padding"
+                    app:clickCommand="@{viewModel.toBillClick}"
+                    android:text="账单" />
+
+                <Button
+                    style="@style/SimpleTextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/item_padding"
+                    android:text="提现" />
+
+            </LinearLayout>
+            <!--订单栏-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@android:color/white"
+                android:divider="@drawable/shape_vertical_divider"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="我的订单"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:drawablePadding="@dimen/line_space"
+                        android:drawableEnd="@mipmap/right_grey"
+                        android:text="全部订单"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal"
+                        app:clickCommand="@{viewModel.toOrderCenterClick}" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/text_padding">
+
+                    <cn.bingoogolapple.badgeview.BGABadgeTextView
+                        android:id="@+id/tv_unpaid"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawablePadding="@dimen/text_padding"
+                        android:drawableTop="@mipmap/order_payment"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="待付款"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal_small"
+                        app:badge_gravity="rightTop"
+                        app:badge_horizontalMargin="15dp"
+                        app:badgeText="@{viewModel.unpaidBadge}"/>
+
+                    <cn.bingoogolapple.badgeview.BGABadgeTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawablePadding="@dimen/text_padding"
+                        android:drawableTop="@mipmap/order_delivery"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="待发货"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal_small"
+                        app:badge_gravity="rightTop"
+                        app:badge_horizontalMargin="15dp"
+                        app:badgeText="@{viewModel.deliveryBadge}" />
+
+
+                    <cn.bingoogolapple.badgeview.BGABadgeTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawablePadding="@dimen/text_padding"
+                        android:drawableTop="@mipmap/order_takeover"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="待收货"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal_small"
+                        app:badge_gravity="rightTop"
+                        app:badge_horizontalMargin="15dp"
+                        app:badgeText="@{viewModel.takeoverBadge}"/>
+
+
+                    <cn.bingoogolapple.badgeview.BGABadgeTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawablePadding="@dimen/text_padding"
+                        android:drawableTop="@mipmap/order_evaluate"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="待评价"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal_small"
+                        app:badge_gravity="rightTop"
+                        app:badge_horizontalMargin="15dp"
+                        app:badgeText="@{viewModel.evaBadge}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <!--菜单栏-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@android:color/white"
+                android:divider="@drawable/shape_vertical_divider"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@mipmap/right_grey"
+                    android:padding="@dimen/item_padding"
+                    android:text="@{viewModel.viewStyle.isMerchantMode ? `商品管理` : `地址管理`}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal"
+                    app:clickCommand="@{viewModel.viewStyle.isMerchantMode ? viewModel.toGoodsManagerClick : viewModel.toAddressMgrClick}" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@mipmap/right_grey"
+                    android:padding="@dimen/item_padding"
+                    android:text="我的关注"
+                    android:textColor="@color/colorText"
+                    app:clickCommand="@{viewModel.toFansMgrClick}"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@mipmap/right_grey"
+                    android:padding="@dimen/item_padding"
+                    android:text="数据统计"
+                    android:visibility="@{viewModel.viewStyle.isMerchantMode ? View.VISIBLE : View.GONE}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+            </LinearLayout>
+            <!--认证栏-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:padding="@dimen/item_padding"
+                app:clickCommand="@{viewModel.toIdentifyClick}">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="商家认证"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@mipmap/right_grey"
+                    android:drawablePadding="@dimen/line_space"
+                    android:text="@{viewModel.authenticationStatus}"
+                    android:textColor="@color/colorComplementaryText"
+                    android:textSize="@dimen/text_normal_small" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </io.codetail.widget.RevealLinearLayout>
+
+</layout>

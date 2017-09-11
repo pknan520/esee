@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.dynamic.viewModel.DynamicPublishVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWindowBg"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:orientation="vertical"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        style="@style/TextListTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="主图（广告栏）" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_banner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_space"
+                        app:itemBinding="@{viewModel.itemBannerBinding}"
+                        app:items="@{viewModel.itemBannerVMs}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        style="@style/TextListTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="标题" />
+
+                    <EditText
+                        style="@style/EditNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:hint="请输入您的标题"
+                        android:text="@={viewModel.title}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:paddingTop="@dimen/item_padding"
+                    android:paddingStart="@dimen/item_padding"
+                    android:paddingEnd="@dimen/item_padding"
+                    android:orientation="vertical"
+                    android:background="@android:color/white">
+
+                    <TextView
+                        style="@style/TextListTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="商品内容" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_desc"
+                        android:layout_marginTop="@dimen/line_space"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:itemBinding="@{viewModel.itemDescBinding}"
+                        app:items="@{viewModel.itemDescVMs}" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/colorDivider" />
+
+                    <Button
+                        style="@style/SimpleTextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="+  增加商品内容"
+                        android:textColor="@color/colorPrimary"
+                        app:clickCommand="@{viewModel.addDescClick}" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:padding="@dimen/item_padding"
+                    android:drawableStart="@mipmap/fabu_link"
+                    android:drawablePadding="@dimen/line_space"
+                    android:text="如果有，请添加商品链接"
+                    android:textColor="@color/colorComplementaryOrange"
+                    android:textSize="@dimen/text_normal"
+                    app:clickCommand="@{viewModel.addGoodsLinkClick}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding"
+                    app:clickCommand="@{viewModel.areaSelectClick}">
+
+                    <TextView
+                        style="@style/TextListTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@mipmap/icon_pin"
+                        android:drawablePadding="@dimen/line_space"
+                        android:text="你的地区" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="选择地区"
+                        android:textColor="@color/colorComplementaryOrange"
+                        android:textSize="@dimen/text_normal" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:padding="@dimen/item_padding">
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="确定发布"
+                app:clickCommand="@{viewModel.publishClick}" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

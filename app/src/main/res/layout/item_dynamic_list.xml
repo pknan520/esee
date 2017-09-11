@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.common.viewModel.ItemDynamicListVM" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        app:cardElevation="2dp"
+        app:clickCommand="@{viewModel.detailClick}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                app:placeholderImageRes="@{viewModel.imgMainPlaceHolder}"
+                app:uri="@{viewModel.imgMain}" />
+            <!--app:actualImageScaleType="fitXY"-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/line_space"
+                android:orientation="vertical"
+                android:padding="@dimen/text_padding">
+
+                <TextView
+                    style="@style/TextListTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:text="@{viewModel.title}" />
+
+                <TextView
+                    style="@style/TextListSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/line_space"
+                    android:maxLines="2"
+                    android:text="@{viewModel.content}" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/line_space">
+
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/iv_head"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        app:placeholderImageRes="@{viewModel.imgHeadPlaceHolder}"
+                        app:roundAsCircle="true"
+                        app:uri="@{viewModel.imgHead}" />
+
+                    <TextView
+                        android:id="@+id/tv_author"
+                        style="@style/TextAuthor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/line_space"
+                        android:layout_toEndOf="@id/iv_head"
+                        android:text="@{viewModel.author}" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.facebook.drawee.view.SimpleDraweeView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            app:clickCommand="@{viewModel.focusClick}"
+                            app:placeholderImageRes="@{viewModel.viewStyle.isLike ? viewModel.imgIsLike : viewModel.imgUnLike}" />
+
+                        <TextView
+                            style="@style/TextAuthor"
+                            android:layout_marginStart="3dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{String.valueOf(viewModel.likeNum)}" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</layout>

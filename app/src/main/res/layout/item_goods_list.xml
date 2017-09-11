@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.common.viewModel.ItemGoodsListVM"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:background="@android:color/white"
+        app:clickCommand="@{viewModel.detailClick}"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_padding">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}"
+            app:uri="@{viewModel.goodsImgUri}" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/vertical_space"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextListTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.goodsName}" />
+
+            <TextView
+                style="@style/TextPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@{@string/rmb + String.valueOf(viewModel.goodsPrice)}" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/TextListSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/sale_num + ` ` + String.valueOf(viewModel.saleNum)}" />
+
+                <TextView
+                    style="@style/TextListSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="@{@string/stock_num + ` ` + String.valueOf(viewModel.stockNum)}" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/vertical_space"
+            android:src="@mipmap/add_shoppingcar"/>
+
+    </LinearLayout>
+
+
+</layout>

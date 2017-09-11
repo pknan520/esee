@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.GoodsManagerVM.ItemGoodsVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_padding">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
+            app:uri="@{viewModel.imgUri}"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/vertical_space">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:padding="@dimen/item_padding"
+                app:clickCommand="@{viewModel.operateClick}"
+                android:src="@mipmap/more_green" />
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/vertical_space"
+                android:textColor="@color/colorText"
+                android:text="@{viewModel.name}"
+                android:textSize="@dimen/text_normal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_name"
+                android:layout_marginStart="@dimen/vertical_space"
+                android:textColor="@color/colorAccent"
+                android:text="@{@string/rmb + String.valueOf(viewModel.price)}"
+                android:textSize="@dimen/text_normal" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/vertical_space"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{@string/sale_num + ` ` + String.valueOf(viewModel.saleNum)}"
+                    android:textColor="@color/colorComplementaryText"
+                    android:textSize="@dimen/text_normal_small" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{@string/stock_num + ` ` + String.valueOf(viewModel.stockNum)}"
+                    android:textColor="@color/colorComplementaryText"
+                    android:textSize="@dimen/text_normal_small" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{viewModel.date}"
+                    android:textColor="@color/colorComplementaryText"
+                    android:textSize="@dimen/text_normal_small" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</layout>

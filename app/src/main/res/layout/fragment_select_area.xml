@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.common.viewModel.SelectAreaVM"/>
+    </data>
+
+    <com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/rv"-->
+            <!--app:items="@{viewModel.itemAreaVMs}"-->
+            <!--app:itemBinding="@{viewModel.itemAreaBinding}"/>-->
+
+        <me.yokeyword.indexablerv.IndexableLayout
+            android:id="@+id/indexableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            app:indexBar_selectedTextColor="@color/colorAccent"
+            app:indexBar_textColor="@color/colorText"
+            app:indexBar_textSize="13sp"
+            app:indexBar_textSpace="4dp" />
+
+    </com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout>
+
+</layout>

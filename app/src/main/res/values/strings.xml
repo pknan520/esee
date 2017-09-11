@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">NongO2O</string>
+
+    <string name="sale_num">销量</string>
+    <string name="stock_num">库存</string>
+
+    <string name="shop_manager">店铺管理</string>
+    <string name="exit_manager">退出管理</string>
+    <string name="rmb">¥</string>
+
+    <string name="order_no">单号：</string>
+    <string name="receiver">收货人：</string>
+    <string name="receive_addr">收货地址：</string>
+    <string name="trans_fee">运费：</string>
+    <string name="trans_order_no">快递单号：</string>
+    <string name="create_date">创建时间:</string>
+
+    <string name="num_of_local_friends">位好友</string>
+    <string name="has_select">已选：</string>
+</resources>

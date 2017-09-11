@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.common.viewModel.PopupStandardVM" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/white"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical">
+            <!--商品信息-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingEnd="@dimen/item_padding"
+                android:paddingStart="@dimen/item_padding">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/iv_goods"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:translationY="-10dp"
+                    app:roundedCornerRadius="5dp"
+                    app:roundingBorderWidth="2dp"
+                    app:roundingBorderColor="@android:color/white"
+                    app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
+                    app:uri="@{viewModel.imgUri}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    android:layout_toEndOf="@+id/iv_goods"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:gravity="bottom"
+                        android:text="@{@string/rmb + String.valueOf(viewModel.price)}"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="@dimen/text_normal"
+                        tools:text="¥48.80" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:gravity="bottom"
+                        android:text="@{@string/stock_num + String.valueOf(viewModel.stockNum)}"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal"
+                        tools:text="库存1829" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:text="@{@string/has_select + viewModel.standard}"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal"
+                        tools:text="已选：进口上等品" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:padding="@dimen/item_padding"
+                    android:src="@mipmap/close_red"
+                    app:clickCommand="@{viewModel.cancelClick}" />
+
+            </RelativeLayout>
+
+            <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:layout_weight="1"
+                android:paddingEnd="@dimen/item_padding"
+                android:paddingStart="@dimen/item_padding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="规格"
+                        android:textColor="@color/colorText"
+                        android:textSize="15sp" />
+                    <!--商品规格-->
+                    <com.zhy.view.flowlayout.TagFlowLayout
+                        android:id="@+id/flowtag_standard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_space"
+                        android:padding="@dimen/text_padding"
+                        app:max_select="1"
+                        app:setAdapter="@{viewModel.standardAdapter}" />
+
+                </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_padding"
+                android:text="确定"
+                app:clickCommand="@{viewModel.confirmClick}" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

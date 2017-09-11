@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.merchant.viewModel.MerchantGoodsVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--商家信息-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/text_padding"
+            app:clickCommand="@{viewModel.personalHomeClick}">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                app:uri="@{viewModel.headUri}" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.name}"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.summary}"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_normal_small" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/text_padding">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:placeholderImageRes="@{viewModel.unFocus}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/line_space"
+                    android:text="关注"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/white"
+            app:tabIndicatorColor="@color/colorPrimary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/colorDivider" />
+
+        <!--商品信息-->
+        <com.nong.nongo2o.widget.ScrollView.ObservableScrollView
+            android:id="@+id/sv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <!--商品轮播-->
+                <com.daimajia.slider.library.SliderLayout
+                    android:id="@+id/slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:defaultSliderView="@{viewModel.sliderList}" />
+                <!--商品信息-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:orientation="vertical"
+                    android:padding="@dimen/text_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.goodsName}"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_space"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.goodsPrice}"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="@dimen/text_normal" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="@{@string/stock_num + `    ` + String.valueOf(viewModel.stockNum) + `        ` + @string/sale_num + `    ` + String.valueOf(viewModel.saleNum)}"
+                            android:textColor="@color/colorComplementaryText"
+                            android:textSize="@dimen/text_normal" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+                <!--商品规格-->
+                <com.zhy.view.flowlayout.TagFlowLayout
+                    android:id="@+id/flowtag_standard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:padding="@dimen/text_padding"
+                    app:max_select="1"
+                    app:setAdapter="@{viewModel.standardAdapter}" />
+                <!--运费-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/text_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="运费"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@{viewModel.transFee}"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                </LinearLayout>
+                <!--详情栏-->
+                <!--图文介绍-->
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:padding="10dp"
+                    app:itemBinding="@{viewModel.itemImageTextBinding}"
+                    app:items="@{viewModel.itemImageTextVMs}" />
+                <!--评价栏-->
+                <!--评价分类-->
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_evaluate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    app:tabIndicatorColor="@color/colorPrimary" />
+                <!--评价列表-->
+                <com.nong.nongo2o.widget.ViewPager.WrapHeightViewPager
+                    android:id="@+id/vp_evaluate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </com.nong.nongo2o.widget.ScrollView.ObservableScrollView>
+
+        <!--底部栏-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBottomTapBg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/line_space"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="@dimen/line_space"
+                android:layout_weight="4"
+                android:background="@drawable/shape_round_grey"
+                android:gravity="center"
+                android:padding="@dimen/text_padding"
+                android:text="咨询一下"
+                app:clickCommand="@{viewModel.consultClick}" />
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:text="加入购物车"
+                app:clickCommand="@{viewModel.addCartClick}" />
+
+            <Button
+                style="@style/SimpleAccentButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:text="立即购买"
+                app:clickCommand="@{viewModel.buyClick}" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

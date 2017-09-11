@@ -1,0 +1,132 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <!-- ToolBar菜单样式 -->
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@android:color/white</item> <!--  敲定颜色-->
+    </style>
+
+
+    <!--Text-->
+    <style name="TextTitle">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextListTitle">
+        <item name="android:textSize">@dimen/text_normal</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <style name="TextListSummary">
+        <item name="android:textSize">@dimen/text_normal</item>
+        <item name="android:textColor">@color/colorComplementaryText</item>
+    </style>
+
+    <style name="TextAuthor">
+        <item name="android:textSize">@dimen/text_normal_small</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <style name="TextInfo">
+        <item name="android:textSize">@dimen/text_normal_small</item>
+        <item name="android:textColor">@color/colorComplementaryText</item>
+    </style>
+
+    <style name="TextPrice">
+        <item name="android:textSize">@dimen/text_normal</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <!--EditText-->
+    <style name="EditNormal" parent="TextListTitle">
+        <item name="android:textColorHint">@color/colorHintText</item>
+        <item name="android:background">@null</item>
+    </style>
+
+
+    <!--Tab-->
+    <style name="MainTopTab">
+        <item name="android:layout_gravity">center</item>
+        <item name="tabIndicatorColor">@android:color/white</item>
+    </style>
+
+    <style name="MainTopTabText" parent="TextTitle">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    <!--Button-->
+    <style name="SimpleTextButton">
+        <item name="android:minHeight">0dp</item>
+        <item name="android:background">@null</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:padding">@dimen/text_padding</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="SimpleOrangeButton" parent="SimpleTextButton">
+        <item name="android:background">@color/colorComplementaryOrange</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SimplePrimaryButton" parent="SimpleTextButton">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SimpleAccentButton" parent="SimpleTextButton">
+        <item name="android:background">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SimpleDisableButton" parent="SimpleTextButton">
+        <item name="android:background">@color/colorDisableButton</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!--PopupWindow-->
+    <style name="popwin_anim_style">
+        <item name="android:windowEnterAnimation">@anim/anim_width_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_width_out</item>
+    </style>
+
+    <style name="PopupAnimBottom" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@animator/push_bottom_in</item>
+        <item name="android:windowExitAnimation">@animator/push_bottom_out</item>
+    </style>
+    
+    <!--Switch-->
+    <style name="GreenSwitch" parent="Theme.AppCompat.Light">
+        <!-- switch 打开时的按钮的颜色 轨迹颜色默认为30%（看效果就明白30%是怎么回事了）这个颜色 -->
+        <item name="colorControlActivated">@color/colorComplementaryGreen</item>
+        <!--  switch关闭时的按钮的颜色 -->
+        <item name="colorSwitchThumbNormal">@android:color/white</item>
+        <!-- switch关闭时的轨迹的颜色 30%这个颜色 -->
+        <!--<item name="android:colorForeground">@color/colorPrimaryDark</item>-->
+    </style>
+
+    <!--RatingBar-->
+    <style name="SmallRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/small_rating_star</item>
+        <item name="android:minHeight">16dp</item>
+        <item name="android:maxHeight">16dp</item>
+    </style>
+
+</resources>

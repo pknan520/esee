@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.GoodsManagerVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+            app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}"
+                app:itemBinding="@{viewModel.itemGoodsBinding}"
+                app:items="@{viewModel.itemGoodsVMs}" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBottomTapBg"
+            android:padding="@dimen/item_padding">
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="+ 添加商品"
+                android:visibility="@{viewModel.status == 1 ? View.VISIBLE : View.GONE}"
+                app:clickCommand="@{viewModel.addGoods}" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

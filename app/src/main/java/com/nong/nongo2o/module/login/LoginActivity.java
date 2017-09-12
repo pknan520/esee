@@ -61,7 +61,6 @@ public class LoginActivity extends RxBaseActivity {
             String[] permissions = permissionList.toArray(new String[permissionList.size()]);
             ActivityCompat.requestPermissions(this, permissions, 100);
         }
-
     }
 
     private void initView() {

@@ -218,7 +218,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="0dp"
                                     android:layout_weight="1"
-                                    android:text="@{viewModel.goodsPrice}" />
+                                    android:text="@{String.valueOf(viewModel.goodsPrice)}" />
 
                                 <RelativeLayout
                                     android:layout_width="wrap_content"
@@ -228,14 +228,14 @@
                                         style="@style/TextListSummary"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@{@string/sale_num + ` ` + viewModel.saleNum}" />
+                                        android:text="@{@string/sale_num + ` ` + String.valueOf(viewModel.saleNum)}" />
 
                                     <TextView
                                         style="@style/TextListSummary"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentEnd="true"
-                                        android:text="@{@string/stock_num + ` ` + viewModel.stockNum}" />
+                                        android:text="@{@string/stock_num + ` ` + String.valueOf(viewModel.stockNum)}" />
 
                                 </RelativeLayout>
 

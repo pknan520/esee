@@ -9,6 +9,7 @@ import android.text.style.ForegroundColorSpan;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.entities.common.DynamicComment;
+import com.nong.nongo2o.entity.domain.MomentComment;
 
 /**
  * Created by Administrator on 2017-7-10.
@@ -17,15 +18,15 @@ import com.nong.nongo2o.entities.common.DynamicComment;
 public class ItemCommentListVM implements ViewModel {
 
     private ItemClickListener listener;
-    private DynamicComment comment;
+    private MomentComment comment;
 
     public final ObservableField<SpannableString> content = new ObservableField<>();
 
     public interface ItemClickListener {
-        void itemClick(DynamicComment comment);
+        void itemClick(MomentComment comment);
     }
 
-    public ItemCommentListVM(ItemClickListener listener, DynamicComment comment) {
+    public ItemCommentListVM(ItemClickListener listener, MomentComment comment) {
         this.listener = listener;
         this.comment = comment;
 
@@ -36,7 +37,7 @@ public class ItemCommentListVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        setNameColor(comment.getUserName(), comment.getToUserName(), comment.getContent());
+        setNameColor(comment.getUser().getUserNick(), comment.getToUser().getUserNick(), comment.getContent());
     }
 
     private void setNameColor(String name, String nameTarget, String comment) {

@@ -1,9 +1,9 @@
 package com.nong.nongo2o.network.api;
 
-import com.nong.nongo2o.entities.common.Address;
-import com.nong.nongo2o.entities.common.ApiListResponse;
-import com.nong.nongo2o.entities.common.ApiResponse;
 import com.nong.nongo2o.entities.response.Fans;
+import com.nong.nongo2o.entity.bean.ApiListResponse;
+import com.nong.nongo2o.entity.bean.ApiResponse;
+import com.nong.nongo2o.entity.domain.Address;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;

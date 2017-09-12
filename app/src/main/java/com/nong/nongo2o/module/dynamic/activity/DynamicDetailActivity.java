@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.databinding.ActivityDynamicDetailBinding;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicDetailFragment;
 
 /**
@@ -20,9 +22,9 @@ public class DynamicDetailActivity extends RxBaseActivity {
 
     private ActivityDynamicDetailBinding binding;
 
-    public static Intent newIntent(Context context, DynamicDetail dynamic) {
+    public static Intent newIntent(Context context, Moment dynamic) {
         Intent intent = new Intent(context, DynamicDetailActivity.class);
-        intent.putExtra("dynamic", dynamic);
+        intent.putExtra("dynamic", (Parcelable) dynamic);
         return intent;
     }
 

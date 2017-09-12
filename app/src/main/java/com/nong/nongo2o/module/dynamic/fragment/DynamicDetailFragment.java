@@ -19,6 +19,7 @@ import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentDynamicDetailBinding;
 import com.nong.nongo2o.databinding.PopupCommentEditBinding;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.viewModel.DynamicDetailVM;
 import com.nong.nongo2o.uils.CommonUtils;
 
@@ -32,11 +33,11 @@ public class DynamicDetailFragment extends RxBaseFragment {
 
     private FragmentDynamicDetailBinding binding;
     private DynamicDetailVM vm;
-    private DynamicDetail dynamic;
+    private Moment dynamic;
     private PopupWindow commentPopup, commentEditPopup;
     private PopupCommentEditBinding popupCommentEditBinding;
 
-    public static DynamicDetailFragment newInstance(DynamicDetail dynamic) {
+    public static DynamicDetailFragment newInstance(Moment dynamic) {
         Bundle args = new Bundle();
         args.putParcelable("dynamic", dynamic);
         DynamicDetailFragment fragment = new DynamicDetailFragment();

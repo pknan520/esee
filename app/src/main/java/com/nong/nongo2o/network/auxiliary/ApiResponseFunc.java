@@ -1,6 +1,6 @@
 package com.nong.nongo2o.network.auxiliary;
 
-import com.nong.nongo2o.entities.common.ApiResponse;
+import com.nong.nongo2o.entity.bean.ApiResponse;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;

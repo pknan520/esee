@@ -22,16 +22,16 @@ public class DynamicDetail implements Parcelable {
     private String updateUserId;
     private String remark;
     private String momentCode;
-    private String userCode;
-    private String goodsCode;
     private String headerImg;
     private String title;
     private String content;
     private String provinceCode;
     private String cityCode;
     private String areaCode;
-    private String goods;
+    private Good goods;
+    private String goodsCode;
     private User user;
+    private String userCode;
     private int isFavorite; //  1-已点赞，0-未点赞
     private int favorite;
 
@@ -203,11 +203,11 @@ public class DynamicDetail implements Parcelable {
         this.areaCode = areaCode;
     }
 
-    public String getGoods() {
+    public Good getGoods() {
         return goods;
     }
 
-    public void setGoods(String goods) {
+    public void setGoods(Good goods) {
         this.goods = goods;
     }
 
@@ -259,16 +259,16 @@ public class DynamicDetail implements Parcelable {
         dest.writeString(this.updateUserId);
         dest.writeString(this.remark);
         dest.writeString(this.momentCode);
-        dest.writeString(this.userCode);
-        dest.writeString(this.goodsCode);
         dest.writeString(this.headerImg);
         dest.writeString(this.title);
         dest.writeString(this.content);
         dest.writeString(this.provinceCode);
         dest.writeString(this.cityCode);
         dest.writeString(this.areaCode);
-        dest.writeString(this.goods);
+        dest.writeParcelable(this.goods, flags);
+        dest.writeString(this.goodsCode);
         dest.writeParcelable(this.user, flags);
+        dest.writeString(this.userCode);
         dest.writeInt(this.isFavorite);
         dest.writeInt(this.favorite);
     }
@@ -290,21 +290,21 @@ public class DynamicDetail implements Parcelable {
         this.updateUserId = in.readString();
         this.remark = in.readString();
         this.momentCode = in.readString();
-        this.userCode = in.readString();
-        this.goodsCode = in.readString();
         this.headerImg = in.readString();
         this.title = in.readString();
         this.content = in.readString();
         this.provinceCode = in.readString();
         this.cityCode = in.readString();
         this.areaCode = in.readString();
-        this.goods = in.readString();
+        this.goods = in.readParcelable(Good.class.getClassLoader());
+        this.goodsCode = in.readString();
         this.user = in.readParcelable(User.class.getClassLoader());
+        this.userCode = in.readString();
         this.isFavorite = in.readInt();
         this.favorite = in.readInt();
     }
 
-    public static final Parcelable.Creator<DynamicDetail> CREATOR = new Parcelable.Creator<DynamicDetail>() {
+    public static final Creator<DynamicDetail> CREATOR = new Creator<DynamicDetail>() {
         @Override
         public DynamicDetail createFromParcel(Parcel source) {
             return new DynamicDetail(source);

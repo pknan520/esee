@@ -6,29 +6,23 @@ import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 import android.widget.Toast;
 
-import com.facebook.drawee.generic.RoundingParams;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entities.request.LikeDynamic;
-import com.nong.nongo2o.entities.request.UpdateUser;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.DynamicDetail;
 import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.activity.DynamicDetailActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -40,7 +34,7 @@ import okhttp3.RequestBody;
 public class ItemDynamicListVM implements ViewModel {
 
     private Fragment fragment;
-    private DynamicDetail dynamic;
+    private Moment dynamic;
 
     @DrawableRes
     public final int imgMainPlaceHolder = R.mipmap.picture_default;
@@ -58,7 +52,7 @@ public class ItemDynamicListVM implements ViewModel {
     public final int imgUnLike = R.mipmap.icon_like_p;
 
 
-    public ItemDynamicListVM(Fragment fragment, DynamicDetail dynamic) {
+    public ItemDynamicListVM(Fragment fragment, Moment dynamic) {
         this.fragment = fragment;
         this.dynamic = dynamic;
 
@@ -79,7 +73,7 @@ public class ItemDynamicListVM implements ViewModel {
         }
         imgHead.set(dynamic.getUser().getAvatar());
         author.set(dynamic.getUser().getUserNick());
-        viewStyle.isLike.set(dynamic.getIsFavorite() == 1);
+//        viewStyle.isLike.set(dynamic.getIsFavorite() == 1);
         likeNum.set(dynamic.getFavorite());
     }
 
@@ -106,7 +100,7 @@ public class ItemDynamicListVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        dynamic.setIsFavorite(1);
+//                        dynamic.setIsFavorite(1);
                         viewStyle.isLike.set(true);
                     }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
         }

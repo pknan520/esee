@@ -3,6 +3,7 @@ package com.nong.nongo2o.module.dynamic.viewModel;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,11 +20,23 @@ import com.nong.nongo2o.module.common.fragment.SelectAreaFragment;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicPublishFragment;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicSelectGoodsFragment;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by Administrator on 2017-7-1.
@@ -84,7 +97,7 @@ public class DynamicPublishVM implements ViewModel {
         }
         if (itemBannerVMs.size() < 9)
             itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
-
+        title.set(dynamic.getTitle());
         List<DynamicContent> contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
         }.getType());
         for (DynamicContent content : contentList) {
@@ -125,6 +138,8 @@ public class DynamicPublishVM implements ViewModel {
         public final ObservableList<ItemPicVM> itemDescPicVMs = new ObservableArrayList<>();
         public final ItemBinding<ItemPicVM> itemDescPicBinding = ItemBinding.of(BR.viewModel, R.layout.item_pic);
 
+        private List<File> newPicFiles = new ArrayList<>();
+
         public ItemDescVM() {
 
             initListener();
@@ -146,6 +161,7 @@ public class DynamicPublishVM implements ViewModel {
                 @Override
                 public void addRadioPic(MediaBean mediaBean) {
                     itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
+                    newPicFiles.add(new File("file://" + mediaBean.getOriginalPath()));
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
@@ -180,6 +196,10 @@ public class DynamicPublishVM implements ViewModel {
             }
             itemDescVMs.remove(ItemDescVM.this);
         });
+
+        public List<File> getNewPicFiles() {
+            return newPicFiles;
+        }
     }
 
     /**
@@ -194,8 +214,45 @@ public class DynamicPublishVM implements ViewModel {
      * 发布按钮
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
-        Toast.makeText(fragment.getActivity(), "你点击了发布按钮", Toast.LENGTH_SHORT).show();
+        if (dynamic != null) {
+            //  编辑，有原始数据
+            Toast.makeText(fragment.getActivity(), "发布旧动态", Toast.LENGTH_SHORT).show();
+        } else {
+            //  新增，没有原始数据
+            Toast.makeText(fragment.getActivity(), "发布新动态", Toast.LENGTH_SHORT).show();
+        }
+        uploadFile();
     });
 
+    private void uploadFile() {
+        Map<String, RequestBody> picMap = new HashMap<>();
+        for (ItemDescVM item : itemDescVMs) {
+            for (File file : item.getNewPicFiles()) {
+                RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+                picMap.put("file\":fileName=\"" + file.getName() + "\"", body);
+            }
+        }
 
+        RetrofitHelper.getFileAPI()
+                .uploadFile(picMap)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        Log.d("DynamicPublish", "accept: String" + s);
+                    }
+                }, throwable -> {
+
+                }, ()-> {});
+    }
+
+    /**
+     * 创建新dynamic
+     * @param detail
+     */
+    private void createDynamic(DynamicDetail detail) {
+
+    }
 }

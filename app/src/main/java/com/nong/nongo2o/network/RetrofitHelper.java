@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.network.api.AccountService;
 import com.nong.nongo2o.network.api.DynamicService;
+import com.nong.nongo2o.network.api.FileService;
 import com.nong.nongo2o.network.api.UserService;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.interceptor.CacheInterceptor;
@@ -41,6 +42,10 @@ public class RetrofitHelper {
 
     static {
         initOkHttpClient();
+    }
+
+    public static FileService getFileAPI() {
+        return createApi(FileService.class, ApiConstants.BASE_URL);
     }
 
     public static AccountService getAccountAPI() {

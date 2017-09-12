@@ -66,7 +66,7 @@ public class DynamicFragment extends RxFragment{
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);
-        binding.vp.setOffscreenPageLimit(1);
+        binding.vp.setOffscreenPageLimit(2);
         binding.tab.setupWithViewPager(binding.vp);
 
         for (int i = 0; i < tabArray.length; i++) {

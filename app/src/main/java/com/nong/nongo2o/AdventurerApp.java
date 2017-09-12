@@ -7,6 +7,8 @@ import com.nong.nongo2o.uils.Constant;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import java.util.Set;
+
 /**
  * Created by Administrator on 2017-6-21.
  */
@@ -15,6 +17,8 @@ public class AdventurerApp extends Application {
 
     public static AdventurerApp mInstance;
     private IWXAPI wxApi;
+
+    private Set<String> follows;
 
     @Override
     public void onCreate() {
@@ -34,5 +38,17 @@ public class AdventurerApp extends Application {
 
     public static AdventurerApp getInstance() {
         return mInstance;
+    }
+
+    public boolean containFollow(String userCode) {
+        return follows.contains(userCode);
+    }
+
+    public void addFollow(String userCode) {
+        follows.add(userCode);
+    }
+
+    public void deleteFollow(String userCode) {
+        follows.remove(userCode);
     }
 }

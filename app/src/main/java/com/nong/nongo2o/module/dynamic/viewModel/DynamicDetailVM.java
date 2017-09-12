@@ -22,6 +22,8 @@ import com.nong.nongo2o.entities.request.UpdateUser;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.DynamicDetail;
 import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.domain.Moment;
+import com.nong.nongo2o.entity.domain.MomentComment;
 import com.nong.nongo2o.module.common.viewModel.ItemCommentListVM;
 import com.nong.nongo2o.module.common.viewModel.ItemImageTextVM;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicDetailFragment;
@@ -31,6 +33,7 @@ import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.MyTimeUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -49,7 +52,7 @@ import okhttp3.RequestBody;
 public class DynamicDetailVM implements ViewModel {
 
     private DynamicDetailFragment fragment;
-    private DynamicDetail dynamic;
+    private Moment dynamic;
     private int pageSize = 999;
     private int total;
     //  假数据图片uri
@@ -71,12 +74,12 @@ public class DynamicDetailVM implements ViewModel {
     public final ObservableField<String> title = new ObservableField<>();
     //  商品链接
     @DrawableRes
-    public final int goodsImgPlaceHolder = R.mipmap.ic_launcher;
+    public final int goodsImgPlaceHolder = R.mipmap.picture_default;
     public final ObservableField<String> goodsImgUri = new ObservableField<>();
     public final ObservableField<String> goodsName = new ObservableField<>();
-    public final ObservableField<String> goodsPrice = new ObservableField<>();
-    public final ObservableField<String> saleNum = new ObservableField<>();
-    public final ObservableField<String> stockNum = new ObservableField<>();
+    public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();
+    public final ObservableField<Integer> saleNum = new ObservableField<>();
+    public final ObservableField<Integer> stockNum = new ObservableField<>();
     @DrawableRes
     public final int cartPlaceHolder = R.mipmap.add_shoppingcar;
     //  地点、时间
@@ -93,9 +96,9 @@ public class DynamicDetailVM implements ViewModel {
     public final ObservableField<String> editComment = new ObservableField<>();
     public final ObservableField<String> hintComment = new ObservableField<>();
 
-    private DynamicComment targetComment = null;
+    private MomentComment targetComment = null;
 
-    public DynamicDetailVM(DynamicDetailFragment fragment, DynamicDetail dynamic) {
+    public DynamicDetailVM(DynamicDetailFragment fragment, Moment dynamic) {
         this.fragment = fragment;
         this.dynamic = dynamic;
 
@@ -117,7 +120,7 @@ public class DynamicDetailVM implements ViewModel {
         addSliderView();
         headUri.set(dynamic.getUser().getAvatar());
         name.set(dynamic.getUser().getUserNick());
-        summary.set(dynamic.getUser().getProfile());
+//        summary.set(dynamic.getUser().getProfile());
 
         title.set(dynamic.getTitle());
         if (dynamic.getContent() != null) {
@@ -132,16 +135,20 @@ public class DynamicDetailVM implements ViewModel {
 
         viewStyle.hasGoodsLink.set(dynamic.getGoods() != null);
         if (dynamic.getGoods() != null) {
-            goodsImgUri.set(uriArray[(int) (Math.random() * 4)]);
-            goodsName.set("墨西哥进口牛油果");
-            goodsPrice.set("¥48.80");
-            saleNum.set("99");
-            stockNum.set("99");
+            List<String> goodCovers = new Gson().fromJson(dynamic.getGoods().getCovers(), new TypeToken<List<String>>() {
+            }.getType());
+            goodsImgUri.set((goodCovers != null && goodCovers.size() > 0) ? goodCovers.get(0) : "");
+            goodsName.set(dynamic.getGoods().getTitle());
+            goodsPrice.set(dynamic.getGoods().getPrice());
+            saleNum.set(dynamic.getGoods().getTotalSale());
+            if (dynamic.getGoods().getGoodsSpecs() != null && dynamic.getGoods().getGoodsSpecs().size() > 0) {
+                stockNum.set(dynamic.getGoods().getGoodsSpecs().get(0).getQuantity());
+            }
         }
 
         city.set("佛山|顺德");
         time.set(MyTimeUtils.formatTime(dynamic.getCreateTime()));
-        viewStyle.isLike.set(dynamic.getIsFavorite() == 1);
+//        viewStyle.isLike.set(dynamic.getIsFavorite() == 1);
 
         //  获取评论
         getCommentList(1);
@@ -181,11 +188,11 @@ public class DynamicDetailVM implements ViewModel {
                 .subscribe(resp -> {
                     total = resp.getTotal();
                     if (resp.getRows() != null && !resp.getRows().isEmpty()) {
-                        for (DynamicComment comment : resp.getRows()) {
+                        for (MomentComment comment : resp.getRows()) {
                             ItemCommentListVM item = new ItemCommentListVM(targetComment -> {
                                 this.targetComment = targetComment;
                                 fragment.editCommentRequestFocus();
-                                hintComment.set("回复" + targetComment.getUserName() + "：");
+                                hintComment.set("回复" + targetComment.getUser().getUserNick() + "：");
                             }, comment);
                             itemCommentListVMs.add(item);
                         }
@@ -261,7 +268,7 @@ public class DynamicDetailVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        dynamic.setIsFavorite(1);
+//                        dynamic.setIsFavorite(1);
                         viewStyle.isLike.set(true);
                     }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
         }
@@ -279,13 +286,13 @@ public class DynamicDetailVM implements ViewModel {
             }
 
             viewStyle.isRefreshing.set(true);
-            DynamicComment sendComment = new DynamicComment();
+            MomentComment sendComment = new MomentComment();
             sendComment.setMomentCode(dynamic.getMomentCode());
             sendComment.setUserCode(User.getInstance().getUserCode());
-            sendComment.setUserName(User.getInstance().getUserName());
+//            sendComment.setUserName(User.getInstance().getUserName());
             sendComment.setContent(editComment.get());
-            sendComment.setToUserCode(targetComment == null ? "" : targetComment.getUserCode());
-            sendComment.setToUserName(targetComment == null ? "" : targetComment.getUserName());
+            sendComment.setToUserCode(targetComment == null ? "" : targetComment.getToUserCode());
+//            sendComment.setToUserName(targetComment == null ? "" : targetComment.getToUser().getUserNick());
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
                     new Gson().toJson(sendComment));
@@ -298,7 +305,7 @@ public class DynamicDetailVM implements ViewModel {
                         ItemCommentListVM item = new ItemCommentListVM(comment -> {
                             targetComment = comment;
                             fragment.editCommentRequestFocus();
-                            hintComment.set("回复" + targetComment.getUserName() + "：");
+                            hintComment.set("回复" + targetComment.getUser().getUserNick() + "：");
                         }, sendComment);
                         itemCommentListVMs.add(item);
                     }, throwable -> {

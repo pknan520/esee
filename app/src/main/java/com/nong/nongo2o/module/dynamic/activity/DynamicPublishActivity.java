@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 
@@ -12,6 +13,7 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityDynamicPublishBinding;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicPublishFragment;
 
 /**
@@ -26,9 +28,9 @@ public class DynamicPublishActivity extends RxBaseToolbarActivity {
         return new Intent(context, DynamicPublishActivity.class);
     }
 
-    public static Intent newIntent(Context context, DynamicDetail dynamic) {
+    public static Intent newIntent(Context context, Moment dynamic) {
         Intent intent = new Intent(context, DynamicPublishActivity.class);
-        intent.putExtra("dynamic", dynamic);
+        intent.putExtra("dynamic", (Parcelable) dynamic);
         return intent;
     }
 

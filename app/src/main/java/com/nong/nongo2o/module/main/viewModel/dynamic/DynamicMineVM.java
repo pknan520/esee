@@ -16,6 +16,8 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.DynamicDetail;
 import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.viewModel.ItemDynamicListVM;
 import com.nong.nongo2o.module.dynamic.activity.DynamicDetailActivity;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
@@ -71,9 +73,9 @@ public class DynamicMineVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        headUri.set(User.getInstance().getAvatar());
-        name.set(User.getInstance().getUserNick());
-        summary.set(User.getInstance().getProfile());
+        headUri.set(UserInfo.getInstance().getAvatar());
+        name.set(UserInfo.getInstance().getUserNick());
+        summary.set(UserInfo.getInstance().getProfile());
 
         getDynamicList(1);
     }
@@ -86,7 +88,7 @@ public class DynamicMineVM implements ViewModel {
 
     public class ItemDynamicMineVM implements ViewModel {
 
-        private DynamicDetail dynamic;
+        private Moment dynamic;
 
         @DrawableRes
         public final int imgPlaceHolder = R.mipmap.ic_launcher;
@@ -95,7 +97,7 @@ public class DynamicMineVM implements ViewModel {
         public final ObservableField<String> summary = new ObservableField<>();
         public final ObservableField<String> imgUri = new ObservableField<>();
 
-        public ItemDynamicMineVM(DynamicDetail dynamic) {
+        public ItemDynamicMineVM(Moment dynamic) {
             this.dynamic = dynamic;
 
             initData();
@@ -106,7 +108,7 @@ public class DynamicMineVM implements ViewModel {
          */
         private void initData() {
             Calendar createDate = Calendar.getInstance();
-            createDate.setTimeInMillis(dynamic.getCreateTime());
+            createDate.setTime(dynamic.getCreateTime());
             date.set(new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA).format(createDate.getTime()));
 
             List<String> headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
@@ -168,14 +170,14 @@ public class DynamicMineVM implements ViewModel {
         viewStyle.isRefreshing.set(true);
 
         RetrofitHelper.getDynamicAPI()
-                .getDynamicList(3, page, pageSize)
+                .getMyDynamicList(page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
                     total = resp.getTotal();
                     dynamicNum.set(String.valueOf(total));
-                    for (DynamicDetail dynamic : resp.getRows()) {
+                    for (Moment dynamic : resp.getRows()) {
                         itemDynamicMineVMs.add(new ItemDynamicMineVM(dynamic));
                     }
                 }, throwable -> {

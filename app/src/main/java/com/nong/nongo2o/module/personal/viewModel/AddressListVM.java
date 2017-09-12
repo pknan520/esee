@@ -12,23 +12,16 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
-import com.nong.nongo2o.entities.common.Address;
-import com.nong.nongo2o.entities.common.ApiListResponse;
-import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.domain.Address;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.module.personal.fragment.AddressEditFragment;
 import com.nong.nongo2o.module.personal.fragment.AddressListFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
-import com.nong.nongo2o.widget.checkbox.ViewBindingAdapter;
-import com.trello.rxlifecycle2.components.RxActivity;
 
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 

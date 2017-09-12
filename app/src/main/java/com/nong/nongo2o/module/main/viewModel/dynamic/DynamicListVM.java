@@ -10,6 +10,7 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.common.viewModel.ItemDynamicListVM;
 import com.nong.nongo2o.module.main.fragment.dynamic.DynamicListFragment;
@@ -65,8 +66,11 @@ public class DynamicListVM implements ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
                     total = resp.getTotal();
-                    for (DynamicDetail dynamic : resp.getRows()) {
-                        itemDynamicVMs.add(new ItemDynamicListVM(fragment, dynamic));
+                    for (Moment moment : resp.getRows()) {
+                        itemDynamicVMs.add(new ItemDynamicListVM(fragment, moment));
+                    }
+                    if (itemDynamicVMs.size() == 0) {
+                        fragment.showEmptyView();
                     }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();

@@ -24,6 +24,9 @@ import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,7 +164,7 @@ public class DynamicPublishVM implements ViewModel {
                 @Override
                 public void addRadioPic(MediaBean mediaBean) {
                     itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
-                    newPicFiles.add(new File("file://" + mediaBean.getOriginalPath()));
+                    newPicFiles.add(new File(mediaBean.getOriginalPath()));
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
@@ -229,7 +232,7 @@ public class DynamicPublishVM implements ViewModel {
         for (ItemDescVM item : itemDescVMs) {
             for (File file : item.getNewPicFiles()) {
                 RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-                picMap.put("file\":fileName=\"" + file.getName() + "\"", body);
+                picMap.put("fileName=" + file.getName(), body);
             }
         }
 

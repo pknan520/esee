@@ -61,4 +61,5 @@ public class DynamicListFragment extends RxFragment {
         binding.rv.setVisibility(View.VISIBLE);
         binding.llEmpty.setVisibility(View.GONE);
     }
+
 }

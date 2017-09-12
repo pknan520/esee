@@ -72,12 +72,12 @@ public class DynamicMineVM implements ViewModel {
     /**
      * 初始化数据
      */
-    private void initData() {
+    public void initData() {
         headUri.set(UserInfo.getInstance().getAvatar());
         name.set(UserInfo.getInstance().getUserNick());
         summary.set(UserInfo.getInstance().getProfile());
 
-        getDynamicList(1);
+        getDynamicList(1, true);
     }
 
     /**
@@ -166,8 +166,11 @@ public class DynamicMineVM implements ViewModel {
     /**
      * 获取动态列表
      */
-    private void getDynamicList(int page) {
+    private void getDynamicList(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
+        if (force) {
+            itemDynamicMineVMs.clear();
+        }
 
         RetrofitHelper.getDynamicAPI()
                 .getMyDynamicList(page, pageSize)
@@ -192,8 +195,7 @@ public class DynamicMineVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        itemDynamicMineVMs.clear();
-        getDynamicList(1);
+        getDynamicList(1, true);
     }
 
     /**
@@ -203,7 +205,7 @@ public class DynamicMineVM implements ViewModel {
 
     private void loadMoreData() {
         if (itemDynamicMineVMs.size() < total) {
-            getDynamicList(itemDynamicMineVMs.size() / pageSize + 1);
+            getDynamicList(itemDynamicMineVMs.size() / pageSize + 1, false);
         } else {
             Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
         }

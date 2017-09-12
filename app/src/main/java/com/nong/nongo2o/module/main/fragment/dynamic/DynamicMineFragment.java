@@ -47,4 +47,5 @@ public class DynamicMineFragment extends RxFragment {
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.addItemDecoration(new LinearItemDecoration(getActivity(), LinearLayoutManager.VERTICAL, 10, R.color.colorDivider));
     }
+
 }

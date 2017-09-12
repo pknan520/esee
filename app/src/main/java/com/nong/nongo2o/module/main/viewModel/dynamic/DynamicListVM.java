@@ -49,14 +49,14 @@ public class DynamicListVM implements ViewModel {
     /**
      * 初始化数据
      */
-    private void initData() {
-        getDynamicList(1);
+    public void initData() {
+        getDynamicList(1, true);
     }
 
     /**
      * 获取动态列表
      */
-    private void getDynamicList(int page) {
+    private void getDynamicList(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
 
         RetrofitHelper.getDynamicAPI()
@@ -65,6 +65,9 @@ public class DynamicListVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
+                    if (force) {
+                        itemDynamicVMs.clear();
+                    }
                     total = resp.getTotal();
                     for (Moment moment : resp.getRows()) {
                         itemDynamicVMs.add(new ItemDynamicListVM(fragment, moment));
@@ -84,8 +87,7 @@ public class DynamicListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        itemDynamicVMs.clear();
-        getDynamicList(1);
+        getDynamicList(1, true);
     }
 
     /**
@@ -95,7 +97,7 @@ public class DynamicListVM implements ViewModel {
 
     private void onLoadMore() {
         if (itemDynamicVMs.size() < total) {
-            getDynamicList(itemDynamicVMs.size() / pageSize + 1);
+            getDynamicList(itemDynamicVMs.size() / pageSize + 1, false);
         } else {
             Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
         }

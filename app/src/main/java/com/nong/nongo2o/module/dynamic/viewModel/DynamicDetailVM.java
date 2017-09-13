@@ -16,14 +16,15 @@ import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
-import com.nong.nongo2o.entities.common.DynamicComment;
-import com.nong.nongo2o.entities.request.LikeDynamic;
-import com.nong.nongo2o.entities.request.UpdateUser;
 import com.nong.nongo2o.entities.response.DynamicContent;
-import com.nong.nongo2o.entities.response.DynamicDetail;
 import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.bean.SimpleUser;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.entity.domain.MomentComment;
+import com.nong.nongo2o.entity.domain.MomentFavorite;
+import com.nong.nongo2o.entity.request.CreateMomentCommentRequest;
+import com.nong.nongo2o.entity.request.IdRequest;
 import com.nong.nongo2o.module.common.viewModel.ItemCommentListVM;
 import com.nong.nongo2o.module.common.viewModel.ItemImageTextVM;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicDetailFragment;
@@ -31,15 +32,14 @@ import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.BeanUtils;
 import com.nong.nongo2o.uils.MyTimeUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
@@ -110,6 +110,7 @@ public class DynamicDetailVM implements ViewModel {
     public class ViewStyle {
         public final ObservableBoolean hasGoodsLink = new ObservableBoolean(false);
         public final ObservableBoolean isLike = new ObservableBoolean(false);
+        public final ObservableBoolean showLikeList = new ObservableBoolean(false);
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
     }
 
@@ -150,6 +151,8 @@ public class DynamicDetailVM implements ViewModel {
         time.set(MyTimeUtils.formatTime(dynamic.getCreateTime()));
 //        viewStyle.isLike.set(dynamic.getIsFavorite() == 1);
 
+        //  获取点赞列表
+        getLikeList(1);
         //  获取评论
         getCommentList(1);
 
@@ -201,6 +204,30 @@ public class DynamicDetailVM implements ViewModel {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);
                 }, () -> viewStyle.isRefreshing.set(false));
+    }
+
+    /**
+     * 获取点赞列表
+     */
+    private void getLikeList(int page) {
+        RetrofitHelper.getDynamicAPI()
+                .getMomentFavoriteList(dynamic.getMomentCode(), page, 999)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    if (resp.getRows() != null && resp.getRows().size() > 0) {
+                        StringBuilder sb = new StringBuilder();
+                        for (MomentFavorite favor : resp.getRows()) {
+                            sb.append(favor.getUser().getUserNick());
+                            sb.append(",");
+                        }
+                        likeName.set(sb.substring(0, sb.length() - 1));
+                        viewStyle.showLikeList.set(true);
+                    }
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     /**
@@ -256,11 +283,10 @@ public class DynamicDetailVM implements ViewModel {
      * 点赞按钮
      */
     public final ReplyCommand likeClick = new ReplyCommand(() -> {
-//        viewStyle.isLike.set(!viewStyle.isLike.get());
         if (!viewStyle.isLike.get()) {
             //  点赞
             RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
-                    new Gson().toJson(new LikeDynamic(dynamic.getMomentCode(), User.getInstance().getUserCode())));
+                    new Gson().toJson(new IdRequest(dynamic.getMomentCode())));
 
             RetrofitHelper.getDynamicAPI()
                     .likeDynamic(requestBody)
@@ -270,6 +296,11 @@ public class DynamicDetailVM implements ViewModel {
                     .subscribe(s -> {
 //                        dynamic.setIsFavorite(1);
                         viewStyle.isLike.set(true);
+                        viewStyle.showLikeList.set(true);
+
+                        StringBuilder sb = new StringBuilder(likeName.get());
+                        sb.append(sb.length() > 0 ? "," + UserInfo.getInstance().getUserNick() : UserInfo.getInstance().getUserNick());
+                        likeName.set(sb.toString());
                     }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
         }
     });
@@ -286,18 +317,25 @@ public class DynamicDetailVM implements ViewModel {
             }
 
             viewStyle.isRefreshing.set(true);
-            MomentComment sendComment = new MomentComment();
-            sendComment.setMomentCode(dynamic.getMomentCode());
-            sendComment.setUserCode(User.getInstance().getUserCode());
-//            sendComment.setUserName(User.getInstance().getUserName());
-            sendComment.setContent(editComment.get());
-            sendComment.setToUserCode(targetComment == null ? "" : targetComment.getToUserCode());
-//            sendComment.setToUserName(targetComment == null ? "" : targetComment.getToUser().getUserNick());
+            CreateMomentCommentRequest request = new CreateMomentCommentRequest();
+            request.setMomentCode(dynamic.getMomentCode());
+            request.setContent(editComment.get());
+            if (targetComment != null) request.setToUserCode(targetComment.getUserCode());
+
+            MomentComment newComment = new MomentComment();
+            newComment.setContent(editComment.get());
+            newComment.setMomentCode(dynamic.getMomentCode());
+            newComment.setUserCode(UserInfo.getInstance().getUserCode());
+            newComment.setUser((SimpleUser) BeanUtils.Copy(new SimpleUser(), UserInfo.getInstance(), true));
+            if (targetComment != null) {
+                newComment.setToUserCode(targetComment.getUserCode());
+                newComment.setToUser(targetComment.getUser());
+            }
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
-                    new Gson().toJson(sendComment));
+                    new Gson().toJson(request));
             RetrofitHelper.getDynamicAPI()
-                    .submitDynamicComment(requestBody)
+                    .postDynamicComment(requestBody)
                     .subscribeOn(Schedulers.io())
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -306,14 +344,25 @@ public class DynamicDetailVM implements ViewModel {
                             targetComment = comment;
                             fragment.editCommentRequestFocus();
                             hintComment.set("回复" + targetComment.getUser().getUserNick() + "：");
-                        }, sendComment);
+                        }, newComment);
                         itemCommentListVMs.add(item);
+
+                        finishEdit();
                     }, throwable -> {
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         viewStyle.isRefreshing.set(false);
                     }, () -> viewStyle.isRefreshing.set(false));
         }
     });
+
+    /**
+     * 隐藏软键盘，清空输入框，取消焦点
+     */
+    private void finishEdit() {
+        fragment.clearFocus();
+        hintComment.set("评论：");
+        editComment.set("");
+    }
 
     /**
      * 选择点赞或评论的弹框

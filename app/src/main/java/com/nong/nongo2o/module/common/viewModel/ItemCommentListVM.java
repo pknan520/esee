@@ -37,7 +37,7 @@ public class ItemCommentListVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        setNameColor(comment.getUser().getUserNick(), comment.getToUser().getUserNick(), comment.getContent());
+        setNameColor(comment.getUser().getUserNick(), comment.getToUser() == null ? "" : comment.getToUser().getUserNick(), comment.getContent());
     }
 
     private void setNameColor(String name, String nameTarget, String comment) {

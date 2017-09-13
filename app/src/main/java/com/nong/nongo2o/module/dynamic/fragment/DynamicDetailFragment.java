@@ -107,6 +107,11 @@ public class DynamicDetailFragment extends RxBaseFragment {
         CommonUtils.showSoftInput(getActivity(), binding.et);
     }
 
+    public void clearFocus() {
+        binding.et.clearFocus();
+        CommonUtils.hideSoftInput(getActivity(), binding.et);
+    }
+
 //    private void initPopup() {
 //        PopupCommentBinding popupCommentBinding = DataBindingUtil.inflate(LayoutInflater.from(getActivity()), R.layout.popup_comment, null, false);
 //        commentPopup = new PopupWindow(popupCommentBinding.getRoot(), WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);

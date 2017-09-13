@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentDynamicPublishBinding;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.nong.nongo2o.module.dynamic.viewModel.DynamicPublishVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
@@ -37,7 +38,7 @@ public class DynamicPublishFragment extends RxFragment {
         return new DynamicPublishFragment();
     }
 
-    public static DynamicPublishFragment newInstance(DynamicDetail dynamic) {
+    public static DynamicPublishFragment newInstance(Moment dynamic) {
         Bundle args = new Bundle();
         args.putParcelable("dynamic", dynamic);
         DynamicPublishFragment fragment = new DynamicPublishFragment();

@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.main.fragment.dynamic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,4 +49,9 @@ public class DynamicMineFragment extends RxFragment {
         binding.rv.addItemDecoration(new LinearItemDecoration(getActivity(), LinearLayoutManager.VERTICAL, 10, R.color.colorDivider));
     }
 
+    public void initData() {
+        if (vm != null) {
+            vm.initData();
+        }
+    }
 }

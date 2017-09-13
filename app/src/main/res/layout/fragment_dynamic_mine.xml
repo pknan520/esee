@@ -61,7 +61,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{viewModel.dynamicNum}"
+                    android:text="@{String.valueOf(viewModel.dynamicNum)}"
                     android:textColor="@color/colorPrimary"
                     android:textSize="14sp" />
 

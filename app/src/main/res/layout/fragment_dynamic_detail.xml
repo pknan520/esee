@@ -298,7 +298,8 @@
                                 android:padding="@dimen/text_padding"
                                 android:text="@{viewModel.likeName}"
                                 android:textColor="#576b95"
-                                android:textSize="@dimen/text_normal_small" />
+                                android:textSize="@dimen/text_normal_small"
+                                android:visibility="@{viewModel.viewStyle.showLikeList ? View.VISIBLE : View.GONE}" />
 
                             <android.support.v7.widget.RecyclerView
                                 android:id="@+id/rv_comment"

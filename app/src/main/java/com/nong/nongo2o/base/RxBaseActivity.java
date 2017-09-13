@@ -3,6 +3,7 @@ package com.nong.nongo2o.base;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.uils.AppManager;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import java.util.List;
 
 /**
  * Created by Administrator on 2017-6-21.

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
@@ -16,29 +17,33 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.FileResponse;
+import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.fragment.SelectAreaFragment;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
+import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicPublishFragment;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicSelectGoodsFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 /**
@@ -48,12 +53,17 @@ import okhttp3.RequestBody;
 public class DynamicPublishVM implements ViewModel {
 
     private DynamicPublishFragment fragment;
-    private DynamicDetail dynamic = null;
+    private Moment dynamic = null;
     private ItemPicVM.addRadioPicListener addBannerPicListener;
+
+    private List<String> headerImgList = new ArrayList<>();
+    private List<DynamicContent> contentList = new ArrayList<>();
+
+    private List<File> bannerFileList = new ArrayList<>();
 
     public final ObservableField<String> title = new ObservableField<>();
 
-    public DynamicPublishVM(DynamicPublishFragment fragment, DynamicDetail dynamic) {
+    public DynamicPublishVM(DynamicPublishFragment fragment, Moment dynamic) {
         this.fragment = fragment;
         this.dynamic = dynamic;
 
@@ -82,6 +92,7 @@ public class DynamicPublishVM implements ViewModel {
             @Override
             public void addRadioPic(MediaBean mediaBean) {
                 itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
+                bannerFileList.add(new File(mediaBean.getOriginalPath()));
                 if (itemBannerVMs.size() > 9) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
@@ -93,15 +104,17 @@ public class DynamicPublishVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        List<String> headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
+        headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
         }.getType());
         for (String bannerUri : headerImgList) {
             itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, addBannerPicListener));
         }
         if (itemBannerVMs.size() < 9)
             itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
+
         title.set(dynamic.getTitle());
-        List<DynamicContent> contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
+
+        contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
         }.getType());
         for (DynamicContent content : contentList) {
             itemDescVMs.add(new ItemDescVM(content));
@@ -141,7 +154,7 @@ public class DynamicPublishVM implements ViewModel {
         public final ObservableList<ItemPicVM> itemDescPicVMs = new ObservableArrayList<>();
         public final ItemBinding<ItemPicVM> itemDescPicBinding = ItemBinding.of(BR.viewModel, R.layout.item_pic);
 
-        private List<File> newPicFiles = new ArrayList<>();
+        private List<File> newPicList = new ArrayList<>();
 
         public ItemDescVM() {
 
@@ -164,7 +177,7 @@ public class DynamicPublishVM implements ViewModel {
                 @Override
                 public void addRadioPic(MediaBean mediaBean) {
                     itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
-                    newPicFiles.add(new File(mediaBean.getOriginalPath()));
+                    newPicList.add(new File(mediaBean.getOriginalPath()));
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
@@ -200,8 +213,8 @@ public class DynamicPublishVM implements ViewModel {
             itemDescVMs.remove(ItemDescVM.this);
         });
 
-        public List<File> getNewPicFiles() {
-            return newPicFiles;
+        public List<File> getNewPicList() {
+            return newPicList;
         }
     }
 
@@ -217,22 +230,29 @@ public class DynamicPublishVM implements ViewModel {
      * 发布按钮
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
-        if (dynamic != null) {
-            //  编辑，有原始数据
-            Toast.makeText(fragment.getActivity(), "发布旧动态", Toast.LENGTH_SHORT).show();
-        } else {
-            //  新增，没有原始数据
-            Toast.makeText(fragment.getActivity(), "发布新动态", Toast.LENGTH_SHORT).show();
-        }
-        uploadFile();
+//        if (dynamic != null) {
+//            //  编辑，有原始数据
+//            Toast.makeText(fragment.getActivity(), "发布旧动态", Toast.LENGTH_SHORT).show();
+//        } else {
+//            //  新增，没有原始数据
+//            Toast.makeText(fragment.getActivity(), "发布新动态", Toast.LENGTH_SHORT).show();
+//        }
+        uploadFile(dynamic == null ? new Moment() : dynamic, dynamic == null);
     });
 
-    private void uploadFile() {
-        Map<String, RequestBody> picMap = new HashMap<>();
+    /**
+     * 上传图片
+     */
+    private void uploadFile(Moment dynamic, boolean isNew) {
+        Map<String, RequestBody> picMap = new LinkedHashMap<>();
+        for (File file : bannerFileList) {
+            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+            picMap.put(file.getName(), body);
+        }
         for (ItemDescVM item : itemDescVMs) {
-            for (File file : item.getNewPicFiles()) {
+            for (File file : item.getNewPicList()) {
                 RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-                picMap.put("fileName=" + file.getName(), body);
+                picMap.put(file.getName(), body);
             }
         }
 
@@ -241,21 +261,76 @@ public class DynamicPublishVM implements ViewModel {
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        Log.d("DynamicPublish", "accept: String" + s);
-                    }
-                }, throwable -> {
-
-                }, ()-> {});
+                .subscribe(s -> {
+                            List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
+                            }.getType());
+                            postDynamic(createDynamic(dynamic, picUriList), isNew);
+                        },
+                        throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     /**
      * 创建新dynamic
-     * @param detail
+     *
+     * @param dynamic
      */
-    private void createDynamic(DynamicDetail detail) {
+    private Moment createDynamic(Moment dynamic, List<FileResponse> picUriList) {
+        int i = 0;
+        int hasAdd = 0;
+        for (; i < bannerFileList.size(); i++) {
+            headerImgList.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+            hasAdd++;
+        }
+        for (int j = 0; j < itemDescVMs.size(); j++) {
+            ItemDescVM item = itemDescVMs.get(j);
+            if (contentList == null || contentList.size() < (j + 1)) {
+                contentList.add(new DynamicContent());
+            }
+            DynamicContent content = contentList.get(j);
+
+            content.setContent(item.desc.get());
+            if (content.getImg() == null) content.setImg(new ArrayList<>());
+            for (; i < hasAdd + item.getNewPicList().size(); i++) {
+                content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+            }
+            hasAdd += item.getNewPicList().size();
+        }
+
+        dynamic.setHeaderImg(new Gson().toJson(headerImgList));
+        dynamic.setTitle(title.get());
+        dynamic.setContent(new Gson().toJson(contentList));
+
+        return dynamic;
+    }
+
+    /**
+     * 发表评论
+     */
+    private void postDynamic(Moment dynamic, boolean isNew) {
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(dynamic));
+
+        if (isNew) {
+            RetrofitHelper.getDynamicAPI()
+                    .postMoment(requestBody)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> ((DynamicPublishActivity) fragment.getActivity()).returnResultOK(),
+                            throwable -> {
+                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+        } else {
+            RetrofitHelper.getDynamicAPI()
+                    .updateDynamic(requestBody)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> ((DynamicPublishActivity) fragment.getActivity()).returnResultOK(),
+                            throwable -> {
+                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+        }
 
     }
 }

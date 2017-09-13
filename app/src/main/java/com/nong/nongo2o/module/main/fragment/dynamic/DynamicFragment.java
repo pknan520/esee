@@ -1,6 +1,7 @@
 package com.nong.nongo2o.module.main.fragment.dynamic;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -22,6 +23,8 @@ import com.trello.rxlifecycle2.components.RxFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by Administrator on 2017-6-22.
  */
@@ -29,11 +32,14 @@ import java.util.List;
 public class DynamicFragment extends RxFragment{
 
     public static final int DYNAMIC_FOCUS = 1, DYNAMIC_ALL = 2;
+    public static final int PUBLISH_RESULT = 0;
 
     public static final String TAG = "DynamicFragment";
     private static String[] tabArray = {"关注", "广场", "我的"};
 
     private FragmentDynamicBinding binding;
+
+    private DynamicMineFragment mineFragment;
 
     public static DynamicFragment newInstance() {
         return new DynamicFragment();
@@ -62,7 +68,8 @@ public class DynamicFragment extends RxFragment{
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(DynamicListFragment.newInstance(DYNAMIC_FOCUS));
         fragmentList.add(DynamicListFragment.newInstance(DYNAMIC_ALL));
-        fragmentList.add(DynamicMineFragment.newInstance());
+        mineFragment = DynamicMineFragment.newInstance();
+        fragmentList.add(mineFragment);
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);
@@ -91,10 +98,19 @@ public class DynamicFragment extends RxFragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.publish_dynamic:
-                getActivity().startActivity(DynamicPublishActivity.newIntent(getActivity()));
+                startActivityForResult(DynamicPublishActivity.newIntent(getActivity()), PUBLISH_RESULT);
                 getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PUBLISH_RESULT:
+                if (resultCode == RESULT_OK && mineFragment != null) mineFragment.initData();
+                break;
+        }
     }
 }

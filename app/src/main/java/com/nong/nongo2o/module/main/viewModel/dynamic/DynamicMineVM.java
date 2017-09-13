@@ -21,6 +21,7 @@ import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.viewModel.ItemDynamicListVM;
 import com.nong.nongo2o.module.dynamic.activity.DynamicDetailActivity;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
+import com.nong.nongo2o.module.main.fragment.dynamic.DynamicFragment;
 import com.nong.nongo2o.module.main.fragment.dynamic.DynamicMineFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
@@ -48,14 +49,14 @@ public class DynamicMineVM implements ViewModel {
     private DynamicMineFragment fragment;
 
     private int pageSize = 10;
-    private int total;
+    private int total = 0;
 
     @DrawableRes
     public final int headPlaceHolder = R.mipmap.head_default_60;
     public final ObservableField<String> headUri = new ObservableField<>();
     public final ObservableField<String> name = new ObservableField<>();
     public final ObservableField<String> summary = new ObservableField<>();
-    public final ObservableField<String> dynamicNum = new ObservableField<>();
+    public final ObservableField<Integer> dynamicNum = new ObservableField<>();
 
     public DynamicMineVM(DynamicMineFragment fragment) {
         this.fragment = fragment;
@@ -126,7 +127,7 @@ public class DynamicMineVM implements ViewModel {
          * 编辑按钮
          */
         public final ReplyCommand editClick = new ReplyCommand(() -> {
-            fragment.getActivity().startActivity(DynamicPublishActivity.newIntent(fragment.getActivity(), dynamic));
+            fragment.getActivity().startActivityForResult(DynamicPublishActivity.newIntent(fragment.getActivity(), dynamic), DynamicFragment.PUBLISH_RESULT);
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         });
 
@@ -144,18 +145,21 @@ public class DynamicMineVM implements ViewModel {
         });
 
         /**
-         * 删除动态请求
+         * 删除动态
          */
         private void deleteDynamic() {
             viewStyle.isRefreshing.set(true);
 
             RetrofitHelper.getDynamicAPI()
-                    .deleteDynamic(dynamic.getId(), dynamic.getUserCode())
+                    .deleteDynamic(dynamic.getMomentCode())
                     .subscribeOn(Schedulers.io())
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
                         itemDynamicMineVMs.remove(this);
+
+                        total--;
+                        dynamicNum.set(total);
                     }, throwable -> {
                         viewStyle.isRefreshing.set(false);
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -179,7 +183,7 @@ public class DynamicMineVM implements ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
                     total = resp.getTotal();
-                    dynamicNum.set(String.valueOf(total));
+                    dynamicNum.set(total);
                     for (Moment dynamic : resp.getRows()) {
                         itemDynamicMineVMs.add(new ItemDynamicMineVM(dynamic));
                     }

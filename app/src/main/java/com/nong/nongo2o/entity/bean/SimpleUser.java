@@ -147,12 +147,4 @@ public class SimpleUser extends PagingEntity {
     public void setLocation(String location) {
         this.location = location;
     }
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
 }

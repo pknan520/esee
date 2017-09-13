@@ -3,6 +3,7 @@ package com.nong.nongo2o.network.api;
 import com.nong.nongo2o.entity.bean.ApiListResponse;
 import com.nong.nongo2o.entity.bean.ApiResponse;
 import com.nong.nongo2o.entity.bean.SalerInfo;
+import com.nong.nongo2o.entity.domain.Goods;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;

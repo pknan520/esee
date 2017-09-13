@@ -60,9 +60,6 @@ public class PersonalVM implements ViewModel {
         public final ObservableBoolean isSaler = new ObservableBoolean(false);
     }
 
-    /**
-     * 假数据
-     */
     private void initData() {
         RetrofitHelper.getUserAPI().userProfile()
                 .subscribeOn(Schedulers.io())

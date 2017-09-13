@@ -12,6 +12,7 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.entities.common.ApiListResponse;
 import com.nong.nongo2o.entities.response.Fans;
 import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.domain.Follow;
 import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.fragment.FansListFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -100,15 +101,15 @@ public class FansListVM implements ViewModel {
      */
     private void searchFocus(int page) {
         viewStyle.isRefreshing.set(true);
-        RetrofitHelper.getUserAPI()
-                .searchFocus(User.getInstance().getUserCode(), page, 10)
+        RetrofitHelper.getFollowAPI()
+                .userFollowSearch(2,page,pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
                     total = resp.getTotal();
-                    for (Fans fans : resp.getRows()) {
-                        itemFansListVMs.add(new ItemFansListVM(fragment, fans, FansMgrActivity.MY_FOCUS));
+                    for (Follow follow : resp.getRows()) {
+                        itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FOCUS));
                     }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -121,15 +122,15 @@ public class FansListVM implements ViewModel {
      */
     private void searchFans(int page) {
         viewStyle.isRefreshing.set(true);
-        RetrofitHelper.getUserAPI()
-                .searchFans(User.getInstance().getUserCode(), page, 10)
+        RetrofitHelper.getFollowAPI()
+                .userFollowSearch(1,page,pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
                     total = resp.getTotal();
-                    for (Fans fans : resp.getRows()) {
-                        itemFansListVMs.add(new ItemFansListVM(fragment, fans, FansMgrActivity.MY_FANS));
+                    for (Follow follow : resp.getRows()) {
+                        itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FANS));
                     }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();

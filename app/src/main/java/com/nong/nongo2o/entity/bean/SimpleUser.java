@@ -49,6 +49,11 @@ public class SimpleUser extends PagingEntity {
      */
     private String location;
 
+    /**
+     * 个人简介
+     */
+    private String profile;
+
     public SimpleUser() { }
 
     public SimpleUser(User user) {
@@ -135,4 +140,11 @@ public class SimpleUser extends PagingEntity {
         this.location = location;
     }
 
- }
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+}

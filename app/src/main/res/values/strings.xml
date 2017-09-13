@@ -7,6 +7,9 @@
     <string name="shop_manager">店铺管理</string>
     <string name="exit_manager">退出管理</string>
     <string name="rmb">¥</string>
+    
+    <string name="saler_authentication">商家认证</string>
+    <string name="saler_authenticated">已认证</string>
 
     <string name="order_no">单号：</string>
     <string name="receiver">收货人：</string>

@@ -70,6 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="@{viewModel.viewStyle.isMerchantMode ? @string/exit_manager : @string/shop_manager}"
+                    android:visibility="@{viewModel.viewStyle.isSaler ? View.VISIBLE : View.GONE }"
                     android:textColor="@android:color/white"
                     app:clickCommand="@{viewModel.switchModeClick}" />
 
@@ -295,7 +296,7 @@
                     android:layout_height="wrap_content"
                     android:drawableEnd="@mipmap/right_grey"
                     android:drawablePadding="@dimen/line_space"
-                    android:text="@{viewModel.authenticationStatus}"
+                    android:text="@{viewModel.viewStyle.isSaler ? @string/saler_authenticated : @string/saler_authentication}"
                     android:textColor="@color/colorComplementaryText"
                     android:textSize="@dimen/text_normal_small" />
 

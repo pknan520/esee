@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
+import android.widget.Toast;
 
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
-import com.nong.nongo2o.entities.response.User;
 import com.nong.nongo2o.module.main.fragment.personal.PersonalFragment;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.module.personal.activity.BillActivity;
@@ -18,8 +18,13 @@ import com.nong.nongo2o.module.personal.activity.IdentifyActivity;
 import com.nong.nongo2o.module.personal.activity.OrderCenterActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.module.personal.activity.SettingActivity;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.math.BigDecimal;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Administrator on 2017-6-22.
@@ -38,7 +43,7 @@ public class PersonalVM implements ViewModel {
     public final ObservableField<String> deliveryBadge = new ObservableField<>();
     public final ObservableField<String> takeoverBadge = new ObservableField<>();
     public final ObservableField<String> evaBadge = new ObservableField<>();
-    public final ObservableField<String> authenticationStatus = new ObservableField<>();
+//    public final ObservableField<String> authenticationStatus = new ObservableField<>();
 
     public PersonalVM(PersonalFragment fragment) {
         this.fragment = fragment;
@@ -52,22 +57,37 @@ public class PersonalVM implements ViewModel {
         public final ObservableBoolean canAuthentication = new ObservableBoolean(true);
         public final ObservableBoolean hasAuthentication = new ObservableBoolean(false);
         public final ObservableBoolean isMerchantMode = new ObservableBoolean(false);
+        public final ObservableBoolean isSaler = new ObservableBoolean(false);
     }
 
     /**
      * 假数据
      */
     private void initData() {
-        headUri.set(User.getInstance().getAvatar());
+        RetrofitHelper.getUserAPI().userProfile()
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    headUri.set(resp.getAvatar());
+                    name.set(resp.getUserNick());
+                    balance.set(resp.getBalance());
+                    viewStyle.isSaler.set( resp.getUserType() == 1);
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }, () -> {});
+
+
+        /*headUri.set(User.getInstance().getAvatar());
         name.set(User.getInstance().getUserNick());
-        balance.set(User.getInstance().getBalance() == null ? BigDecimal.ZERO : User.getInstance().getBalance());
+        balance.set(User.getInstance().getBalance() == null ? BigDecimal.ZERO : User.getInstance().getBalance());*/
 
         unpaidBadge.set("12");
         deliveryBadge.set("3");
         takeoverBadge.set("25");
         evaBadge.set("99+");
 
-        authenticationStatus.set("未认证");
+//        authenticationStatus.set(R.string.saler_authentication);
     }
 
     /**

@@ -146,6 +146,16 @@
             android:text="退出登录"
             android:textSize="15sp" />
 
+        <Button
+            style="@style/SimpleOrangeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:padding="@dimen/item_padding"
+            app:clickCommand="@{viewModel.saveUserProfileClick}"
+            android:text="保存"
+            android:textSize="15sp" />
+
     </LinearLayout>
 
 </layout>

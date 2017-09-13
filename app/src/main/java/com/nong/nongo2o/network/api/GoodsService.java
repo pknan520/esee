@@ -15,6 +15,17 @@ import retrofit2.http.Query;
 public interface GoodsService {
 
     /**
+     *
+     * @param goodsStatus 商品状态 商品状态：0.待发布，1.上架，2.下架
+     * @param page 页码
+     * @param pageSize  分页大小
+     * @return
+     */
+    @GET("user/goods/search")
+    Observable<ApiResponse<ApiListResponse<Goods>>> userGoodsSearch(@Query("goodsStatus") int goodsStatus, @Query("page") int page, @Query("pageSize") int pageSize);
+
+
+    /**
      * 获取关注商家列表
      *
      * @param type 1：关注

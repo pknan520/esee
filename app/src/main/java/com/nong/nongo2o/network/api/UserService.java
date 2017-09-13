@@ -29,7 +29,7 @@ public interface UserService {
      * @return
      */
     @GET("validcode")
-    Observable<ApiResponse<Void>> validcode(@Query("phone") String phone);
+    Observable<ApiResponse<String>> validcode(@Query("phone") String phone);
 
     /**
      * 用户注册
@@ -55,7 +55,7 @@ public interface UserService {
      */
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @PUT("/user/saler")
-    Observable<ApiResponse<Void>> userSaler(@Body RequestBody body);
+    Observable<ApiResponse<String>> userSaler(@Body RequestBody body);
 
     /**
      * 获取当前登录用户信息
@@ -86,7 +86,7 @@ public interface UserService {
      */
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @PUT("user/profile")
-    Observable<ApiResponse<Void>> updateUserrofile(@Body RequestBody body);
+    Observable<ApiResponse<String>> updateUserPofile(@Body RequestBody body);
 
     /*********old***********/
 
@@ -97,7 +97,7 @@ public interface UserService {
      */
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @PUT("user")
-    Observable<ApiResponse<Void>> updateUser(@Body RequestBody body);
+    Observable<ApiResponse<String>> updateUser(@Body RequestBody body);
 
     /**
      * 查询关注列表

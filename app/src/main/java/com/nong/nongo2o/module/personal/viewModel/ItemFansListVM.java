@@ -13,6 +13,7 @@ import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.entities.request.AddFocus;
 import com.nong.nongo2o.entities.response.Fans;
 import com.nong.nongo2o.entities.response.User;
+import com.nong.nongo2o.entity.domain.Follow;
 import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -30,7 +31,7 @@ import okhttp3.RequestBody;
 public class ItemFansListVM implements ViewModel {
 
     private RxBaseFragment fragment;
-    private Fans fans;
+    private Follow follow;
     private int status;
 
     @DrawableRes
@@ -43,9 +44,9 @@ public class ItemFansListVM implements ViewModel {
     @DrawableRes
     public final int unFocus = R.mipmap.icon_focus;
 
-    public ItemFansListVM(RxBaseFragment fragment, Fans fans, int status) {
+    public ItemFansListVM(RxBaseFragment fragment, Follow follow, int status) {
         this.fragment = fragment;
-        this.fans = fans;
+        this.follow = follow;
         this.status = status;
 
         initData();
@@ -64,17 +65,18 @@ public class ItemFansListVM implements ViewModel {
         switch (status) {
             case FansMgrActivity.MY_FOCUS:
                 //  我关注的
-                headUri.set(fans.getTargetUserInfo().getAvatar());
-                name.set(fans.getTargetUserInfo().getUserNick());
-                summary.set(fans.getTargetUserInfo().getProfile());
+                headUri.set(follow.getTarget().getAvatar());
+                name.set(follow.getTarget().getUserNick());
+                summary.set(follow.getTarget().getProfile());
                 viewStyle.hasFocus.set(true);
                 break;
             case FansMgrActivity.MY_FANS:
                 //  我的粉丝
-                headUri.set(fans.getUserInfo().getAvatar());
-                name.set(fans.getUserInfo().getUserNick());
-                summary.set(fans.getUserInfo().getProfile());
-                viewStyle.hasFocus.set(fans.getEachOther() != null && fans.getEachOther() == 1);
+                headUri.set(follow.getUser().getAvatar());
+                name.set(follow.getUser().getUserNick());
+                summary.set(follow.getUser().getProfile());
+                //-TODO
+//                viewStyle.hasFocus.set(fans.getEachOther() != null && fans.getEachOther() == 1);
                 break;
         }
     }
@@ -91,11 +93,11 @@ public class ItemFansListVM implements ViewModel {
         switch (status) {
             case FansMgrActivity.MY_FOCUS:
                 //  我关注的点击取消关注
-                focusOrNot(fans.getTargetCode());
+                focusOrNot(follow.getTargetCode());
                 break;
             case FansMgrActivity.MY_FANS:
                 //  我的粉丝点，未关注的点击关注，已关注的点击取消关注
-                focusOrNot(fans.getUserCode());
+                focusOrNot(follow.getUserCode());
                 break;
         }
     });

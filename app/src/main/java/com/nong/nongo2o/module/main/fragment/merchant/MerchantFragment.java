@@ -23,6 +23,8 @@ import java.util.List;
 
 public class MerchantFragment extends RxFragment {
 
+    public static final int MERCHANT_FOCUS = 1, MERCHANT_ALL = 2;
+
     private static String[] tabArray = {"关注", "广场"};
 
     private FragmentMerchantBinding binding;
@@ -41,8 +43,8 @@ public class MerchantFragment extends RxFragment {
 
     private void initView() {
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(MerchantListFragment.newInstance());
-        fragmentList.add(MerchantListFragment.newInstance());
+        fragmentList.add(MerchantListFragment.newInstance(MERCHANT_FOCUS));
+        fragmentList.add(MerchantListFragment.newInstance(MERCHANT_ALL));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);

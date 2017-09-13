@@ -22,15 +22,19 @@ public class MerchantListFragment extends RxFragment {
     private FragmentMerchantListBinding binding;
     private MerchantListVM vm;
 
-    public static MerchantListFragment newInstance() {
-        return new MerchantListFragment();
+    public static MerchantListFragment newInstance(int type) {
+        Bundle args = new Bundle();
+        args.putInt("type", type);
+        MerchantListFragment fragment = new MerchantListFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new MerchantListVM(this);
+            vm = new MerchantListVM(this, getArguments().getInt("type"));
         }
     }
 

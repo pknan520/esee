@@ -14,5 +14,5 @@ import retrofit2.http.Query;
 public interface AccountService {
 
     @GET("login")
-    Observable<ApiResponse<UserInfo>> login(@Query("userCode") String userCode, @Query("password")String password);
+    Observable<ApiResponse<UserInfo>> login(@Query("openId") String openId);
 }

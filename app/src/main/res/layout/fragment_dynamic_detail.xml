@@ -141,19 +141,20 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
+                            app:clickCommand="@{viewModel.focusClick}"
                             android:padding="@dimen/text_padding">
 
                             <com.facebook.drawee.view.SimpleDraweeView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:placeholderImageRes="@{viewModel.unFocus}" />
+                                app:placeholderImageRes="@{viewModel.viewStyle.isFocus ? viewModel.isFocus : viewModel.unFocus}" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/line_space"
-                                android:text="关注"
-                                android:textColor="@color/colorComplementaryGreen"
+                                android:text="@{viewModel.viewStyle.isFocus ? `取消关注` : `关注`}"
+                                android:textColor="@{viewModel.viewStyle.isFocus ? @color/colorHintText : @color/colorComplementaryGreen}"
                                 android:textSize="13sp" />
 
                         </LinearLayout>

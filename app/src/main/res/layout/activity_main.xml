@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.main.viewModel.MainVM"/>
     </data>
 
     <LinearLayout

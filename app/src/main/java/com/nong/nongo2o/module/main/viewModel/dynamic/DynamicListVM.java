@@ -74,6 +74,8 @@ public class DynamicListVM implements ViewModel {
                     }
                     if (itemDynamicVMs.size() == 0) {
                         fragment.showEmptyView();
+                    } else {
+                        fragment.showContentView();
                     }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();

@@ -42,6 +42,7 @@
         <activity
             android:name=".module.main.MainActivity"
             android:launchMode="singleTask" />
+        <service android:name=".service.InitDataService"/>
         <!--Dynamic-->
         <activity android:name=".module.dynamic.activity.DynamicDetailActivity" />
         <activity android:name=".module.dynamic.activity.DynamicPublishActivity" />
@@ -79,6 +80,7 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote"/>
+
     </application>
 
 </manifest>

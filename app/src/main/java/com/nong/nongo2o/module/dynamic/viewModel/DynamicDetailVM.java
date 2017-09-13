@@ -33,6 +33,7 @@ import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.BeanUtils;
+import com.nong.nongo2o.uils.FocusUtils;
 import com.nong.nongo2o.uils.MyTimeUtils;
 
 import java.math.BigDecimal;
@@ -55,9 +56,6 @@ public class DynamicDetailVM implements ViewModel {
     private Moment dynamic;
     private int pageSize = 999;
     private int total;
-    //  假数据图片uri
-    private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhj5228gwdj20u00u0qv5.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
-            "https://ws1.sinaimg.cn/large/610dc034ly1fhovjwwphfj20u00u04qp.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fgdmpxi7erj20qy0qyjtr.jpg"};
 
     @DrawableRes
     public final int headPlaceHolder = R.mipmap.head_default_60;
@@ -91,6 +89,12 @@ public class DynamicDetailVM implements ViewModel {
     public final int isLikePlaceHolder = R.mipmap.icon_dianzan;
     @DrawableRes
     public final int unLikePlaceHolder = R.mipmap.icon_dianzan_grey;
+     // 图文列表
+    public final ObservableList<ItemImageTextVM> itemImageTextVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemImageTextVM> itemImageTextBinding = ItemBinding.of(BR.viewModel, R.layout.item_image_text);
+    //  评论列表
+    public final ObservableList<ItemCommentListVM> itemCommentListVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemCommentListVM> itemCommentBinding = ItemBinding.of(BR.viewModel, R.layout.item_comment_list);
     //  评论
     public final ObservableField<String> likeName = new ObservableField<>();
     public final ObservableField<String> editComment = new ObservableField<>();
@@ -108,6 +112,7 @@ public class DynamicDetailVM implements ViewModel {
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
+        public final ObservableBoolean isFocus = new ObservableBoolean(false);
         public final ObservableBoolean hasGoodsLink = new ObservableBoolean(false);
         public final ObservableBoolean isLike = new ObservableBoolean(false);
         public final ObservableBoolean showLikeList = new ObservableBoolean(false);
@@ -121,7 +126,8 @@ public class DynamicDetailVM implements ViewModel {
         addSliderView();
         headUri.set(dynamic.getUser().getAvatar());
         name.set(dynamic.getUser().getUserNick());
-//        summary.set(dynamic.getUser().getProfile());
+        summary.set(dynamic.getUser().getProfile());
+        viewStyle.isFocus.set(FocusUtils.checkIsFocus(dynamic.getUser().getUserCode()));
 
         title.set(dynamic.getTitle());
         if (dynamic.getContent() != null) {
@@ -252,23 +258,18 @@ public class DynamicDetailVM implements ViewModel {
     }
 
     /**
-     * 图文列表
-     */
-    public final ObservableList<ItemImageTextVM> itemImageTextVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemImageTextVM> itemImageTextBinding = ItemBinding.of(BR.viewModel, R.layout.item_image_text);
-
-    /**
-     * 评论列表
-     */
-    public final ObservableList<ItemCommentListVM> itemCommentListVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemCommentListVM> itemCommentBinding = ItemBinding.of(BR.viewModel, R.layout.item_comment_list);
-
-    /**
      * 查看作者主页
      */
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
         fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
+
+    /**
+     * 关注按钮
+     */
+    public final ReplyCommand focusClick = new ReplyCommand(() -> {
+        FocusUtils.changeFocus(fragment.getActivity(), viewStyle.isFocus.get(), dynamic.getUser().getUserCode(), viewStyle.isFocus::set);
     });
 
     /**

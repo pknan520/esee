@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -57,7 +58,16 @@ public class CartFragment extends RxFragment {
     }
 
     private void initView() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+        binding.toolbar.inflateMenu(R.menu.menu_cart);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.edit_cart:
+                    editClick(item);
+                    break;
+            }
+            return true;
+        });
         setHasOptionsMenu(true);
 
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -89,21 +99,21 @@ public class CartFragment extends RxFragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.menu_cart, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.edit_cart:
-                editClick(item);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        menu.clear();
+//        inflater.inflate(R.menu.menu_cart, menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.edit_cart:
+//                editClick(item);
+//                break;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void editClick(MenuItem item) {
         vm.viewStyle.isEdit.set(!vm.viewStyle.isEdit.get());

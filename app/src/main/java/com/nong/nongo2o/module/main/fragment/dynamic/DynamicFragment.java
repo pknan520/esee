@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,7 +60,17 @@ public class DynamicFragment extends RxFragment{
     }
 
     private void initToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+        binding.toolbar.inflateMenu(R.menu.menu_dynamic);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.publish_dynamic:
+                    startActivityForResult(DynamicPublishActivity.newIntent(getActivity()), PUBLISH_RESULT);
+                    getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                    break;
+            }
+            return true;
+        });
         getActivity().setTitle("");
         setHasOptionsMenu(true);
     }
@@ -88,22 +99,22 @@ public class DynamicFragment extends RxFragment{
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.menu_dynamic, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.publish_dynamic:
-                startActivityForResult(DynamicPublishActivity.newIntent(getActivity()), PUBLISH_RESULT);
-                getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        menu.clear();
+//        inflater.inflate(R.menu.menu_dynamic, menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.publish_dynamic:
+//                startActivityForResult(DynamicPublishActivity.newIntent(getActivity()), PUBLISH_RESULT);
+//                getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+//                break;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

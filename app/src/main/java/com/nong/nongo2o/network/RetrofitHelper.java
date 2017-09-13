@@ -15,6 +15,8 @@ import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.network.api.AccountService;
 import com.nong.nongo2o.network.api.DynamicService;
 import com.nong.nongo2o.network.api.FileService;
+import com.nong.nongo2o.network.api.FollowService;
+import com.nong.nongo2o.network.api.GoodsService;
 import com.nong.nongo2o.network.api.UserService;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.interceptor.CacheInterceptor;
@@ -58,6 +60,14 @@ public class RetrofitHelper {
 
     public static DynamicService getDynamicAPI() {
         return createApi(DynamicService.class, ApiConstants.BASE_URL);
+    }
+
+    public static FollowService getFollowAPI() {
+        return createApi(FollowService.class, ApiConstants.BASE_URL);
+    }
+
+    public static GoodsService getGoodsAPI() {
+        return createApi(GoodsService.class, ApiConstants.BASE_URL);
     }
 
     /**

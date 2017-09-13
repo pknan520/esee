@@ -1,12 +1,15 @@
 package com.nong.nongo2o;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.nong.nongo2o.service.InitDataService;
 import com.nong.nongo2o.uils.Constant;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,6 +30,7 @@ public class AdventurerApp extends Application {
 
         Fresco.initialize(this);
         regToWx();
+        follows = new HashSet<>();
     }
 
     private void regToWx() {
@@ -50,5 +54,9 @@ public class AdventurerApp extends Application {
 
     public void deleteFollow(String userCode) {
         follows.remove(userCode);
+    }
+
+    public void clearFollow() {
+        follows.clear();
     }
 }

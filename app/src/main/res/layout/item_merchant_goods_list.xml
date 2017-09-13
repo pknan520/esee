@@ -38,7 +38,7 @@
             android:layout_marginTop="@dimen/line_space"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/text_normal"
-            android:text="@{viewModel.goodsPrice}"/>
+            android:text="@{@string/rmb + String.valueOf(viewModel.goodsPrice)}"/>
 
     </LinearLayout>
 

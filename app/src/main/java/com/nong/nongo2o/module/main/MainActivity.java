@@ -1,6 +1,5 @@
 package com.nong.nongo2o.module.main;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -11,22 +10,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nong.nongo2o.R;
-import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.databinding.ActivityMainBinding;
+import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.module.main.fragment.cart.CartFragment;
 import com.nong.nongo2o.module.main.fragment.dynamic.DynamicFragment;
 import com.nong.nongo2o.module.main.fragment.merchant.MerchantFragment;
 import com.nong.nongo2o.module.main.fragment.message.MessageListFragment;
 import com.nong.nongo2o.module.main.fragment.personal.PersonalFragment;
-import com.nong.nongo2o.module.main.viewModel.message.MessageListVM;
+import com.nong.nongo2o.module.main.viewModel.MainVM;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends RxBaseActivity {
 
-//    private static String[] tabArray = {"动态", "分享", "口碑", "购物车", "我的"};
     private static String[] tabArray = {"动态", "口碑", "消息", "购物车", "我的"};
     private static int[] tabPicArray = {R.drawable.selector_main_tab_dynamic, R.drawable.selector_main_tab_merchant,
             R.drawable.selector_main_tap_message, R.drawable.selector_main_tab_cart, R.drawable.selector_main_tab_personal};
@@ -41,9 +39,9 @@ public class MainActivity extends RxBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-//        MainVM mainVM = new MainVM(this);
+        MainVM mainVM = new MainVM(this);
         initView(binding);
-//        binding.setViewModel(mainVM);
+        binding.setViewModel(mainVM);
     }
 
     private void initView(ActivityMainBinding binding) {

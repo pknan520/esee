@@ -2,18 +2,28 @@ package com.nong.nongo2o.module.common.viewModel;
 
 import android.app.Fragment;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.bean.SalerInfo;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
+import com.nong.nongo2o.uils.FocusUtils;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 import io.reactivex.functions.Action;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
@@ -26,6 +36,7 @@ import me.tatarka.bindingcollectionadapter2.LayoutManagers;
 public class ItemMerchantListVM implements ViewModel {
 
     private Fragment fragment;
+    private SalerInfo saler;
 
     @DrawableRes
     public final int headPlaceHolder = R.mipmap.head_default_60;
@@ -36,19 +47,41 @@ public class ItemMerchantListVM implements ViewModel {
     public final int isFocus = R.mipmap.icon_focus_p;
     @DrawableRes
     public final int unFocus = R.mipmap.icon_focus;
+    //  商家的商品列表
+    public final ObservableList<ItemMerchantGoodsListVM> itemPicVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemMerchantGoodsListVM> itemPicBinding = ItemBinding.of(BR.viewModel, R.layout.item_merchant_goods_list);
 
+    // TODO: 2017-9-13 容错的构造方法，以后删除
     public ItemMerchantListVM(Fragment fragment) {
         this.fragment = fragment;
-
-        initFakeData();
     }
 
-    private void initFakeData() {
-        name.set("果酱妈咪09");
-        summary.set("这家伙很懒，什么都没留下~");
+    public ItemMerchantListVM(Fragment fragment, SalerInfo saler) {
+        this.fragment = fragment;
+        this.saler = saler;
 
-        for (int i = 0; i < 9; i++) {
-            itemPicVMs.add(new ItemMerchantGoodsListVM());
+        initData();
+    }
+
+    public final ViewStyle viewStyle = new ViewStyle();
+
+    public class ViewStyle {
+        public final ObservableBoolean isFocus = new ObservableBoolean(false);
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        headUri.set(saler.getAvatar());
+        name.set(saler.getUserNick());
+        summary.set(saler.getProfile());
+        viewStyle.isFocus.set(FocusUtils.checkIsFocus(saler.getUserCode()));
+
+        if (saler.getGoods() != null && saler.getGoods().size() > 0) {
+            for (Goods good : saler.getGoods()) {
+                itemPicVMs.add(new ItemMerchantGoodsListVM(good));
+            }
         }
     }
 
@@ -71,37 +104,40 @@ public class ItemMerchantListVM implements ViewModel {
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
-
     /**
-     * 商家的商品列表
+     * 关注按钮
      */
-    public final ObservableList<ItemMerchantGoodsListVM> itemPicVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemMerchantGoodsListVM> itemPicBinding = ItemBinding.of(BR.viewModel, R.layout.item_merchant_goods_list);
+    public final ReplyCommand focusClick = new ReplyCommand(() -> {
+        FocusUtils.changeFocus(fragment.getActivity(), viewStyle.isFocus.get(), saler.getUserCode(), viewStyle.isFocus::set);
+    });
 
     public class ItemMerchantGoodsListVM implements ViewModel {
 
-        //  假数据图片uri
-        private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhj5228gwdj20u00u0qv5.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
-                "https://ws1.sinaimg.cn/large/610dc034ly1fhb0t7ob2mj20u011itd9.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fgdmpxi7erj20qy0qyjtr.jpg"};
+        private Goods good;
 
         @DrawableRes
         public final int goodsImgPlaceHolder = R.mipmap.ic_launcher;
         public final ObservableField<String> goodsImg = new ObservableField<>();
         public final ObservableField<String> goodsName = new ObservableField<>();
-        public final ObservableField<String> goodsPrice = new ObservableField<>();
+        public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();
 
-        public ItemMerchantGoodsListVM() {
+        public ItemMerchantGoodsListVM(Goods good) {
+            this.good = good;
 
-            initFakeData();
+            initData();
         }
 
         /**
-         * 假数据
+         * 初始化数据
          */
-        private void initFakeData() {
-            goodsImg.set(uriArray[(int) (Math.random() * 4)]);
-            goodsName.set("澳洲进口奇异果新鲜美味");
-            goodsPrice.set("¥48.80");
+        private void initData() {
+            if (!TextUtils.isEmpty(good.getCovers())) {
+                List<String> covers = new Gson().fromJson(good.getCovers(), new TypeToken<List<String>>() {
+                }.getType());
+                goodsImg.set(covers.get(0));
+            }
+            goodsName.set(good.getTitle());
+            goodsPrice.set(good.getPrice());
         }
 
         /**

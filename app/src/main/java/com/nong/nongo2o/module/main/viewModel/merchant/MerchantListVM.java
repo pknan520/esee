@@ -4,6 +4,7 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.widget.Toast;
 
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
@@ -11,12 +12,21 @@ import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.bean.ApiListResponse;
+import com.nong.nongo2o.entity.bean.SalerInfo;
 import com.nong.nongo2o.module.common.viewModel.ItemMerchantListVM;
 import com.nong.nongo2o.module.main.fragment.merchant.MerchantListFragment;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 /**
@@ -30,13 +40,21 @@ public class MerchantListVM implements ViewModel {
             "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhegpeu0h5j20u011iae5.jpg"};
 
     private MerchantListFragment fragment;
+    private int type;
     public final ObservableList<DefaultSliderView> sliderList = new ObservableArrayList<>();
     public final ObservableField<String> adText = new ObservableField<>();
+    // 商家列表
+    public final ObservableList<ItemMerchantListVM> itemMerchantListVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemMerchantListVM> itemMerchantBinding = ItemBinding.of(BR.viewModel, R.layout.item_merchant_list);
 
-    public MerchantListVM(MerchantListFragment fragment) {
+    private int pageSize = 10;
+    private int total = 0;
+
+    public MerchantListVM(MerchantListFragment fragment, int type) {
         this.fragment = fragment;
+        this.type = type;
 
-        initFakeData();
+        initData();
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
@@ -46,16 +64,14 @@ public class MerchantListVM implements ViewModel {
     }
 
     /**
-     * 假数据
+     * 初始化数据
      */
-    private void initFakeData() {
+    private void initData() {
         addSliderView();
 
         adText.set("活动期间注册账户将有机会获得奖励");
 
-        for (int i = 0; i < 20; i++) {
-            itemMerchantListVMs.add(new ItemMerchantListVM(fragment));
-        }
+        getMerchantList(1, true);
     }
 
     /**
@@ -70,11 +86,31 @@ public class MerchantListVM implements ViewModel {
         }
     }
 
-    /**
-     * 商家列表
-     */
-    public final ObservableList<ItemMerchantListVM> itemMerchantListVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemMerchantListVM> itemMerchantBinding = ItemBinding.of(BR.viewModel, R.layout.item_merchant_list);
+    private void getMerchantList(int page, boolean force) {
+        viewStyle.isRefreshing.set(true);
+
+        if (type == 1) {
+            viewStyle.isRefreshing.set(false);
+        } else if (type == 2) {
+            RetrofitHelper.getGoodsAPI()
+                    .getAllSalerInfos(page, pageSize)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        if (force) {
+                            itemMerchantListVMs.clear();
+                        }
+                        total = resp.getTotal();
+                        for (SalerInfo saller : resp.getRows()) {
+                            itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
+                        }
+                    }, throwable -> {
+                        viewStyle.isRefreshing.set(false);
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }, () -> viewStyle.isRefreshing.set(false));
+        }
+    }
 
     /**
      * 下拉刷新
@@ -82,22 +118,23 @@ public class MerchantListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        viewStyle.isRefreshing.set(true);
-
-        Observable.just(0)
-                .delay(3000, TimeUnit.MILLISECONDS)
-                .subscribe(integer -> {
-                    viewStyle.isRefreshing.set(false);
-                });
+        getMerchantList(1, true);
     }
+
+    /**
+     * NestedScrollView滑动到底部的监听
+     */
+    public final ReplyCommand onScrollBottomCommand = new ReplyCommand(this::onLoadMoreCommand);
 
     /**
      * 加载更多
      */
-    public final ReplyCommand<Integer> onLoadMoreCommand = new ReplyCommand<>(integer -> {
-        for (int i = 0; i < 10; i++) {
-            itemMerchantListVMs.add(new ItemMerchantListVM(fragment));
+    private void onLoadMoreCommand() {
+        if (itemMerchantListVMs.size() < total) {
+            getMerchantList(itemMerchantListVMs.size() / pageSize + 1, false);
+        } else {
+            Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
         }
-    });
+    }
 
 }

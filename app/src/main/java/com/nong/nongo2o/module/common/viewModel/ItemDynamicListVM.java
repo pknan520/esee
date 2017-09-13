@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -51,6 +52,10 @@ public class ItemDynamicListVM implements ViewModel {
     @DrawableRes
     public final int imgUnLike = R.mipmap.icon_like_p;
 
+    // TODO: 2017-9-13 容错的构造方法，以后删除
+    public ItemDynamicListVM(Fragment fragment) {
+        this.fragment = fragment;
+    }
 
     public ItemDynamicListVM(Fragment fragment, Moment dynamic) {
         this.fragment = fragment;
@@ -60,13 +65,13 @@ public class ItemDynamicListVM implements ViewModel {
     }
 
     private void initData() {
-        if (dynamic.getHeaderImg() != null) {
+        if (!TextUtils.isEmpty(dynamic.getHeaderImg())) {
             List<String> headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
             }.getType());
             imgMain.set(headerImgList.get(0));
         }
         title.set(dynamic.getTitle());
-        if (dynamic.getContent() != null) {
+        if (!TextUtils.isEmpty(dynamic.getContent())) {
             List<DynamicContent> contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
             }.getType());
             content.set(contentList.get(0).getContent());

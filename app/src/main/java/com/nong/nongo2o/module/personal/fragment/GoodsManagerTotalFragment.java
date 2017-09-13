@@ -26,7 +26,7 @@ public class GoodsManagerTotalFragment extends RxFragment {
 
     public static final String TAG = "GoodsManagerTotalFragme";
 
-    private static String[] tabArray = {"上架", "售罄", "下架"};
+    private static String[] tabArray = {"待发布","上架", "下架"};
 
     private FragmentGoodsManagerTotalBinding binding;
 
@@ -44,9 +44,10 @@ public class GoodsManagerTotalFragment extends RxFragment {
 
     private void initView(FragmentGoodsManagerTotalBinding binding) {
         List<Fragment> fragmentList = new ArrayList<>();
+
+        fragmentList.add(GoodsManagerFragment.newInstance(0));
         fragmentList.add(GoodsManagerFragment.newInstance(1));
         fragmentList.add(GoodsManagerFragment.newInstance(2));
-        fragmentList.add(GoodsManagerFragment.newInstance(3));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);

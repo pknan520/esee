@@ -14,16 +14,26 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
+import com.nong.nongo2o.base.RxBaseFragment;
+import com.nong.nongo2o.entity.domain.Follow;
+import com.nong.nongo2o.entity.domain.Goods;
+import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerFragment;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerTotalFragment;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 /**
@@ -31,6 +41,10 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
  */
 
 public class GoodsManagerVM implements ViewModel {
+
+    private int page = 1;
+    private final int pageSize = 10;
+    private int total;
 
     private GoodsManagerFragment fragment;
     public final ObservableField<Integer> status = new ObservableField<>();
@@ -42,7 +56,7 @@ public class GoodsManagerVM implements ViewModel {
         this.fragment = fragment;
         this.status.set(status);
 
-        initFakeData();
+        initFakeData(true);
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
@@ -54,11 +68,34 @@ public class GoodsManagerVM implements ViewModel {
     /**
      * 假数据
      */
-    private void initFakeData() {
-
-        for (int i = 0; i < 10; i++) {
-            itemGoodsVMs.add(new ItemGoodsVM());
+    private void initFakeData(boolean force) {
+        if(force){
+            viewStyle.isRefreshing.set(true);
+            page = 1;
+            total = 0;
+            itemGoodsVMs.clear();
         }
+
+        RetrofitHelper.getGoodsAPI()
+                .userGoodsSearch(status.get(),page,pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    total = resp.getTotal();
+                    for (Goods goods : resp.getRows()) {
+                        itemGoodsVMs.add(new ItemGoodsVM( goods, status.get()));
+                    }
+                    if(total > page * pageSize){
+                        page ++ ;
+                    }else{
+                        Toast.makeText(fragment.getActivity(), "数据已加载完毕", Toast.LENGTH_SHORT).show();
+                    }
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    viewStyle.isRefreshing.set(false);
+                }, () -> viewStyle.isRefreshing.set(false));
+
     }
 
     /**
@@ -67,11 +104,7 @@ public class GoodsManagerVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        viewStyle.isRefreshing.set(true);
-
-        Observable.just(0)
-                .delay(3000, TimeUnit.MILLISECONDS)
-                .subscribe(integer -> viewStyle.isRefreshing.set(false));
+        initFakeData(true);
     }
 
     /**
@@ -80,9 +113,7 @@ public class GoodsManagerVM implements ViewModel {
     public final ReplyCommand<Integer> onLoadMoreCommand = new ReplyCommand<>(integer -> loadMoreData());
 
     private void loadMoreData() {
-        for (int i = 0; i < 10; i++) {
-            itemGoodsVMs.add(new ItemGoodsVM());
-        }
+        initFakeData(false);
     }
 
     /**
@@ -97,6 +128,9 @@ public class GoodsManagerVM implements ViewModel {
      * 商品列表的Item
      */
     public class ItemGoodsVM implements ViewModel {
+        private Goods goods;
+        private int status;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         //  假数据图片uri
         private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhhz28n9vyj20u00u00w9.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
@@ -106,13 +140,14 @@ public class GoodsManagerVM implements ViewModel {
         public final int imgPlaceHolder = R.mipmap.picture_default;
         public final ObservableField<String> imgUri = new ObservableField<>();
         public final ObservableField<String> name = new ObservableField<>();
-        public final ObservableField<Double> price = new ObservableField<>();
+        public final ObservableField<BigDecimal> price = new ObservableField<>();
         public final ObservableField<Integer> saleNum = new ObservableField<>();
         public final ObservableField<Integer> stockNum = new ObservableField<>();
         public final ObservableField<String> date = new ObservableField<>();
 
-        public ItemGoodsVM() {
-
+        public ItemGoodsVM(Goods goods,int status) {
+            this.goods = goods;
+            this.status = status;
             initFakeDate();
         }
 
@@ -121,11 +156,11 @@ public class GoodsManagerVM implements ViewModel {
          */
         private void initFakeDate() {
             imgUri.set(uriArray[(int) (Math.random() * 4)]);
-            name.set("墨西哥进口牛油果");
-            price.set(48.80);
-            saleNum.set(128);
-            stockNum.set(293);
-            date.set("2017-07-05");
+            name.set(goods.getTitle());
+            price.set(goods.getPrice());
+            saleNum.set(goods.getTotalSale());
+            stockNum.set(0);
+            date.set(simpleDateFormat.format(goods.getCreateTime()));
         }
 
         /**

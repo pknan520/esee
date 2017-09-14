@@ -3,16 +3,28 @@ package com.nong.nongo2o.module.personal.viewModel;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
-import com.nong.nongo2o.entities.common.Address;
+import com.nong.nongo2o.entity.domain.Address;
+import com.nong.nongo2o.entity.request.CreateAddressRequest;
+import com.nong.nongo2o.entity.request.UpdateAddressRequest;
 import com.nong.nongo2o.module.common.activity.SelectAreaActivity;
 import com.nong.nongo2o.module.common.fragment.SelectAreaFragment;
 import com.nong.nongo2o.module.common.popup.AreaPopup;
 import com.nong.nongo2o.module.personal.fragment.AddressEditFragment;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.widget.checkbox.ViewBindingAdapter;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by Administrator on 2017-6-30.
@@ -66,22 +78,61 @@ public class AddressEditVM implements ViewModel {
      * 保存按钮
      */
     public final ReplyCommand saveClick = new ReplyCommand(() -> {
+
         if (address != null) {
             //  编辑地址
-            setAddressRequest(address);
+            UpdateAddressRequest updateAddressRequest = new UpdateAddressRequest();
+            updateAddressRequest.setId(address.getId());
+            updateAddressRequest.setAddressCode(address.getAddressCode());
+            updateAddressRequest.setDefaultAddr(address.getDefaultAddr());
+
+            updateAddressRequest.setConsigneeName(name.get());
+            updateAddressRequest.setConsigneeMobile(phone.get());
+            updateAddressRequest.setConsigneeAddress(addressStr.get());
+
+            //-TODO
+            updateAddressRequest.setConsigneeProvince("11");
+            updateAddressRequest.setConsigneeCity("22");
+            updateAddressRequest.setConsigneeArea("33");
+            updateAddressRequest.setConsigneeTown("44");
+
+            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                    new Gson().toJson(updateAddressRequest));
+
+            RetrofitHelper.getAddressAPI().updateUserAddress(requestBody)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        Toast.makeText(fragment.getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
+                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+
         } else {
             //  新增地址
-            Address newAddress = new Address();
-            setAddressRequest(newAddress);
+            CreateAddressRequest createAddressRequest = new CreateAddressRequest();
+
+            createAddressRequest.setDefaultAddr(0);
+            createAddressRequest.setConsigneeName(name.get());
+            createAddressRequest.setConsigneeMobile(phone.get());
+            createAddressRequest.setConsigneeAddress(addressStr.get());
+            //-TODO
+            createAddressRequest.setConsigneeProvince("11");
+            createAddressRequest.setConsigneeCity("22");
+            createAddressRequest.setConsigneeArea("33");
+            createAddressRequest.setConsigneeTown("44");
+
+            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                    new Gson().toJson(createAddressRequest));
+
+            RetrofitHelper.getAddressAPI().userAddress(requestBody)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        Toast.makeText(fragment.getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
+                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+
         }
     });
-
-    private void setAddressRequest(Address addressRequest) {
-        addressRequest.setConsigneeName(name.get());
-        addressRequest.setConsigneeMobile(phone.get());
-        addressRequest.setConsigneeAddress(addressStr.get());
-        addressRequest.setDefaultAddr(isDefault.get() ? 1 : 0);
-    }
-
 
 }

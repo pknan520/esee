@@ -70,10 +70,8 @@ public class AddressListVM implements ViewModel {
      */
     private void searchAddress(int page) {
         viewStyle.isRefreshing.set(true);
-
-        RetrofitHelper.getUserAPI()
-//                .searchAddress(User.getInstance().getUserCode(), page, 10)
-                .searchAddress("usercode000000000000", page, pageSize)
+        RetrofitHelper.getAddressAPI()
+                .userAddressSearch()
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())

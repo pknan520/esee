@@ -31,7 +31,7 @@ public class LoginVM implements ViewModel {
     private void login() {
 
         RetrofitHelper.getAccountAPI()
-                .login("123456789abc")
+                .login("246810abc")
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())

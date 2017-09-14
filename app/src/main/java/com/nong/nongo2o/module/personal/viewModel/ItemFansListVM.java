@@ -18,6 +18,7 @@ import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.FocusUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -75,8 +76,8 @@ public class ItemFansListVM implements ViewModel {
                 headUri.set(follow.getUser().getAvatar());
                 name.set(follow.getUser().getUserNick());
                 summary.set(follow.getUser().getProfile());
-                //-TODO
-//                viewStyle.hasFocus.set(fans.getEachOther() != null && fans.getEachOther() == 1);
+
+                viewStyle.hasFocus.set(FocusUtils.checkIsFocus(follow.getUserCode()));
                 break;
         }
     }
@@ -92,42 +93,14 @@ public class ItemFansListVM implements ViewModel {
     public final ReplyCommand focusOrNotClick = new ReplyCommand(() -> {
         switch (status) {
             case FansMgrActivity.MY_FOCUS:
-                //  我关注的点击取消关注
-                focusOrNot(follow.getTargetCode());
+                FocusUtils.changeFocus(fragment.getActivity(), viewStyle.hasFocus.get(), follow.getTargetCode(), viewStyle.hasFocus::set);
                 break;
             case FansMgrActivity.MY_FANS:
-                //  我的粉丝点，未关注的点击关注，已关注的点击取消关注
-                focusOrNot(follow.getUserCode());
+                FocusUtils.changeFocus(fragment.getActivity(), viewStyle.hasFocus.get(), follow.getUserCode(), viewStyle.hasFocus::set);
                 break;
         }
     });
 
-    private void focusOrNot(String userCode) {
-        if (viewStyle.hasFocus.get()) {
-            //  已关注的，点击取消关注
-            RetrofitHelper.getUserAPI()
-                    .deleteFocus(User.getInstance().getUserCode(), userCode)
-                    .subscribeOn(Schedulers.io())
-                    .map(new ApiResponseFunc<>())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> {
-                        Toast.makeText(fragment.getActivity(), s, Toast.LENGTH_SHORT).show();
-                        viewStyle.hasFocus.set(false);
-                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
-        } else {
-            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
-                    new Gson().toJson(new AddFocus(User.getInstance().getUserCode(), userCode)));
-            //  未关注的，点击关注
-            RetrofitHelper.getUserAPI()
-                    .focus(requestBody)
-                    .subscribeOn(Schedulers.io())
-                    .map(new ApiResponseFunc<>())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> {
-                        Toast.makeText(fragment.getActivity(), s, Toast.LENGTH_SHORT).show();
-                        viewStyle.hasFocus.set(true);
-                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
-        }
-    }
+
 
 }

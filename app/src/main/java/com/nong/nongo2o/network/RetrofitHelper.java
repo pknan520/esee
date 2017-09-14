@@ -13,6 +13,7 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.network.api.AccountService;
+import com.nong.nongo2o.network.api.AddressService;
 import com.nong.nongo2o.network.api.DynamicService;
 import com.nong.nongo2o.network.api.FileService;
 import com.nong.nongo2o.network.api.FollowService;
@@ -68,6 +69,10 @@ public class RetrofitHelper {
 
     public static GoodsService getGoodsAPI() {
         return createApi(GoodsService.class, ApiConstants.BASE_URL);
+    }
+
+    public static AddressService getAddressAPI() {
+        return createApi(AddressService.class, ApiConstants.BASE_URL);
     }
 
     /**

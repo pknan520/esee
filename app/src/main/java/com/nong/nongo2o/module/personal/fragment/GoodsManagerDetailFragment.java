@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentGoodsManagerDetailBinding;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.personal.activity.GoodsManagerActivity;
 import com.nong.nongo2o.module.personal.viewModel.GoodsManagerDetailVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
@@ -25,16 +26,24 @@ public class GoodsManagerDetailFragment extends RxFragment {
 
     private GoodsManagerDetailVM vm;
     private FragmentGoodsManagerDetailBinding binding;
-
-    public static GoodsManagerDetailFragment newInstance() {
-        return new GoodsManagerDetailFragment();
+    private Goods goods;
+    public static GoodsManagerDetailFragment newInstance(Goods goods) {
+        Bundle args = new Bundle();
+        args.putSerializable("goods", goods);
+        GoodsManagerDetailFragment fragment = new GoodsManagerDetailFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getArguments().getSerializable("goods") != null){
+            goods = (Goods) getArguments().getSerializable("goods");
+        }
+
         if (vm == null) {
-            vm = new GoodsManagerDetailVM(this);
+            vm = new GoodsManagerDetailVM(this,goods);
         }
     }
 

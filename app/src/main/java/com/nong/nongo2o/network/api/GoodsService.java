@@ -6,7 +6,13 @@ import com.nong.nongo2o.entity.bean.SalerInfo;
 import com.nong.nongo2o.entity.domain.Goods;
 
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 /**
@@ -41,4 +47,23 @@ public interface GoodsService {
      */
     @GET("search/saler/goods")
     Observable<ApiResponse<ApiListResponse<SalerInfo>>> getAllSalerInfos(@Query("page") int page, @Query("pageSize") int pageSize);
+
+    /**
+     * 更新用户商品
+     * @param body
+     * @return
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @PUT("user/goods")
+    Observable<ApiResponse<String>> updateUserGoods(@Body RequestBody body);
+
+    /**
+     * 删除商品
+     * @param id
+     * @return
+     */
+    @DELETE("user/goods")
+    Observable<ApiResponse<String>> delUserGoods(@Query("id") String id);
+
+
 }

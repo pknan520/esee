@@ -84,7 +84,8 @@ public class AddressEditVM implements ViewModel {
             UpdateAddressRequest updateAddressRequest = new UpdateAddressRequest();
             updateAddressRequest.setId(address.getId());
             updateAddressRequest.setAddressCode(address.getAddressCode());
-            updateAddressRequest.setDefaultAddr(address.getDefaultAddr());
+
+            updateAddressRequest.setDefaultAddr(isDefault.get() ? 1 : 0);
 
             updateAddressRequest.setConsigneeName(name.get());
             updateAddressRequest.setConsigneeMobile(phone.get());
@@ -111,7 +112,7 @@ public class AddressEditVM implements ViewModel {
             //  新增地址
             CreateAddressRequest createAddressRequest = new CreateAddressRequest();
 
-            createAddressRequest.setDefaultAddr(0);
+            createAddressRequest.setDefaultAddr(isDefault.get() ? 1 : 0);
             createAddressRequest.setConsigneeName(name.get());
             createAddressRequest.setConsigneeMobile(phone.get());
             createAddressRequest.setConsigneeAddress(addressStr.get());

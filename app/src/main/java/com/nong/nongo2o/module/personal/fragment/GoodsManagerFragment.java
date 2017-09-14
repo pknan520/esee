@@ -15,6 +15,7 @@ import android.widget.PopupWindow;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentGoodsManagerBinding;
 import com.nong.nongo2o.databinding.PopupMenuBinding;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.personal.viewModel.GoodsManagerVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
 import com.trello.rxlifecycle2.components.RxFragment;
@@ -77,12 +78,13 @@ public class GoodsManagerFragment extends RxFragment {
             }
             return true;
         });
-        popupBinding.setViewModel(vm.new PopupVM(popupMenu));
-        popupMenu.update();
     }
 
-    public void showPopupMenu() {
+    public void showPopupMenu(Goods goods) {
         if (popupMenu != null && !popupMenu.isShowing()) {
+
+            popupBinding.setViewModel(vm.new PopupVM(popupMenu, goods));
+            popupMenu.update();
             popupMenu.showAtLocation(binding.llContainer, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
         }
     }

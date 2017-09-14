@@ -11,6 +11,7 @@ import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 
@@ -25,6 +26,7 @@ public class GoodsManagerDetailVM implements ViewModel {
 
     private static final String TAG = "GoodsManagerDetailVM";
 
+    private Goods goods = null;
     private GoodsManagerDetailFragment fragment;
     private ItemPicVM.addRadioPicListener addBannerPicListener;
 
@@ -42,8 +44,9 @@ public class GoodsManagerDetailVM implements ViewModel {
     public final ObservableList<ItemDescVM> itemDescVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemDescVM> itemDescBinding = ItemBinding.of(BR.viewModel, R.layout.item_goods_manager_desc);
 
-    public GoodsManagerDetailVM(GoodsManagerDetailFragment fragment) {
+    public GoodsManagerDetailVM(GoodsManagerDetailFragment fragment,Goods goods) {
         this.fragment = fragment;
+        this.goods = goods;
 
         initListener();
 
@@ -53,6 +56,10 @@ public class GoodsManagerDetailVM implements ViewModel {
         itemStandardVMs.add(new ItemStandardVM());
         //  初始有一个空白的商品描述
         itemDescVMs.add(new ItemDescVM());
+
+        if(goods != null){
+            goodsName.set(goods.getTitle());
+        }
     }
 
     /**

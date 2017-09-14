@@ -40,7 +40,15 @@ public interface OrderService {
      * @return
      */
     @POST("user/order")
-    Observable<ApiResponse<Void>> delUserOrder(@Query("id") String id);
+    Observable<ApiResponse<String>> delUserOrder(@Query("id") String id);
+
+
+
+    /*@GET("user/order/count")
+    Observable<ApiResponse<Void>> userOrderCount(@Query("id") String id);*/
+
+    @GET("user/order/search")
+    Observable<ApiResponse<ApiListResponse<Order>>> userOrderCount(Integer orderStatus,Integer userType,Integer page,Integer pageSize);
 
 
 }

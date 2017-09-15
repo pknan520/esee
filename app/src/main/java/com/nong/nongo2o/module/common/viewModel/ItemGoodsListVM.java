@@ -52,8 +52,8 @@ public class ItemGoodsListVM implements ViewModel {
      * 查看商品详情
      */
     public final ReplyCommand detailClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
-        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+//        fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
+//        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
 }

@@ -5,17 +5,35 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.bean.SimpleUser;
+import com.nong.nongo2o.entity.domain.Cart;
+import com.nong.nongo2o.entity.domain.Goods;
+import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.module.common.activity.BuyActivity;
 import com.nong.nongo2o.module.main.fragment.cart.CartFragment;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 /**
@@ -35,27 +53,57 @@ public class CartVM implements ViewModel {
     public CartVM(CartFragment fragment) {
         this.fragment = fragment;
 
-        initFakeData();
+        initData();
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
+        public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
         public final ObservableBoolean isEdit = new ObservableBoolean(false);
     }
 
     /**
-     * 假数据
+     * 初始化数据
      */
-    private void initFakeData() {
-        totalPrice.set("¥117.60");
-        transFee.set("含运费：¥20.00");
-
-        //  添加商家列表
-        for (int i = 0; i < 3; i++) {
-            itemCartMerchantVMs.add(new ItemCartMerchantVM());
-        }
+    private void initData() {
+        getCartList();
     }
+
+    private void getCartList() {
+        viewStyle.isRefreshing.set(true);
+
+        RetrofitHelper.getCartAPI()
+                .getCartList()
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    itemCartMerchantVMs.clear();
+
+                    Map<String, List<Cart>> cartMap = new HashMap<>();
+                    for (Cart cart : resp) {
+                        if (cartMap.containsKey(cart.getSaleUserCode())) {
+                            cartMap.get(cart.getSaleUserCode()).add(cart);
+                        } else {
+                            cartMap.put(cart.getSaleUserCode(), new ArrayList<>());
+                            cartMap.get(cart.getSaleUserCode()).add(cart);
+                        }
+                    }
+
+                    for (String key : cartMap.keySet()) {
+                        itemCartMerchantVMs.add(new ItemCartMerchantVM(cartMap.get(key)));
+                    }
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    viewStyle.isRefreshing.set(false);
+                }, () -> viewStyle.isRefreshing.set(false));
+    }
+
+    /**
+     * 下拉刷新
+     */
+    public final ReplyCommand onRefreshCommand = new ReplyCommand(this::getCartList);
 
     /**
      * 提交订单
@@ -67,26 +115,34 @@ public class CartVM implements ViewModel {
 
     public class ItemCartMerchantVM implements ViewModel {
 
+        private List<Cart> cartList;
+
         @DrawableRes
         public final int headPlaceHolder = R.mipmap.head_default_60;
         public final ObservableField<String> headUri = new ObservableField<>();
         public final ObservableField<String> name = new ObservableField<>();
         public final ObservableField<String> summary = new ObservableField<>();
 
-        public ItemCartMerchantVM() {
+        public ItemCartMerchantVM(List<Cart> cartList) {
+            this.cartList = cartList;
 
-            initFakeData();
+            initData();
         }
 
         /**
-         * 假数据
+         * 初始化数据
          */
-        private void initFakeData() {
-            name.set("果酱妈咪09");
-            summary.set("这家伙很懒，什么都没留下");
-            //  添加商品列表
-            for (int i = 0; i < 2; i++) {
-                itemCartMerchantGoodsVMs.add(new ItemCartMerchantGoodsVM(this));
+        private void initData() {
+            if (cartList != null && cartList.size() > 0) {
+                //  商家信息
+                SimpleUser saler = cartList.get(0).getSaleUser();
+                headUri.set(saler.getAvatar());
+                name.set(saler.getUserNick());
+                summary.set(saler.getProfile());
+                //  添加商品列表
+                for (Cart cart : cartList) {
+                    itemCartMerchantGoodsVMs.add(new ItemCartMerchantGoodsVM(this, cart));
+                }
             }
         }
 
@@ -106,50 +162,73 @@ public class CartVM implements ViewModel {
 
         public class ItemCartMerchantGoodsVM implements ViewModel {
 
-            //  假数据图片uri
-            private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhhz28n9vyj20u00u00w9.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
-                    "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhegpeu0h5j20u011iae5.jpg"};
-
             private ItemCartMerchantVM merchantVM;
+            private Cart cart;
+            private List<GoodsSpec> specList;
+            private GoodsSpec currentSpec;
 
             @DrawableRes
             public final int goodsImgPlaceHolder = R.mipmap.ic_launcher;
             public final ObservableField<String> goodsImgUri = new ObservableField<>();
             public final ObservableField<String> goodsName = new ObservableField<>();
             public final ObservableField<String> goodsSummary = new ObservableField<>();
-            public final ObservableField<String> goodsPrice = new ObservableField<>();
+            public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();
             public final ObservableField<Integer> goodsNum = new ObservableField<>();
             public final ObservableField<String> standardStr = new ObservableField<>();
 
-            public ItemCartMerchantGoodsVM(ItemCartMerchantVM merchantVM) {
+            public ItemCartMerchantGoodsVM(ItemCartMerchantVM merchantVM, Cart cart) {
                 this.merchantVM = merchantVM;
+                this.cart = cart;
 
-                initFakeData();
+                initData();
             }
 
             public final ViewStyle viewStyle = new ViewStyle();
 
             public class ViewStyle {
+                public final ObservableBoolean isSelect = new ObservableBoolean(false);
                 public final ObservableBoolean isEdit = new ObservableBoolean(false);
             }
 
             /**
-             * 假数据
+             * 初始化数据
              */
-            private void initFakeData() {
-                goodsImgUri.set(uriArray[(int) (Math.random() * 4)]);
-                goodsName.set("墨西哥进口牛油果");
-                goodsSummary.set("精装4只/盒");
-                goodsPrice.set("¥48.80");
-                goodsNum.set(4);
-                standardStr.set("进口上等品");
+            private void initData() {
+                if (cart != null && cart.getGoods() != null) {
+                    Goods good = cart.getGoods();
+                    if (good.getGoodsSpecs() != null && good.getGoodsSpecs().size() > 0) {
+                        specList = good.getGoodsSpecs();
+                        currentSpec = getCurrentSpec();
+                    }
+                    if (!TextUtils.isEmpty(good.getCovers())) {
+                        List<String> covers = new Gson().fromJson(good.getCovers(), new TypeToken<List<String>>() {
+                        }.getType());
+                        goodsImgUri.set(covers.get(0));
+                    }
+                    goodsName.set(good.getTitle());
+                    goodsNum.set(cart.getGoodsNum());
+                    if (currentSpec != null) {
+                        goodsSummary.set(currentSpec.getTitle());
+                        goodsPrice.set(currentSpec.getPrice());
+                        standardStr.set(currentSpec.getTitle());
+                    }
+                }
+            }
+
+            private GoodsSpec getCurrentSpec() {
+                for (GoodsSpec spec : specList) {
+                    if (spec.getSpecCode().equals(cart.getSpecCode())) {
+                        return spec;
+                    }
+                }
+                return null;
             }
 
             /**
              * 查看商品详情
              */
             public final ReplyCommand detailClick = new ReplyCommand(() -> {
-                fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
+                fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity(), cart.getGoods()));
                 fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
             });
 
@@ -173,7 +252,7 @@ public class CartVM implements ViewModel {
              * 选择规格
              */
             public ReplyCommand standardClick = new ReplyCommand(() -> {
-                fragment.showPopupStandard();
+                fragment.showPopupStandard(cart);
             });
 
             /**

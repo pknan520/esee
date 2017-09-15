@@ -21,6 +21,7 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.databinding.FragmentCartBinding;
 import com.nong.nongo2o.databinding.PopupStandardBinding;
+import com.nong.nongo2o.entity.domain.Cart;
 import com.nong.nongo2o.module.common.viewModel.PopupStandardVM;
 import com.nong.nongo2o.module.main.viewModel.cart.CartVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
@@ -34,6 +35,7 @@ public class CartFragment extends RxFragment {
 
     private FragmentCartBinding binding;
     private CartVM vm;
+    private PopupStandardBinding popupBinding;
     private PopupWindow popupStandard;
 
     public static CartFragment newInstance() {
@@ -73,7 +75,7 @@ public class CartFragment extends RxFragment {
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.addItemDecoration(new LinearItemDecoration(getActivity(), LinearLayoutManager.VERTICAL, R.drawable.shape_vertical_divider_15px));
 
-        PopupStandardBinding popupBinding = PopupStandardBinding.inflate(getActivity().getLayoutInflater(), null, false);
+        popupBinding = PopupStandardBinding.inflate(getActivity().getLayoutInflater(), null, false);
         popupStandard = new PopupWindow(popupBinding.getRoot(), WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         popupStandard.setFocusable(true);
         popupStandard.setAnimationStyle(R.style.PopupAnimBottom);
@@ -89,31 +91,15 @@ public class CartFragment extends RxFragment {
             }
             return true;
         });
-        popupBinding.setViewModel(new PopupStandardVM((RxBaseActivity) getActivity(), popupStandard));
-        popupStandard.update();
     }
 
-    public void showPopupStandard() {
+    public void showPopupStandard(Cart cart) {
         if (popupStandard != null && !popupStandard.isShowing()) {
+            popupBinding.setViewModel(new PopupStandardVM((RxBaseActivity) getActivity(), popupStandard, cart));
+            popupStandard.update();
             popupStandard.showAtLocation(binding.llContainer, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         }
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        menu.clear();
-//        inflater.inflate(R.menu.menu_cart, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.edit_cart:
-//                editClick(item);
-//                break;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     private void editClick(MenuItem item) {
         vm.viewStyle.isEdit.set(!vm.viewStyle.isEdit.get());

@@ -20,6 +20,7 @@ import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.User;
 import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.entity.domain.MomentComment;
 import com.nong.nongo2o.entity.domain.MomentFavorite;
@@ -130,11 +131,11 @@ public class DynamicDetailVM implements ViewModel {
         viewStyle.isFocus.set(FocusUtils.checkIsFocus(dynamic.getUser().getUserCode()));
 
         title.set(dynamic.getTitle());
-        if (dynamic.getContent() != null) {
-            List<DynamicContent> contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
+        if (!TextUtils.isEmpty(dynamic.getContent())) {
+            List<ImgTextContent> contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<ImgTextContent>>() {
             }.getType());
             if (contentList != null && !contentList.isEmpty()) {
-                for (DynamicContent content : contentList) {
+                for (ImgTextContent content : contentList) {
                     itemImageTextVMs.add(new ItemImageTextVM(content));
                 }
             }
@@ -276,7 +277,7 @@ public class DynamicDetailVM implements ViewModel {
      * 查看商品详情
      */
     public final ReplyCommand goodsDetailClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
+        fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity(), dynamic.getGoods()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 

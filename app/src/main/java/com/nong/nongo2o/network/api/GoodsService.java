@@ -4,6 +4,7 @@ import com.nong.nongo2o.entity.bean.ApiListResponse;
 import com.nong.nongo2o.entity.bean.ApiResponse;
 import com.nong.nongo2o.entity.bean.SalerInfo;
 import com.nong.nongo2o.entity.domain.Goods;
+import com.nong.nongo2o.entity.domain.GoodsComment;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -11,7 +12,6 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
-import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
@@ -22,10 +22,9 @@ import retrofit2.http.Query;
 public interface GoodsService {
 
     /**
-     *
      * @param goodsStatus 商品状态 商品状态：0.待发布，1.上架，2.下架
-     * @param page 页码
-     * @param pageSize  分页大小
+     * @param page        页码
+     * @param pageSize    分页大小
      * @return
      */
     @GET("user/goods/search")
@@ -43,7 +42,8 @@ public interface GoodsService {
 
     /**
      * 获取所有商家列表
-     * @return  返回商家列表
+     *
+     * @return 返回商家列表
      */
     @GET("search/saler/goods")
     Observable<ApiResponse<ApiListResponse<SalerInfo>>> getAllSalerInfos(@Query("page") int page, @Query("pageSize") int pageSize);
@@ -66,4 +66,14 @@ public interface GoodsService {
     Observable<ApiResponse<String>> delUserGoods(@Query("id") String id);
 
 
+
+    /**
+     * 获取评论列表
+     *
+     * @param goodsCode 商品Code
+     * @return 返回评论列表
+     */
+    @GET("goods/comment/search")
+    Observable<ApiResponse<ApiListResponse<GoodsComment>>> getGoodsComment(@Query("goodsCode") String goodsCode, @Query("star") int star,
+                                                                           @Query("page") int page, @Query("pageSize") int pageSize);
 }

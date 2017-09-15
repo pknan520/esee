@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityMerchantGoodsBinding;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.merchant.fragment.MerchantGoodsFragment;
 
 /**
@@ -23,8 +24,12 @@ public class MerchantGoodsActivity extends RxBaseToolbarActivity {
 
     private ActivityMerchantGoodsBinding binding;
 
-    public static Intent newIntent(Context context) {
-        return new Intent(context, MerchantGoodsActivity.class);
+    private Goods good;
+
+    public static Intent newIntent(Context context, Goods good) {
+        Intent intent = new Intent(context, MerchantGoodsActivity.class);
+        intent.putExtra("good", good);
+        return intent;
     }
 
     @Override
@@ -41,12 +46,13 @@ public class MerchantGoodsActivity extends RxBaseToolbarActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        good = (Goods) getIntent().getSerializableExtra("good");
         initView();
     }
 
     private void initView() {
         binding.tvToolbarTitle.setText("商品标题");
-        replaceFragment(R.id.fl, MerchantGoodsFragment.newInstance(), MerchantGoodsFragment.TAG);
+        replaceFragment(R.id.fl, MerchantGoodsFragment.newInstance(good == null ? null : good), MerchantGoodsFragment.TAG);
     }
 
     @Override

@@ -86,17 +86,6 @@ public class ItemMerchantListVM implements ViewModel {
     }
 
     /**
-     * 查看详情
-     */
-    public final ReplyCommand detailClick = new ReplyCommand(new Action() {
-        @Override
-        public void run() throws Exception {
-            fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
-            fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
-        }
-    });
-
-    /**
      * 进入商家主页
      */
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
@@ -144,7 +133,7 @@ public class ItemMerchantListVM implements ViewModel {
          * 查看商品详情
          */
         public final ReplyCommand goodsDetailClick = new ReplyCommand(() -> {
-            fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
+            fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity(), good));
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         });
     }

@@ -8,7 +8,7 @@ import android.support.annotation.DrawableRes;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
-import com.nong.nongo2o.entities.response.DynamicContent;
+import com.nong.nongo2o.entity.domain.ImgTextContent;
 
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
@@ -18,16 +18,11 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 public class ItemImageTextVM implements ViewModel {
 
-    private DynamicContent content;
+    private ImgTextContent content;
 
     public final ObservableField<String> text = new ObservableField<>();
 
-    public ItemImageTextVM() {
-
-        initData();
-    }
-
-    public ItemImageTextVM(DynamicContent content) {
+    public ItemImageTextVM(ImgTextContent content) {
         this.content = content;
 
         initData();

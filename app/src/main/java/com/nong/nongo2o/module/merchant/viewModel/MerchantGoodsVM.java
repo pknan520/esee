@@ -1,29 +1,48 @@
 package com.nong.nongo2o.module.merchant.viewModel;
 
-import android.content.Intent;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.domain.ImgTextContent;
+import com.nong.nongo2o.entity.domain.Goods;
+import com.nong.nongo2o.entity.domain.GoodsSpec;
+import com.nong.nongo2o.entity.request.CreateCartRequest;
 import com.nong.nongo2o.module.common.activity.BuyActivity;
 import com.nong.nongo2o.module.common.viewModel.ItemImageTextVM;
 import com.nong.nongo2o.module.merchant.fragment.MerchantGoodsFragment;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.FocusUtils;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 
-import io.reactivex.functions.Action;
+import java.math.BigDecimal;
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by Administrator on 2017-7-4.
@@ -31,11 +50,8 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 public class MerchantGoodsVM implements ViewModel {
 
-    //  假数据图片uri
-    private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhj5228gwdj20u00u0qv5.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
-            "https://ws1.sinaimg.cn/large/610dc034ly1fhb0t7ob2mj20u011itd9.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fgdmpxi7erj20qy0qyjtr.jpg"};
-
     private MerchantGoodsFragment fragment;
+    private Goods good;
 
     //  商家信息
     @DrawableRes
@@ -51,57 +67,79 @@ public class MerchantGoodsVM implements ViewModel {
     public final ObservableList<DefaultSliderView> sliderList = new ObservableArrayList<>();
     //  商品信息
     public final ObservableField<String> goodsName = new ObservableField<>();
-    public final ObservableField<String> goodsPrice = new ObservableField<>();
+    public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();
+    public final ObservableField<BigDecimal> minPrice = new ObservableField<>();    //  最低价
+    public final ObservableField<BigDecimal> maxPrice = new ObservableField<>();    //  最高价
     public final ObservableField<Integer> stockNum = new ObservableField<>();
     public final ObservableField<Integer> saleNum = new ObservableField<>();
     //  商品规格
     public final ObservableField<TagAdapter> standardAdapter = new ObservableField<>();
-    public final ObservableList<String> standardList = new ObservableArrayList<>();
+    private final ObservableList<GoodsSpec> standardList = new ObservableArrayList<>();
+    //  图文详情
+    public final ObservableList<ItemImageTextVM> itemImageTextVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemImageTextVM> itemImageTextBinding = ItemBinding.of(BR.viewModel, R.layout.item_image_text);
     //  运费
-    public final ObservableField<String> transFee = new ObservableField<>();
+    public final ObservableField<BigDecimal> transFee = new ObservableField<>();
+    //  总库存
+    private int totalStock = 0;
+    //  当前规格位置，没有选择时为-1
+    private int currentSpecPos = -1;
 
-    public MerchantGoodsVM(MerchantGoodsFragment fragment) {
+    public MerchantGoodsVM(MerchantGoodsFragment fragment, Goods good) {
         this.fragment = fragment;
+        this.good = good;
 
         initAdapter();
-        initFakeData();
+        if (good != null) {
+            initData();
+        }
+    }
+
+    public final ViewStyle viewStyle = new ViewStyle();
+
+    public class ViewStyle {
+        public final ObservableBoolean isFocus = new ObservableBoolean(false);
+        public final ObservableBoolean selectedSpec = new ObservableBoolean(false);
     }
 
     private void initAdapter() {
-        standardAdapter.set(new TagAdapter<String>(standardList) {
+        standardAdapter.set(new TagAdapter<GoodsSpec>(standardList) {
             @Override
-            public View getView(FlowLayout parent, int position, String s) {
+            public View getView(FlowLayout parent, int position, GoodsSpec goodsSpec) {
                 TextView tv = (TextView) LayoutInflater.from(fragment.getActivity()).inflate(R.layout.item_standard, parent, false);
-                tv.setText(s);
+                tv.setText(goodsSpec.getTitle());
                 return tv;
             }
         });
     }
 
     /**
-     * 假数据
+     * 初始化数据
      */
-    private void initFakeData() {
+    private void initData() {
         //  商家信息
-        name.set("NeilsonLo");
-        summary.set("这家伙很懒，还没填写任何东西~");
+        headUri.set(good.getSale().getAvatar());
+        name.set(good.getSale().getUserNick());
+        summary.set(good.getSale().getProfile());
+        viewStyle.isFocus.set(FocusUtils.checkIsFocus(good.getSale().getUserCode()));
         //  轮播图
         addSliderView();
         //  商品信息
-        goodsName.set("墨西哥进口牛油果");
-        goodsPrice.set("¥48.80");
-        stockNum.set(725);
-        saleNum.set(99);
-        //  规格列表
-        String[] standardArray = {"规格", "规格+1", "规格不同长度", "就想看看长点会怎样", "规格+2"};
-        for (int i = 0; i < 20; i++) {
-            standardList.add(standardArray[(int) (Math.random() * 5 - 0.01)]);
-        }
+        goodsName.set(good.getTitle());
+        saleNum.set(good.getTotalSale());
+        //  设置规格信息
+        setGoodSpecInfo();
         //  运费
-        transFee.set("¥10.00");
+        transFee.set(good.getFreight());
         //  图文详情
-        for (int i = 0; i < 2; i++) {
-            itemImageTextVMs.add(new ItemImageTextVM());
+        if (!TextUtils.isEmpty(good.getDetail())) {
+            List<ImgTextContent> contentList = new Gson().fromJson(good.getDetail(), new TypeToken<List<ImgTextContent>>() {
+            }.getType());
+            if (contentList != null && !contentList.isEmpty()) {
+                for (ImgTextContent content : contentList) {
+                    itemImageTextVMs.add(new ItemImageTextVM(content));
+                }
+            }
         }
     }
 
@@ -109,13 +147,56 @@ public class MerchantGoodsVM implements ViewModel {
      * 添加轮播图
      */
     private void addSliderView() {
-        for (int i = 0; i < uriArray.length; i++) {
-            DefaultSliderView view = new DefaultSliderView(fragment.getActivity());
-            view.image(uriArray[i])
-                    .setScaleType(BaseSliderView.ScaleType.CenterCrop);
-            sliderList.add(view);
+        if (!TextUtils.isEmpty(good.getCovers())) {
+            List<String> covers = new Gson().fromJson(good.getCovers(), new TypeToken<List<String>>() {
+            }.getType());
+            for (String uri : covers) {
+                DefaultSliderView view = new DefaultSliderView(fragment.getActivity());
+                view.image(uri)
+                        .setScaleType(BaseSliderView.ScaleType.CenterCrop);
+                sliderList.add(view);
+            }
         }
     }
+
+    /**
+     * 设置商品规格信息
+     */
+    private void setGoodSpecInfo() {
+        if (good.getGoodsSpecs() != null && good.getGoodsSpecs().size() > 0) {
+            minPrice.set(good.getGoodsSpecs().get(0).getPrice());
+            maxPrice.set(good.getGoodsSpecs().get(0).getPrice());
+            //  规格列表
+            for (GoodsSpec spec : good.getGoodsSpecs()) {
+                standardList.add(spec);
+                totalStock += spec.getQuantity();
+                if (spec.getPrice().compareTo(minPrice.get()) == -1 || spec.getPrice().compareTo(minPrice.get()) == 0) {
+                    minPrice.set(spec.getPrice());
+                } else if (spec.getPrice().compareTo(maxPrice.get()) == 1) {
+                    maxPrice.set(spec.getPrice());
+                }
+            }
+            stockNum.set(totalStock);
+        }
+    }
+
+    /**
+     * 规格点击事件
+     */
+    public final ReplyCommand<Integer> tagClickCommand = new ReplyCommand<>(position -> {
+        if (currentSpecPos != -1 && currentSpecPos == position) {
+            //  当前已选择，取消选择
+            currentSpecPos = -1;
+            viewStyle.selectedSpec.set(false);
+            goodsPrice.set(good.getPrice());
+            stockNum.set(totalStock);
+        } else {
+            currentSpecPos = position;
+            viewStyle.selectedSpec.set(true);
+            goodsPrice.set(good.getGoodsSpecs().get(position).getPrice());
+            stockNum.set(good.getGoodsSpecs().get(position).getQuantity());
+        }
+    });
 
     /**
      * 进入商家主页
@@ -126,12 +207,6 @@ public class MerchantGoodsVM implements ViewModel {
     });
 
     /**
-     * 图文详情
-     */
-    public final ObservableList<ItemImageTextVM> itemImageTextVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemImageTextVM> itemImageTextBinding = ItemBinding.of(BR.viewModel, R.layout.item_image_text);
-
-    /**
      * 咨询商家
      */
     public final ReplyCommand consultClick = new ReplyCommand(() -> {
@@ -139,18 +214,55 @@ public class MerchantGoodsVM implements ViewModel {
     });
 
     /**
-     * 加入购物车
+     * 关注商家
      */
-    public final ReplyCommand addCartClick = new ReplyCommand(() -> {
-
+    public final ReplyCommand focusClick = new ReplyCommand(() -> {
+        FocusUtils.changeFocus(fragment.getActivity(), viewStyle.isFocus.get(), good.getSale().getUserCode(), viewStyle.isFocus::set);
     });
 
     /**
-     * 立即购买
+     * 加入购物车
      */
-    public final ReplyCommand buyClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity()));
-        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    public final ReplyCommand addCartClick = new ReplyCommand(() -> {
+        if (currentSpecPos == -1) {
+            Toast.makeText(fragment.getActivity(), "请选择规格", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        postCart(createCartBody());
     });
+
+    private RequestBody createCartBody() {
+        CreateCartRequest request = new CreateCartRequest();
+        request.setSaleUserCode(good.getSale().getUserCode());
+        request.setGoodsCode(good.getGoodsCode());
+        request.setGoodsNum(1);
+        request.setSpecCode(good.getGoodsSpecs().get(currentSpecPos).getSpecCode());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(request));
+
+        return requestBody;
+    }
+
+    private void postCart(RequestBody body) {
+        RetrofitHelper.getCartAPI()
+                .postCart(body)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+//    /**
+//     * 立即购买
+//     */
+//    public final ReplyCommand buyClick = new ReplyCommand(() -> {
+//        fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity()));
+//        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+//    });
 
 }

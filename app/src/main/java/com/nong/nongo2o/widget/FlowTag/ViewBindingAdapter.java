@@ -1,7 +1,10 @@
 package com.nong.nongo2o.widget.FlowTag;
 
 import android.databinding.BindingAdapter;
+import android.view.View;
 
+import com.kelin.mvvmlight.command.ReplyCommand;
+import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
 
@@ -25,6 +28,21 @@ public class ViewBindingAdapter {
     @BindingAdapter(value = {"setAdapter"}, requireAll = false)
     public static void setAdapter(TagFlowLayout tagLayout, TagAdapter adapter) {
         tagLayout.setAdapter(adapter);
+    }
+
+    @BindingAdapter({"tagClickCommand"})
+    public static void tagClickCommand(TagFlowLayout tagLayout, ReplyCommand<Integer> tagClickCommand) {
+        tagLayout.setOnTagClickListener(new TagFlowLayout.OnTagClickListener() {
+            @Override
+            public boolean onTagClick(View view, int position, FlowLayout parent) {
+                try {
+                    tagClickCommand.execute(position);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
     }
 
 }

@@ -64,8 +64,8 @@ public class ItemOrderGoodsListVM implements ViewModel {
                         OrderDetailFragment.newInstance(), OrderDetailFragment.TAG);
                 break;
             case FROM_ORDER_DETAIL:
-                fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
-                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+//                fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity()));
+//                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
                 break;
         }
     }

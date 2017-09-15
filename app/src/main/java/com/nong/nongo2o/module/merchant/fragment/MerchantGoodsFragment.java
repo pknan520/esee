@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +13,18 @@ import android.widget.Toast;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentMerchantGoodsBinding;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
-import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.merchant.viewModel.MerchantGoodsVM;
 import com.nong.nongo2o.widget.ScrollView.ObservableScrollView;
 import com.nong.nongo2o.widget.ScrollView.ScrollViewListener;
 import com.trello.rxlifecycle2.components.RxFragment;
 import com.zhy.view.flowlayout.FlowLayout;
-import com.zhy.view.flowlayout.TagAdapter;
+import com.zhy.view.flowlayout.TagFlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Administrator on 2017-7-4.
@@ -34,12 +34,22 @@ public class MerchantGoodsFragment extends RxFragment {
 
     public static final String TAG = "MerchantGoodsFragment";
 
+    private static final int EVA_ALL = 0, EVA_GOOD = 1, EVA_NORMAL = 2, EVA_BAD = 3;
     private static final String[] tabArray = {"商品", "详情", "评价"};
     private static final String[] evaArray = {"全部", "好评", "中评", "差评"};
 
     private FragmentMerchantGoodsBinding binding;
     private MerchantGoodsVM vm;
 
+    public static MerchantGoodsFragment newInstance(Goods good) {
+        Bundle args = new Bundle();
+        args.putSerializable("good", good);
+        MerchantGoodsFragment fragment = new MerchantGoodsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    // TODO: 2017-9-13 临时容错，以后删除
     public static MerchantGoodsFragment newInstance() {
         return new MerchantGoodsFragment();
     }
@@ -48,7 +58,7 @@ public class MerchantGoodsFragment extends RxFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new MerchantGoodsVM(this);
+            vm = new MerchantGoodsVM(this, (Goods) getArguments().getSerializable("good"));
         }
     }
 
@@ -123,10 +133,10 @@ public class MerchantGoodsFragment extends RxFragment {
 
         //  评价
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance());
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance());
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance());
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance());
+        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_ALL));
+        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_GOOD));
+        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_NORMAL));
+        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_BAD));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vpEvaluate.setAdapter(pagerAdapter);
@@ -144,4 +154,5 @@ public class MerchantGoodsFragment extends RxFragment {
             }
         }
     }
+
 }

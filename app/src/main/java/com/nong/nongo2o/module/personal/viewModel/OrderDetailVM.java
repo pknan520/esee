@@ -78,7 +78,7 @@ public class OrderDetailVM implements ViewModel {
         summary.set("这家伙很懒，什么都没留下~");
 
         for (int i = 0; i < 2; i++) {
-            itemGoodsVMs.add(new ItemOrderGoodsListVM(ItemOrderGoodsListVM.FROM_ORDER_DETAIL, fragment));
+            itemGoodsVMs.add(new ItemOrderGoodsListVM(null,ItemOrderGoodsListVM.FROM_ORDER_DETAIL, fragment));
         }
 
         transFee.set(10.00);

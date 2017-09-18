@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityBuyBinding;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.fragment.CreateOrderFragment;
 
 /**
@@ -20,6 +21,7 @@ public class BuyActivity extends RxBaseToolbarActivity {
 
     private ActivityBuyBinding binding;
 
+    private OrderDetail orderDetail;
     public static Intent newIntent(Context context) {
         return new Intent(context, BuyActivity.class);
     }
@@ -42,7 +44,8 @@ public class BuyActivity extends RxBaseToolbarActivity {
     }
 
     private void initView() {
-        replaceFragment(R.id.fl, CreateOrderFragment.newInstance(), CreateOrderFragment.TAG);
+        //-TODO orderDetail
+        replaceFragment(R.id.fl, CreateOrderFragment.newInstance(orderDetail), CreateOrderFragment.TAG);
     }
 
     @Override

@@ -8,6 +8,9 @@ import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Address;
 import com.nong.nongo2o.entity.domain.User;
 
+import java.util.List;
+import java.util.Map;
+
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
@@ -88,7 +91,14 @@ public interface UserService {
     @PUT("user/profile")
     Observable<ApiResponse<String>> updateUserPofile(@Body RequestBody body);
 
-    /*********old***********/
+    /**
+     *  报表
+     * @param type 后台配置的类型【必传】
+     * @param param Map<String,String>参数 k-v
+     * @return
+     */
+    @GET("user/db/wrapper")
+    Observable<ApiResponse<List<Map<String, Object>>>> userDbWrapper(@Query("type")String type, @Query("param")String param );
 
     /**
      * 更新用户信息
@@ -173,5 +183,4 @@ public interface UserService {
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @POST("address")
     Observable<ApiResponse<String>> deleteAddress(@Query("addressCode") String addressCode);
-
 }

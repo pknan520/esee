@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentCreateOrderBinding;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.activity.BuyActivity;
 import com.nong.nongo2o.module.common.viewModel.CreateOrderVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
@@ -24,16 +25,22 @@ public class CreateOrderFragment extends RxBaseFragment {
 
     private FragmentCreateOrderBinding binding;
     private CreateOrderVM vm;
+    private OrderDetail orderDetail;
 
-    public static CreateOrderFragment newInstance() {
-        return new CreateOrderFragment();
+    public static CreateOrderFragment newInstance(OrderDetail orderDetail) {
+        CreateOrderFragment createOrderFragment = new CreateOrderFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("orderDetail",orderDetail);
+        createOrderFragment.setArguments(bundle);
+        return createOrderFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        orderDetail = (OrderDetail) getArguments().getSerializable("orderDetail");
         if (vm == null) {
-            vm = new CreateOrderVM(this);
+            vm = new CreateOrderVM(this ,orderDetail);
         }
     }
 

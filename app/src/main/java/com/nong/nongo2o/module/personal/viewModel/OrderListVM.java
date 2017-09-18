@@ -13,17 +13,25 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.base.RxBaseFragment;
+import com.nong.nongo2o.entity.domain.Follow;
+import com.nong.nongo2o.entity.domain.Order;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.viewModel.ItemOrderGoodsListVM;
+import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.module.personal.fragment.OrderDetailFragment;
 import com.nong.nongo2o.module.personal.fragment.OrderListFragment;
+import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 /**
@@ -34,15 +42,24 @@ public class OrderListVM implements ViewModel {
 
     private OrderListFragment fragment;
     public final ObservableField<String> status = new ObservableField<>();
+    public final ObservableField<Boolean> isMerchantMode = new ObservableField<>();
 
-    public OrderListVM(OrderListFragment fragment, int status) {
+    private int page = 1;
+    private int pageSize = 10;
+    private int total = 0;
+
+
+
+    public OrderListVM(OrderListFragment fragment, int status,boolean isMerchantMode) {
         this.fragment = fragment;
         this.status.set(String.valueOf(status));
-
-        for (int i = 0; i < 20; i++) {
+        this.isMerchantMode.set(isMerchantMode);
+        /*for (int i = 0; i < 20; i++) {
             itemOrderVMs.add(new ItemOrderVM());
-        }
+        }*/
+        initData();
     }
+
 
     public final ViewStyle viewStyle = new ViewStyle();
 
@@ -51,16 +68,42 @@ public class OrderListVM implements ViewModel {
     }
 
     /**
+     * 初始数据
+     */
+    private void initData() {
+        searchDate(true);
+    }
+    private void searchDate(boolean force){
+        if(force){
+            viewStyle.isRefreshing.set(true);
+            page = 1;
+        }
+        RetrofitHelper.getOrderAPI()
+                .userOrderSearch(Integer.parseInt(status.get()),isMerchantMode.get() ? 1 : 0,page,pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    total = resp.getTotal();
+                    for (Order order : resp.getRows()) {
+                        itemOrderVMs.add(new ItemOrderVM(order));
+                    }
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    viewStyle.isRefreshing.set(false);
+                }, () -> viewStyle.isRefreshing.set(false));
+    }
+    /**
      * 下拉刷新
      */
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
         viewStyle.isRefreshing.set(true);
-
-        Observable.just(0)
+        searchDate(true);
+        /*Observable.just(0)
                 .delay(3000, TimeUnit.MILLISECONDS)
-                .subscribe(integer -> viewStyle.isRefreshing.set(false));
+                .subscribe(integer -> viewStyle.isRefreshing.set(false));*/
     }
 
     /**
@@ -69,9 +112,10 @@ public class OrderListVM implements ViewModel {
     public final ReplyCommand<Integer> onLoadMoreCommand = new ReplyCommand<>(integer -> loadMoreData());
 
     private void loadMoreData() {
-        for (int i = 0; i < 10; i++) {
+        /*for (int i = 0; i < 10; i++) {
             itemOrderVMs.add(new ItemOrderVM());
-        }
+        }*/
+        searchDate(false);
     }
 
     /**
@@ -82,6 +126,7 @@ public class OrderListVM implements ViewModel {
 
     public class ItemOrderVM implements ViewModel {
 
+        private Order order;
         //  商家信息
         @DrawableRes
         public final int headPlaceHolder = R.mipmap.head_default_60;
@@ -97,8 +142,8 @@ public class OrderListVM implements ViewModel {
         //  操作按钮
         public final ObservableField<String> btnStr = new ObservableField<>();
 
-        public ItemOrderVM() {
-
+        public ItemOrderVM(Order order) {
+            this.order = order;
             initFakeData();
         }
 
@@ -106,15 +151,40 @@ public class OrderListVM implements ViewModel {
          * 假数据
          */
         private void initFakeData() {
-            name.set("果酱妈咪09");
-            summary.set("这家伙很懒，什么都没留下~");
-            status.set("已发货");
-
-            for (int i = 0; i < (int) (Math.random() * 2) + 1; i++) {
-                itemOrderGoodsListVMs.add(new ItemOrderGoodsListVM(ItemOrderGoodsListVM.FROM_ORDER_LIST, fragment));
+            name.set(order.getUser().getUserNick());
+            summary.set(order.getUser().getProfile());
+            switch (order.getOrderStatus()){
+                case -1:
+                    status.set("已取消");
+                    break;
+                case 0:
+                    status.set("待支付");
+                    break;
+                case 1:
+                    status.set("待发货");
+                    break;
+                case 2:
+                    status.set("待收货");
+                    break;
+                case 3:
+                    status.set("待评价");
+                    break;
+                case 4:
+                    status.set("已完成");
+                    break;
             }
 
-            orderInfo.set("共n件，合计¥58.80（含运费¥10.00）");
+            int goodNum = 0;
+            for(OrderDetail orderDetail : order.getOrderDetails()){
+                goodNum += orderDetail.getGoodsNum();
+
+                itemOrderGoodsListVMs.add(new ItemOrderGoodsListVM(orderDetail,ItemOrderGoodsListVM.FROM_ORDER_LIST, fragment));
+            }
+            /*for (int i = 0; i < (int) (Math.random() * 2) + 1; i++) {
+                itemOrderGoodsListVMs.add(new ItemOrderGoodsListVM(ItemOrderGoodsListVM.FROM_ORDER_LIST, fragment));
+            }*/
+
+            orderInfo.set("共"+goodNum+"件，合计¥ "+order.getTotalPrice());
 
             btnStr.set("操作按钮");
         }

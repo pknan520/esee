@@ -19,9 +19,11 @@ import com.nong.nongo2o.module.personal.fragment.OrderListTotalFragment;
 public class OrderCenterActivity extends RxBaseToolbarActivity {
 
     private ActivityOrderCenterBinding binding;
-
-    public static Intent newIntent(Context context) {
-        return new Intent(context, OrderCenterActivity.class);
+    private boolean isMerchantMode;
+    public static Intent newIntent(Context context,boolean isMerchantMode) {
+        Intent intent = new Intent(context, OrderCenterActivity.class);
+        intent.putExtra("isMerchantMode",isMerchantMode);
+        return intent;
     }
 
     @Override
@@ -38,11 +40,12 @@ public class OrderCenterActivity extends RxBaseToolbarActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isMerchantMode = getIntent().getBooleanExtra("isMerchantMode",false);
         initView();
     }
 
     private void initView() {
-        replaceFragment(R.id.fl, OrderListTotalFragment.newInstance(), OrderListTotalFragment.TAG);
+        replaceFragment(R.id.fl, OrderListTotalFragment.newInstance(isMerchantMode), OrderListTotalFragment.TAG);
     }
 
     @Override

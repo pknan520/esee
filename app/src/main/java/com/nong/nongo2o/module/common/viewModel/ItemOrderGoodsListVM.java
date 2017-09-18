@@ -3,13 +3,19 @@ package com.nong.nongo2o.module.common.viewModel;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.base.RxBaseFragment;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.personal.fragment.OrderDetailFragment;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017-7-14.
@@ -19,37 +25,45 @@ public class ItemOrderGoodsListVM implements ViewModel {
 
     public static final int FROM_ORDER_LIST = 0, FROM_ORDER_DETAIL = 1;
 
+    private Gson gson;
+    private OrderDetail orderDetail;
+
     private int fromTag;
     private RxBaseFragment fragment;
-
-    //  假数据图片uri
-    private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhhz28n9vyj20u00u00w9.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
-            "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhegpeu0h5j20u011iae5.jpg"};
 
     @DrawableRes
     public final int imgPlaceHolder = R.mipmap.picture_default;
     public final ObservableField<String> imgUri = new ObservableField<>();
     public final ObservableField<String> name = new ObservableField<>();
     public final ObservableField<String> standard = new ObservableField<>();
-    public final ObservableField<Double> price = new ObservableField<>();
+    public final ObservableField<BigDecimal> price = new ObservableField<>();
     public final ObservableField<Integer> num = new ObservableField<>();
 
-    public ItemOrderGoodsListVM(int fromTag, RxBaseFragment fragment) {
+    public ItemOrderGoodsListVM(OrderDetail orderDetail,int fromTag, RxBaseFragment fragment) {
+        gson = new Gson();
+        this.orderDetail = orderDetail;
         this.fromTag = fromTag;
         this.fragment = fragment;
 
         initFakeData();
     }
 
-    /**
-     * 假数据
-     */
+
     private void initFakeData() {
-        imgUri.set(uriArray[(int) (Math.random() * 4)]);
+        if(null != orderDetail.getGoods() && null != orderDetail.getGoods().getCovers()){
+            List<String> list = gson.fromJson(orderDetail.getGoods().getCovers(),new TypeToken<List<String>>() { }.getType());
+            imgUri.set(list.get(0));
+        }
+
+        name.set(orderDetail.getGoodsSpec().getTitle());
+        standard.set(orderDetail.getGoodsSpec().getDetail());
+        price.set(orderDetail.getUnitPrice());
+        num.set(orderDetail.getGoodsNum());
+        /*imgUri.set(uriArray[(int) (Math.random() * 4)]);
         name.set("墨西哥进口牛油果");
         standard.set("精装4只/每盒");
         price.set(48.80);
-        num.set(4);
+        num.set(4);*/
     }
 
     /**

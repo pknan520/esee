@@ -20,6 +20,7 @@ import com.nong.nongo2o.network.api.DynamicService;
 import com.nong.nongo2o.network.api.FileService;
 import com.nong.nongo2o.network.api.FollowService;
 import com.nong.nongo2o.network.api.GoodsService;
+import com.nong.nongo2o.network.api.OrderService;
 import com.nong.nongo2o.network.api.UserService;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.interceptor.CacheInterceptor;
@@ -83,6 +84,10 @@ public class RetrofitHelper {
 
     public static ActivityService getActivityAPI() {
         return createApi(ActivityService.class, ApiConstants.BASE_URL);
+    }
+
+    public static OrderService getOrderAPI() {
+        return createApi(OrderService.class, ApiConstants.BASE_URL);
     }
 
     /**

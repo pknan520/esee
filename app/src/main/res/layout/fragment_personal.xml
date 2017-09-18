@@ -180,7 +180,7 @@
                         android:textSize="@dimen/text_normal_small"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{viewModel.unpaidBadge}"/>
+                        app:badgeText="@{String.valueOf(viewModel.unpaidBadge)}"/>
 
                     <cn.bingoogolapple.badgeview.BGABadgeTextView
                         android:layout_width="0dp"
@@ -195,7 +195,7 @@
                         android:textSize="@dimen/text_normal_small"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{viewModel.deliveryBadge}" />
+                        app:badgeText="@{String.valueOf(viewModel.deliveryBadge)}" />
 
 
                     <cn.bingoogolapple.badgeview.BGABadgeTextView
@@ -211,7 +211,7 @@
                         android:textSize="@dimen/text_normal_small"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{viewModel.takeoverBadge}"/>
+                        app:badgeText="@{String.valueOf(viewModel.takeoverBadge)}"/>
 
 
                     <cn.bingoogolapple.badgeview.BGABadgeTextView
@@ -227,7 +227,7 @@
                         android:textSize="@dimen/text_normal_small"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{viewModel.evaBadge}" />
+                        app:badgeText="@{String.valueOf(viewModel.evaBadge)}" />
 
                 </LinearLayout>
 

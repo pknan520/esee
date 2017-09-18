@@ -66,8 +66,11 @@ public class CartVM implements ViewModel {
     /**
      * 初始化数据
      */
-    private void initData() {
+    public void initData() {
         getCartList();
+
+        totalPrice.set("¥0");
+        transFee.set("运费：¥0");
     }
 
     private void getCartList() {
@@ -122,6 +125,9 @@ public class CartVM implements ViewModel {
         public final ObservableField<String> headUri = new ObservableField<>();
         public final ObservableField<String> name = new ObservableField<>();
         public final ObservableField<String> summary = new ObservableField<>();
+        //  商品列表
+        public final ObservableList<ItemCartMerchantGoodsVM> itemCartMerchantGoodsVMs = new ObservableArrayList<>();
+        public final ItemBinding<ItemCartMerchantGoodsVM> itemCartMerchantGoodsBinding = ItemBinding.of(BR.viewModel, R.layout.item_cart_merchant_goods);
 
         public ItemCartMerchantVM(List<Cart> cartList) {
             this.cartList = cartList;
@@ -150,15 +156,9 @@ public class CartVM implements ViewModel {
          * 打开商家主页
          */
         public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
-            fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity()));
+            fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), cartList.get(0).getSaleUser()));
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         });
-
-        /**
-         * 商品列表
-         */
-        public final ObservableList<ItemCartMerchantGoodsVM> itemCartMerchantGoodsVMs = new ObservableArrayList<>();
-        public final ItemBinding<ItemCartMerchantGoodsVM> itemCartMerchantGoodsBinding = ItemBinding.of(BR.viewModel, R.layout.item_cart_merchant_goods);
 
         public class ItemCartMerchantGoodsVM implements ViewModel {
 
@@ -175,6 +175,10 @@ public class CartVM implements ViewModel {
             public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();
             public final ObservableField<Integer> goodsNum = new ObservableField<>();
             public final ObservableField<String> standardStr = new ObservableField<>();
+            @DrawableRes
+            public final int isSelect = R.mipmap.icon_select;
+            @DrawableRes
+            public final int notSelect = R.mipmap.icon_select_none;
 
             public ItemCartMerchantGoodsVM(ItemCartMerchantVM merchantVM, Cart cart) {
                 this.merchantVM = merchantVM;
@@ -194,6 +198,10 @@ public class CartVM implements ViewModel {
              * 初始化数据
              */
             private void initData() {
+                refreshData();
+            }
+
+            private void refreshData() {
                 if (cart != null && cart.getGoods() != null) {
                     Goods good = cart.getGoods();
                     if (good.getGoodsSpecs() != null && good.getGoodsSpecs().size() > 0) {
@@ -225,6 +233,64 @@ public class CartVM implements ViewModel {
             }
 
             /**
+             * 勾选事件
+             */
+            public final ReplyCommand checkClick = new ReplyCommand(new Action() {
+                @Override
+                public void run() throws Exception {
+                    viewStyle.isSelect.set(!viewStyle.isSelect.get());
+                    if (viewStyle.isSelect.get()) {
+                        for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
+                            if (itemMerchantVM != merchantVM) {
+                                for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
+                                    itemGoodsVM.viewStyle.isSelect.set(false);
+                                }
+                            }
+                        }
+                    }
+
+                    totalPrice.set(calculatePrice());
+                    transFee.set(calculateTransFee());
+                }
+            });
+
+            /**
+             * 计算总价
+             */
+            private String calculatePrice() {
+                BigDecimal total = new BigDecimal(0);
+                for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
+                    for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
+                        if (itemGoodsVM.viewStyle.isSelect.get()) {
+                            total = total.add(itemGoodsVM.goodsPrice.get().multiply(new BigDecimal(itemGoodsVM.goodsNum.get())));
+                        }
+                    }
+                }
+
+                return "¥" + total.toString();
+            }
+
+
+            public Cart getCart() {
+                return cart;
+            }
+            /**
+             * 计算运费
+             */
+            private String calculateTransFee() {
+                BigDecimal total = new BigDecimal(0);
+                for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
+                    for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
+                        if (itemGoodsVM.viewStyle.isSelect.get()) {
+                            total = total.add(itemGoodsVM.getCart().getGoods().getFreight());
+                        }
+                    }
+                }
+
+                return "¥" + total.toString();
+            }
+
+            /**
              * 查看商品详情
              */
             public final ReplyCommand detailClick = new ReplyCommand(() -> {
@@ -252,7 +318,10 @@ public class CartVM implements ViewModel {
              * 选择规格
              */
             public ReplyCommand standardClick = new ReplyCommand(() -> {
-                fragment.showPopupStandard(cart);
+                fragment.showPopupStandard(cart, spec -> {
+                    cart.setSpecCode(spec.getSpecCode());
+                    refreshData();
+                });
             });
 
             /**
@@ -261,10 +330,19 @@ public class CartVM implements ViewModel {
             public final ReplyCommand deleteClick = new ReplyCommand(this::deleteGoods);
 
             private void deleteGoods() {
-                itemCartMerchantGoodsVMs.remove(this);
-                if (itemCartMerchantGoodsVMs.size() == 0) {
-                    itemCartMerchantVMs.remove(merchantVM);
-                }
+                RetrofitHelper.getCartAPI()
+                        .deleteCart(cart.getCartCode())
+                        .subscribeOn(Schedulers.io())
+                        .map(new ApiResponseFunc<>())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(s -> {
+                            itemCartMerchantGoodsVMs.remove(this);
+                            if (itemCartMerchantGoodsVMs.size() == 0) {
+                                itemCartMerchantVMs.remove(merchantVM);
+                            }
+                        }, throwable -> {
+                            Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
 
         }

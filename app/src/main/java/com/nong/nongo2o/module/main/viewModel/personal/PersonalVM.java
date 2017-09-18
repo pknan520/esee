@@ -9,6 +9,8 @@ import android.widget.Toast;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.bean.SimpleUser;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.module.main.fragment.personal.PersonalFragment;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.module.personal.activity.BillActivity;
@@ -20,6 +22,7 @@ import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.module.personal.activity.SettingActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.BeanUtils;
 
 import java.math.BigDecimal;
 
@@ -69,15 +72,11 @@ public class PersonalVM implements ViewModel {
                     headUri.set(resp.getAvatar());
                     name.set(resp.getUserNick());
                     balance.set(resp.getBalance());
-                    viewStyle.isSaler.set( resp.getUserType() == 1);
+                    viewStyle.isSaler.set(resp.getUserType() == 1);
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }, () -> {});
-
-
-        /*headUri.set(User.getInstance().getAvatar());
-        name.set(User.getInstance().getUserNick());
-        balance.set(User.getInstance().getBalance() == null ? BigDecimal.ZERO : User.getInstance().getBalance());*/
+                }, () -> {
+                });
 
         unpaidBadge.set("12");
         deliveryBadge.set("3");
@@ -109,7 +108,7 @@ public class PersonalVM implements ViewModel {
     /**
      * 去个人主页
      */
-    public final ReplyCommand toPersonalHomeClick = new ReplyCommand(() -> startActivityClick(PersonalHomeActivity.newIntent(fragment.getActivity())));
+    public final ReplyCommand toPersonalHomeClick = new ReplyCommand(() -> startActivityClick(PersonalHomeActivity.newIntent(fragment.getActivity(), (SimpleUser) BeanUtils.Copy(new SimpleUser(), UserInfo.getInstance(), true))));
 
     /**
      * 去订单管理

@@ -1,7 +1,12 @@
 package com.nong.nongo2o.module.dynamic.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +22,7 @@ import android.widget.Toast;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentDynamicPublishBinding;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.nong.nongo2o.module.dynamic.viewModel.DynamicPublishVM;
@@ -33,6 +39,8 @@ public class DynamicPublishFragment extends RxFragment {
 
     private FragmentDynamicPublishBinding binding;
     protected DynamicPublishVM vm;
+
+    private LocalBroadcastManager lbm;
 
     public static DynamicPublishFragment newInstance() {
         return new DynamicPublishFragment();
@@ -56,6 +64,7 @@ public class DynamicPublishFragment extends RxFragment {
                 vm = new DynamicPublishVM(this, null);
             }
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -81,5 +90,31 @@ public class DynamicPublishFragment extends RxFragment {
         super.onHiddenChanged(hidden);
         ((DynamicPublishActivity) getActivity()).getTabLayout().setVisibility(View.GONE);
         ((DynamicPublishActivity) getActivity()).setToolbarTitle("动态发布");
+    }
+
+    /**
+     * 注册广播接受器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("selectGoods");
+        lbm.registerReceiver(selectGoodsReceiver, filter);
+    }
+
+    /**
+     * 广播接受器
+     */
+    private BroadcastReceiver selectGoodsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (vm != null && intent.getSerializableExtra("Goods") != null) vm.setSelectedGoods((Goods) intent.getSerializableExtra("Goods"));
+        }
+    };
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        lbm.unregisterReceiver(selectGoodsReceiver);
     }
 }

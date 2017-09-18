@@ -5,7 +5,7 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -16,26 +16,17 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
-import com.nong.nongo2o.base.RxBaseFragment;
-import com.nong.nongo2o.entity.domain.Follow;
 import com.nong.nongo2o.entity.domain.Goods;
-import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerFragment;
-import com.nong.nongo2o.module.personal.fragment.GoodsManagerTotalFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
@@ -47,21 +38,20 @@ import okhttp3.RequestBody;
 
 public class GoodsManagerVM implements ViewModel {
 
-    private int page = 1;
     private final int pageSize = 10;
     private int total;
 
     private GoodsManagerFragment fragment;
-    public final ObservableField<Integer> status = new ObservableField<>();
+    public int status;
     //  商品列表
     public final ObservableList<ItemGoodsVM> itemGoodsVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemGoodsVM> itemGoodsBinding = ItemBinding.of(BR.viewModel, R.layout.item_goods_manager);
 
     public GoodsManagerVM(GoodsManagerFragment fragment, int status) {
         this.fragment = fragment;
-        this.status.set(status);
+        this.status = status;
 
-        initFakeData(true);
+        initData();
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
@@ -70,36 +60,33 @@ public class GoodsManagerVM implements ViewModel {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
     }
 
-    private void initFakeData(boolean force) {
-        if(force){
-            viewStyle.isRefreshing.set(true);
-            page = 1;
-            total = 0;
-        }
+    /**
+     * 初始化数据
+     */
+    public void initData() {
+        getGoodsList(1, true);
+    }
+
+    private void getGoodsList(int page, boolean force) {
+        viewStyle.isRefreshing.set(true);
 
         RetrofitHelper.getGoodsAPI()
-                .userGoodsSearch(status.get(),page,pageSize)
+                .userGoodsSearch(status, page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    if(force){
+                    if (force) {
                         itemGoodsVMs.clear();
                     }
                     total = resp.getTotal();
                     for (Goods goods : resp.getRows()) {
-                        itemGoodsVMs.add(new ItemGoodsVM( goods, status.get()));
+                        itemGoodsVMs.add(new ItemGoodsVM(goods, status));
                     }
-                    if(total > page * pageSize){
-                        page ++ ;
-                    }/*else{
-                        Toast.makeText(fragment.getActivity(), "数据已加载完毕", Toast.LENGTH_SHORT).show();
-                    }*/
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);
                 }, () -> viewStyle.isRefreshing.set(false));
-
     }
 
     /**
@@ -108,7 +95,7 @@ public class GoodsManagerVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        initFakeData(true);
+        getGoodsList(1, true);
     }
 
     /**
@@ -117,7 +104,11 @@ public class GoodsManagerVM implements ViewModel {
     public final ReplyCommand<Integer> onLoadMoreCommand = new ReplyCommand<>(integer -> loadMoreData());
 
     private void loadMoreData() {
-        initFakeData(false);
+        if (itemGoodsVMs.size() < total) {
+            getGoodsList(itemGoodsVMs.size() / pageSize + 1, false);
+        } else {
+            Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -145,17 +136,25 @@ public class GoodsManagerVM implements ViewModel {
         public final ObservableField<Integer> stockNum = new ObservableField<>();
         public final ObservableField<String> date = new ObservableField<>();
 
-        public ItemGoodsVM(Goods goods,int status) {
+        public ItemGoodsVM(Goods goods, int status) {
             gson = new Gson();
+
             this.goods = goods;
             this.status = status;
-            initFakeDate();
+
+            initData();
         }
 
-        private void initFakeDate() {
-            List<String> list = gson.fromJson(goods.getCovers(),new TypeToken<List<String>>() { }.getType());
-            if(list != null && list.size() > 0){
-                imgUri.set(list.get(0));
+        /**
+         * 初始化数据
+         */
+        private void initData() {
+            if (!TextUtils.isEmpty(goods.getCovers())) {
+                List<String> list = gson.fromJson(goods.getCovers(), new TypeToken<List<String>>() {
+                }.getType());
+                if (list != null && list.size() > 0) {
+                    imgUri.set(list.get(0));
+                }
             }
             name.set(goods.getTitle());
             price.set(goods.getPrice());
@@ -195,7 +194,7 @@ public class GoodsManagerVM implements ViewModel {
         public final ObservableList<ItemPopupVM> itemPopupVMs = new ObservableArrayList<>();
         public final ItemBinding<ItemPopupVM> itemPopupBinding = ItemBinding.of(BR.viewModel, R.layout.item_popup_menu);
 
-        public PopupVM(PopupWindow popup,Goods goods) {
+        public PopupVM(PopupWindow popup, Goods goods) {
             this.goods = goods;
             this.popup = popup;
 
@@ -231,9 +230,9 @@ public class GoodsManagerVM implements ViewModel {
                         updateGoods.setGoodsCode(goods.getGoodsCode());
                         updateGoods.setId(goods.getId());
                         updateGoods.setGoodsSpecs(goods.getGoodsSpecs());
-                        if(status.get() == 1){
+                        if (status == 1) {
                             updateGoods.setGoodsStatus(2);
-                        }else{
+                        } else {
                             updateGoods.setGoodsStatus(1);
                         }
 
@@ -247,8 +246,8 @@ public class GoodsManagerVM implements ViewModel {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(resp -> {
                                     Toast.makeText(fragment.getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
-                                    initFakeData(true);
-                                },throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                                    getGoodsList(1, true);
+                                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
                         break;
 
                     case "删除":
@@ -258,8 +257,8 @@ public class GoodsManagerVM implements ViewModel {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(resp -> {
                                     Toast.makeText(fragment.getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
-                                    initFakeData(true);
-                                },throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+//                                    initFakeData(true);
+                                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
                         break;
                 }
                 popup.dismiss();

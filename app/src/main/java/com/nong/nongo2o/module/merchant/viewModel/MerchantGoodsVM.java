@@ -1,10 +1,12 @@
 package com.nong.nongo2o.module.merchant.viewModel;
 
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -202,7 +204,7 @@ public class MerchantGoodsVM implements ViewModel {
      * 进入商家主页
      */
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity()));
+        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), good.getSale()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
@@ -251,7 +253,10 @@ public class MerchantGoodsVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-
+                    Toast.makeText(fragment.getActivity(), "添加购物车成功", Toast.LENGTH_SHORT).show();
+                    //  通知购物车刷新
+                    Intent intent = new Intent("updateCart");
+                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });

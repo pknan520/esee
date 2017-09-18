@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,8 +25,14 @@ import com.zhy.view.flowlayout.TagAdapter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Administrator on 2017-7-21.
@@ -36,6 +43,7 @@ public class PopupStandardVM implements ViewModel {
     private RxBaseActivity activity;
     private PopupWindow popup;
     private Cart cart;
+    private SelectListener listener;
 
     //  商品信息
     @DrawableRes
@@ -57,10 +65,15 @@ public class PopupStandardVM implements ViewModel {
     private int currentSpecPos = -1;
     private GoodsSpec currentSpec;
 
-    public PopupStandardVM(RxBaseActivity activity, PopupWindow popup, Cart cart) {
+    public interface SelectListener {
+        void onSelected(GoodsSpec spec);
+    }
+
+    public PopupStandardVM(RxBaseActivity activity, PopupWindow popup, Cart cart, SelectListener listener) {
         this.activity = activity;
         this.popup = popup;
         this.cart = cart;
+        this.listener = listener;
 
         initAdapter();
         initData();
@@ -110,11 +123,10 @@ public class PopupStandardVM implements ViewModel {
                         maxPrice.set(spec.getPrice());
                     }
                 }
-//                tagAdapter.setSelectedList(currentSpecPos);
-                tagAdapter.setSelected(currentSpecPos, standardList.get(currentSpecPos));
-//                tagAdapter.notifyDataChanged();
-//                standardAdapter.get().notifyDataChanged();
-//                standardAdapter.get().setSelectedList(currentSpecPos);
+                Observable.timer(200, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> tagAdapter.setSelectedList(currentSpecPos));
             }
         }
     }
@@ -145,11 +157,7 @@ public class PopupStandardVM implements ViewModel {
     /**
      * 取消按钮
      */
-    public final ReplyCommand cancelClick = new ReplyCommand(() -> {
-        if (popup != null && popup.isShowing()) {
-            popup.dismiss();
-        }
-    });
+    public final ReplyCommand cancelClick = new ReplyCommand(this::popupDismiss);
 
     /**
      * 规格点击事件
@@ -173,6 +181,20 @@ public class PopupStandardVM implements ViewModel {
      * 确定按钮
      */
     public final ReplyCommand confirmClick = new ReplyCommand(() -> {
-
+        if (currentSpecPos == -1) {
+            Toast.makeText(activity, "请选择一种规格", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        if (listener != null) {
+            listener.onSelected(cart.getGoods().getGoodsSpecs().get(currentSpecPos));
+            popupDismiss();
+        }
     });
+
+    private void popupDismiss() {
+        if (popup != null && popup.isShowing()) {
+            popup.dismiss();
+        }
+    }
 }

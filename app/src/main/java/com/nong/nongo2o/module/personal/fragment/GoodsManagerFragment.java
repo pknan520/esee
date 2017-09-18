@@ -1,9 +1,15 @@
 package com.nong.nongo2o.module.personal.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,10 +32,14 @@ import com.trello.rxlifecycle2.components.RxFragment;
 
 public class GoodsManagerFragment extends RxFragment {
 
+    private static final String TAG = "GoodsManagerFragment";
+
     private FragmentGoodsManagerBinding binding;
     private GoodsManagerVM vm;
     private PopupWindow popupMenu;
     private PopupMenuBinding popupBinding;
+
+    private LocalBroadcastManager lbm;
 
     public static GoodsManagerFragment newInstance(int status) {
         Bundle args = new Bundle();
@@ -46,6 +56,7 @@ public class GoodsManagerFragment extends RxFragment {
         if (vm == null) {
             vm = new GoodsManagerVM(this, status);
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -89,4 +100,23 @@ public class GoodsManagerFragment extends RxFragment {
         }
     }
 
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("goodsManagerUpdate");
+        lbm.registerReceiver(updateReceiver, filter);
+    }
+
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (vm != null) vm.initData();
+        }
+    };
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        lbm.unregisterReceiver(updateReceiver);
+    }
 }

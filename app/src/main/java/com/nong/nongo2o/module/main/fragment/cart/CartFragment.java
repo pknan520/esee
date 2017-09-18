@@ -1,8 +1,13 @@
 package com.nong.nongo2o.module.main.fragment.cart;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +43,8 @@ public class CartFragment extends RxFragment {
     private PopupStandardBinding popupBinding;
     private PopupWindow popupStandard;
 
+    private LocalBroadcastManager lbm;
+
     public static CartFragment newInstance() {
         return new CartFragment();
     }
@@ -48,6 +55,7 @@ public class CartFragment extends RxFragment {
         if (vm == null) {
             vm = new CartVM(this);
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -93,9 +101,9 @@ public class CartFragment extends RxFragment {
         });
     }
 
-    public void showPopupStandard(Cart cart) {
+    public void showPopupStandard(Cart cart, PopupStandardVM.SelectListener listener) {
         if (popupStandard != null && !popupStandard.isShowing()) {
-            popupBinding.setViewModel(new PopupStandardVM((RxBaseActivity) getActivity(), popupStandard, cart));
+            popupBinding.setViewModel(new PopupStandardVM((RxBaseActivity) getActivity(), popupStandard, cart, listener));
             popupStandard.update();
             popupStandard.showAtLocation(binding.llContainer, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         }
@@ -116,4 +124,31 @@ public class CartFragment extends RxFragment {
             item.setTitle("编辑");
         }
     }
+
+    /**
+     * 注册广播接收器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("updateCart");
+        lbm.registerReceiver(updateReceiver, filter);
+    }
+
+    /**
+     * 广播接收器
+     */
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (vm != null) vm.initData();
+        }
+    };
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        lbm.unregisterReceiver(updateReceiver);
+    }
+
 }

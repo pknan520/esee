@@ -6,7 +6,10 @@ import android.support.annotation.DrawableRes;
 
 import com.kelin.mvvmlight.base.ViewModel;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.bean.SimpleUser;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.module.personal.fragment.PersonalHomeFragment;
+import com.nong.nongo2o.uils.FocusUtils;
 
 /**
  * Created by Administrator on 2017-6-30.
@@ -15,6 +18,7 @@ import com.nong.nongo2o.module.personal.fragment.PersonalHomeFragment;
 public class PersonalHomeVM implements ViewModel {
 
     private PersonalHomeFragment fragment;
+    private SimpleUser user;
 
     @DrawableRes
     public final int headPlaceHolder = R.mipmap.head_homepage_72;
@@ -32,26 +36,48 @@ public class PersonalHomeVM implements ViewModel {
     @DrawableRes
     public final int isFocus = R.mipmap.icon_like;
 
+    // TODO: 2017-9-18 临时容错，以后删除
     public PersonalHomeVM(PersonalHomeFragment fragment) {
         this.fragment = fragment;
 
-        initFakeData();
+        initData();
+    }
+
+    public PersonalHomeVM(PersonalHomeFragment fragment, SimpleUser user) {
+        this.fragment = fragment;
+        this.user = user;
+
+        initData();
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
         public final ObservableBoolean isFocus = new ObservableBoolean(false);
+        public final ObservableBoolean isMySelf = new ObservableBoolean(false);
     }
 
     /**
-     * 假数据
+     * 初始化数据
      */
-    private void initFakeData() {
-        name.set("NeilsonLo");
-        goodsNum.set(23);
-        fansNum.set(628);
-        dynamicNum.set(41);
-        city.set("广东 顺德");
+    private void initData() {
+        if (user != null) {
+            headUri.set(user.getAvatar());
+            name.set(user.getUserNick());
+            fansNum.set(user.getFollowers());
+            city.set(user.getLocation());
+            viewStyle.isMySelf.set(user.getUserCode().equals(UserInfo.getInstance().getUserCode()));
+            if (!viewStyle.isMySelf.get()) {
+                viewStyle.isFocus.set(FocusUtils.checkIsFocus(user.getUserCode()));
+            }
+        }
+    }
+
+    public void setGoodsNum(int num) {
+        goodsNum.set(num);
+    }
+
+    public void setDynamicNum(int num) {
+        dynamicNum.set(num);
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentPersonalGoodsBinding;
+import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.module.personal.viewModel.PersonalGoodsVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
 
@@ -22,15 +23,24 @@ public class PersonalGoodsFragment extends RxBaseFragment {
     private FragmentPersonalGoodsBinding binding;
     private PersonalGoodsVM vm;
 
+    // TODO: 2017-9-15 临时容错，以后删除
     public static PersonalGoodsFragment newInstance() {
         return new PersonalGoodsFragment();
+    }
+
+    public static PersonalGoodsFragment newInstance(SimpleUser user) {
+        Bundle args = new Bundle();
+        args.putSerializable("user", user);
+        PersonalGoodsFragment fragment = new PersonalGoodsFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new PersonalGoodsVM(this);
+            vm = new PersonalGoodsVM(this, (SimpleUser) getArguments().getSerializable("user"));
         }
     }
 

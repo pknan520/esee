@@ -23,13 +23,15 @@
             app:clickCommand="@{viewModel.detailClick}"
             android:orientation="horizontal">
 
-            <CheckBox
-                android:button="@drawable/selector_check_box"
-                android:padding="3dp"
+            <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:visibility="@{viewModel.viewStyle.isEdit ? View.GONE : View.VISIBLE}" />
+                android:paddingEnd="@dimen/item_padding"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:placeholderImageRes="@{viewModel.viewStyle.isSelect ? viewModel.isSelect : viewModel.notSelect}"
+                app:clickCommand="@{viewModel.checkClick}"/>
 
             <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="70dp"

@@ -25,7 +25,7 @@ public interface AddressService {
      * @return
      */
     @GET("user/address/search")
-    Observable<ApiResponse<ApiListResponse<Address>>> userAddressSearch();
+    Observable<ApiResponse<ApiListResponse<Address>>> userAddressSearch(@Query("page") int page, @Query("pageSize") int pageSize);
 
 
     /**

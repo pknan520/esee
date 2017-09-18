@@ -99,23 +99,6 @@ public class DynamicFragment extends RxFragment{
         }
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        menu.clear();
-//        inflater.inflate(R.menu.menu_dynamic, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.publish_dynamic:
-//                startActivityForResult(DynamicPublishActivity.newIntent(getActivity()), PUBLISH_RESULT);
-//                getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
-//                break;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {

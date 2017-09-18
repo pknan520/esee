@@ -14,17 +14,14 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.ApiListResponse;
 import com.nong.nongo2o.entity.bean.SalerInfo;
+import com.nong.nongo2o.entity.domain.Activity;
 import com.nong.nongo2o.module.common.viewModel.ItemMerchantListVM;
 import com.nong.nongo2o.module.main.fragment.merchant.MerchantListFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
@@ -67,11 +64,27 @@ public class MerchantListVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        addSliderView();
+        getActivities(1);
 
         adText.set("活动期间注册账户将有机会获得奖励");
 
         getMerchantList(1, true);
+    }
+
+    /**
+     * 获取活动内容
+     */
+    private void getActivities(int page) {
+        RetrofitHelper.getActivityAPI()
+                .getActivities(page, pageSize)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    addSliderView();
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     /**
@@ -90,7 +103,23 @@ public class MerchantListVM implements ViewModel {
         viewStyle.isRefreshing.set(true);
 
         if (type == 1) {
-            viewStyle.isRefreshing.set(false);
+            RetrofitHelper.getGoodsAPI()
+                    .getFocusSalerInfos(page, pageSize)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        if (force) {
+                            itemMerchantListVMs.clear();
+                        }
+                        total = resp.getTotal();
+                        for (SalerInfo saller : resp.getRows()) {
+                            itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
+                        }
+                    }, throwable -> {
+                        viewStyle.isRefreshing.set(false);
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }, () -> viewStyle.isRefreshing.set(false));
         } else if (type == 2) {
             RetrofitHelper.getGoodsAPI()
                     .getAllSalerInfos(page, pageSize)

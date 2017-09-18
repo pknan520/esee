@@ -22,7 +22,7 @@ public class ViewBindingAdapter {
                 Log.d("CheckBox", "onCheckedChanged: " + isChecked);
                 if (onCheckChangCommand != null) {
                     try {
-                        onCheckChangCommand.execute(new OnCheckChange(buttonView, isChecked));
+                        onCheckChangCommand.execute(new OnCheckChange(checkBox, isChecked));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -33,11 +33,11 @@ public class ViewBindingAdapter {
 
     public static class OnCheckChange {
 
-        public View view;
+        public CheckBox cb;
         public boolean isChecked;
 
-        public OnCheckChange(View view, boolean isChecked) {
-            this.view = view;
+        public OnCheckChange(CheckBox cb, boolean isChecked) {
+            this.cb = cb;
             this.isChecked = isChecked;
         }
     }

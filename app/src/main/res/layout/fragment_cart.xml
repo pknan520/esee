@@ -35,15 +35,15 @@
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:refreshing="@{viewModel.viewStyle.isRefreshing}"
             app:onRefreshCommand="@{viewModel.onRefreshCommand}">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 app:itemBinding="@{viewModel.itemCartMerchantBinding}"
                 app:items="@{viewModel.itemCartMerchantVMs}" />
 

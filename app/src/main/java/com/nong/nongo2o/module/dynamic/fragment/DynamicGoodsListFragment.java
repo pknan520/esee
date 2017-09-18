@@ -23,15 +23,19 @@ public class DynamicGoodsListFragment extends RxFragment {
     private FragmentDynamicGoodsListBinding binding;
     private DynamicGoodsListVM vm;
 
-    public static DynamicGoodsListFragment newInstance() {
-        return new DynamicGoodsListFragment();
+    public static DynamicGoodsListFragment newInstance(int status) {
+        Bundle args = new Bundle();
+        args.putInt("status", status);
+        DynamicGoodsListFragment fragment = new DynamicGoodsListFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new DynamicGoodsListVM(this);
+            vm = new DynamicGoodsListVM(this, getArguments().getInt("status"));
         }
     }
 

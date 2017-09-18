@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.personal.viewModel.PersonalHomeVM" />
+        <import type="android.view.View"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -169,24 +170,29 @@
                             android:textColor="@android:color/white"
                             android:textSize="@dimen/text_normal_small" />
 
-                        <com.facebook.drawee.view.SimpleDraweeView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toStartOf="@+id/tv_focus"
-                            app:placeholderImageRes="@{viewModel.viewStyle.isFocus ? viewModel.isFocus : viewModel.unFocus}" />
-
-                        <TextView
-                            android:id="@+id/tv_focus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="@dimen/line_space"
-                            android:text="@{viewModel.viewStyle.isFocus ? `已关注` : `关注`}"
-                            android:textColor="@android:color/white"
-                            android:textSize="@dimen/text_normal_small" />
+                            android:visibility="@{viewModel.viewStyle.isMySelf ? View.GONE : View.VISIBLE}">
 
+                            <com.facebook.drawee.view.SimpleDraweeView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:placeholderImageRes="@{viewModel.viewStyle.isFocus ? viewModel.isFocus : viewModel.unFocus}" />
+
+                            <TextView
+                                android:id="@+id/tv_focus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/line_space"
+                                android:text="@{viewModel.viewStyle.isFocus ? `取消关注` : `关注`}"
+                                android:textColor="@android:color/white"
+                                android:textSize="@dimen/text_normal_small" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
 

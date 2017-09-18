@@ -9,12 +9,20 @@
             type="com.nong.nongo2o.module.personal.viewModel.PersonalDynamicVM"/>
     </data>
 
-    <android.support.v7.widget.RecyclerView
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rv"
-        app:items="@{viewModel.itemDynamicVMs}"
-        app:itemBinding="@{viewModel.itemDynamicBinding}"
-        app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}"/>
+        android:layout_height="match_parent"
+        android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+        app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rv"
+            app:items="@{viewModel.itemDynamicVMs}"
+            app:itemBinding="@{viewModel.itemDynamicBinding}"
+            app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </layout>

@@ -11,6 +11,7 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityPersonalHomeBinding;
+import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.module.personal.fragment.PersonalHomeFragment;
 
 /**
@@ -21,8 +22,15 @@ public class PersonalHomeActivity extends RxBaseActivity {
 
     private ActivityPersonalHomeBinding binding;
 
+    // TODO: 2017-9-15 临时容错，以后删除
     public static Intent newIntent(Context context) {
         return new Intent(context, PersonalHomeActivity.class);
+    }
+
+    public static Intent newIntent(Context context, SimpleUser user) {
+        Intent intent = new Intent(context, PersonalHomeActivity.class);
+        intent.putExtra("user", user);
+        return intent;
     }
 
     @Override
@@ -33,7 +41,7 @@ public class PersonalHomeActivity extends RxBaseActivity {
     }
 
     private void initView() {
-        replaceFragment(R.id.fl, PersonalHomeFragment.newInstance(), PersonalHomeFragment.TAG);
+        replaceFragment(R.id.fl, PersonalHomeFragment.newInstance((SimpleUser) getIntent().getSerializableExtra("user")), PersonalHomeFragment.TAG);
     }
 
     @Override

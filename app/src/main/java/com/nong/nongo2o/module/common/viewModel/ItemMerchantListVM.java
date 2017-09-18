@@ -89,7 +89,7 @@ public class ItemMerchantListVM implements ViewModel {
      * 进入商家主页
      */
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity()));
+        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), saler));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 

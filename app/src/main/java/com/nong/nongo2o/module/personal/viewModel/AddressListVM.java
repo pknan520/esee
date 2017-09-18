@@ -35,7 +35,7 @@ public class AddressListVM implements ViewModel {
     private int status;
 
     private List<Address> addressList;
-    private final int pageSize = 10;
+    private final int pageSize = 20;
     private int total;
 
     /**
@@ -61,25 +61,28 @@ public class AddressListVM implements ViewModel {
      * 初始化数据
      */
     public void initData() {
-        itemAddressVMs.clear();
-        searchAddress(1);
+        searchAddress(1, true);
     }
 
     /**
      * 获取地址列表
      */
-    private void searchAddress(int page) {
+    private void searchAddress(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
         RetrofitHelper.getAddressAPI()
-                .userAddressSearch()
+                .userAddressSearch(page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
+                    if (force) itemAddressVMs.clear();
                     total = resp.getTotal();
-                    addressList = resp.getRows();
-                    for (Address address : addressList) {
-                        itemAddressVMs.add(new ItemAddressVM(address));
+                    for (Address address : resp.getRows()) {
+                        if (address.getDefaultAddr() == 1) {
+                            itemAddressVMs.add(0, new ItemAddressVM(address));
+                        } else {
+                            itemAddressVMs.add(new ItemAddressVM(address));
+                        }
                     }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -101,8 +104,7 @@ public class AddressListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::onRefresh);
 
     private void onRefresh() {
-        itemAddressVMs.clear();
-        searchAddress(1);
+        searchAddress(1, true);
     }
 
     /**
@@ -112,7 +114,9 @@ public class AddressListVM implements ViewModel {
 
     private void onLoadMoreAddr() {
         if (itemAddressVMs.size() < total) {
-            searchAddress(itemAddressVMs.size() / pageSize + 1);
+            searchAddress(itemAddressVMs.size() / pageSize + 1, false);
+        } else {
+            Toast.makeText(fragment.getActivity(), "没有更多内容了^.^", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -133,6 +137,13 @@ public class AddressListVM implements ViewModel {
             initData();
         }
 
+        public final ViewStyle viewStyle = new ViewStyle();
+
+        public class ViewStyle {
+            public final ObservableBoolean checkVisi = new ObservableBoolean(false);
+            public final ObservableBoolean isDef = new ObservableBoolean(false);
+        }
+
         /**
          * 初始化数据
          */
@@ -148,13 +159,6 @@ public class AddressListVM implements ViewModel {
             } else {
                 //  选择模式
             }
-        }
-
-        public final ViewStyle viewStyle = new ViewStyle();
-
-        public class ViewStyle {
-            public final ObservableBoolean checkVisi = new ObservableBoolean(false);
-            public final ObservableBoolean isDef = new ObservableBoolean(false);
         }
 
         /**

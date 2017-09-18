@@ -3,6 +3,7 @@ package com.nong.nongo2o.module.dynamic.viewModel;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.DynamicDetail;
 import com.nong.nongo2o.entity.domain.FileResponse;
+import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.fragment.SelectAreaFragment;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
@@ -63,6 +65,8 @@ public class DynamicPublishVM implements ViewModel {
 
     public final ObservableField<String> title = new ObservableField<>();
 
+    private String selectedGoodsCode = "";
+
     public DynamicPublishVM(DynamicPublishFragment fragment, Moment dynamic) {
         this.fragment = fragment;
         this.dynamic = dynamic;
@@ -104,20 +108,24 @@ public class DynamicPublishVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
-        }.getType());
-        for (String bannerUri : headerImgList) {
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, addBannerPicListener));
+        if (!TextUtils.isEmpty(dynamic.getHeaderImg())) {
+            headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
+            }.getType());
+            for (String bannerUri : headerImgList) {
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, addBannerPicListener));
+            }
+            if (itemBannerVMs.size() < 9)
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
         }
-        if (itemBannerVMs.size() < 9)
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
 
         title.set(dynamic.getTitle());
 
-        contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
-        }.getType());
-        for (DynamicContent content : contentList) {
-            itemDescVMs.add(new ItemDescVM(content));
+        if (!TextUtils.isEmpty(dynamic.getContent())) {
+            contentList = new Gson().fromJson(dynamic.getContent(), new TypeToken<List<DynamicContent>>() {
+            }.getType());
+            for (DynamicContent content : contentList) {
+                itemDescVMs.add(new ItemDescVM(content));
+            }
         }
     }
 
@@ -157,7 +165,6 @@ public class DynamicPublishVM implements ViewModel {
         private List<File> newPicList = new ArrayList<>();
 
         public ItemDescVM() {
-
             initListener();
 
             //  初始有一个添加图片的按钮
@@ -222,21 +229,19 @@ public class DynamicPublishVM implements ViewModel {
      * 添加商品链接
      */
     public final ReplyCommand addGoodsLinkClick = new ReplyCommand(() -> {
+        // TODO: 2017-9-18 界面如何展示
         ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
                 DynamicSelectGoodsFragment.newInstance(), DynamicSelectGoodsFragment.TAG);
     });
+
+    public void setSelectedGoods(Goods goods) {
+        this.selectedGoodsCode = goods.getGoodsCode();
+    }
 
     /**
      * 发布按钮
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
-//        if (dynamic != null) {
-//            //  编辑，有原始数据
-//            Toast.makeText(fragment.getActivity(), "发布旧动态", Toast.LENGTH_SHORT).show();
-//        } else {
-//            //  新增，没有原始数据
-//            Toast.makeText(fragment.getActivity(), "发布新动态", Toast.LENGTH_SHORT).show();
-//        }
         uploadFile(dynamic == null ? new Moment() : dynamic, dynamic == null);
     });
 
@@ -271,8 +276,6 @@ public class DynamicPublishVM implements ViewModel {
 
     /**
      * 创建新dynamic
-     *
-     * @param dynamic
      */
     private Moment createDynamic(Moment dynamic, List<FileResponse> picUriList) {
         int i = 0;
@@ -299,12 +302,13 @@ public class DynamicPublishVM implements ViewModel {
         dynamic.setHeaderImg(new Gson().toJson(headerImgList));
         dynamic.setTitle(title.get());
         dynamic.setContent(new Gson().toJson(contentList));
+        dynamic.setGoodsCode(TextUtils.isEmpty(selectedGoodsCode) ? "" : selectedGoodsCode);
 
         return dynamic;
     }
 
     /**
-     * 发表评论
+     * 发表动态
      */
     private void postDynamic(Moment dynamic, boolean isNew) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
@@ -331,6 +335,5 @@ public class DynamicPublishVM implements ViewModel {
                                 Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             });
         }
-
     }
 }

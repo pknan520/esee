@@ -1,19 +1,25 @@
 package com.nong.nongo2o.module.personal.fragment;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentPersonalHomeBinding;
+import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.module.personal.viewModel.PersonalHomeVM;
 import com.trello.rxlifecycle2.components.RxFragment;
@@ -34,16 +40,28 @@ public class PersonalHomeFragment extends RxFragment {
     private FragmentPersonalHomeBinding binding;
     private PersonalHomeVM vm;
 
+    private LocalBroadcastManager lbm;
+
+    // TODO: 2017-9-15 临时容错，以后删除
     public static PersonalHomeFragment newInstance() {
         return new PersonalHomeFragment();
+    }
+
+    public static PersonalHomeFragment newInstance(SimpleUser user) {
+        Bundle args = new Bundle();
+        args.putSerializable("user", user);
+        PersonalHomeFragment fragment = new PersonalHomeFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new PersonalHomeVM(this);
+            vm = new PersonalHomeVM(this, (SimpleUser) getArguments().getSerializable("user"));
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -63,8 +81,8 @@ public class PersonalHomeFragment extends RxFragment {
         binding.toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
 
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(PersonalDynamicFragment.newInstance());
-        fragmentList.add(PersonalGoodsFragment.newInstance());
+        fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+        fragmentList.add(PersonalGoodsFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);
@@ -81,5 +99,39 @@ public class PersonalHomeFragment extends RxFragment {
                 }
             }
         }
+    }
+
+    /**
+     * 注册广播接收器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("updateDynamicNum");
+        filter.addAction("updateGoodsNum");
+        lbm.registerReceiver(updateReceiver, filter);
+    }
+
+    /**
+     * 广播接收器
+     */
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case "updateDynamicNum":
+                    if (vm != null) vm.setDynamicNum(intent.getIntExtra("dynamicNum", 0));
+                    break;
+                case "updateGoodsNum":
+                    if (vm != null) vm.setGoodsNum(intent.getIntExtra("goodsNum", 0));
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        lbm.unregisterReceiver(updateReceiver);
     }
 }

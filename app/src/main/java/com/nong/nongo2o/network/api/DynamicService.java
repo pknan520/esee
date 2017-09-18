@@ -34,6 +34,19 @@ public interface DynamicService {
     Observable<ApiResponse<ApiListResponse<Moment>>> getDynamicList(@Query("type") int type, @Query("page") int page, @Query("pageSize") int pageSize);
 
     /**
+     * 查询某人的动态列表
+     *
+     * @param type     1：关注，2：广场，3：我的
+     * @param userCode 指定的userCode
+     * @param page     页码
+     * @param pageSize 每页数量
+     * @return 返回动态列表
+     */
+    @GET("moment/search")
+    Observable<ApiResponse<ApiListResponse<Moment>>> getUserDynamicList(@Query("type") int type, @Query("userCode") String userCode,
+                                                                        @Query("page") int page, @Query("pageSize") int pageSize);
+
+    /**
      * 发表动态
      *
      * @param body Moment请求体
@@ -56,7 +69,7 @@ public interface DynamicService {
     /**
      * 删除我的动态
      *
-     * @param id       动态id
+     * @param id 动态id
      * @return 返回操作成功/失败
      */
     @DELETE("user/moment")

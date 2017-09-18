@@ -25,7 +25,8 @@ import java.util.List;
 public class DynamicSelectGoodsFragment extends RxFragment {
 
     public static final String TAG = "DynamicSelectGoodsFragment";
-    private static final String[] tabArray = {"你的商品", "你买到的"};
+    private static final String[] tabArray = {"我的商品", "我买到的"};
+    private static final int MY_GOODS = 0, BOUGHT_GOODS = 1;
 
     private FragmentDynamicSelectGoodsBinding binding;
 
@@ -45,8 +46,8 @@ public class DynamicSelectGoodsFragment extends RxFragment {
         ((DynamicPublishActivity) getActivity()).setToolbarTitle("");
 
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(DynamicGoodsListFragment.newInstance());
-        fragmentList.add(DynamicGoodsListFragment.newInstance());
+        fragmentList.add(DynamicGoodsListFragment.newInstance(MY_GOODS));
+        fragmentList.add(DynamicGoodsListFragment.newInstance(BOUGHT_GOODS));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);

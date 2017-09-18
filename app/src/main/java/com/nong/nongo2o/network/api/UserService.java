@@ -173,4 +173,5 @@ public interface UserService {
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @POST("address")
     Observable<ApiResponse<String>> deleteAddress(@Query("addressCode") String addressCode);
+
 }

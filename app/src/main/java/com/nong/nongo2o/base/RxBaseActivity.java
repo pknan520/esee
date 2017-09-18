@@ -1,5 +1,6 @@
 package com.nong.nongo2o.base;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -19,6 +20,8 @@ import java.util.List;
  */
 
 public class RxBaseActivity extends RxAppCompatActivity {
+
+    private AlertDialog deleteDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

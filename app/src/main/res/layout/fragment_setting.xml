@@ -142,18 +142,19 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:padding="@dimen/item_padding"
-            app:clickCommand="@{viewModel.logoutClick}"
-            android:text="退出登录"
+            app:clickCommand="@{viewModel.saveUserProfileClick}"
+            android:text="保存"
             android:textSize="15sp" />
 
         <Button
-            style="@style/SimpleOrangeButton"
+            style="@style/SimpleAccentButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:padding="@dimen/item_padding"
-            app:clickCommand="@{viewModel.saveUserProfileClick}"
-            android:text="保存"
+            app:clickCommand="@{viewModel.logoutClick}"
+            android:text="退出登录"
             android:textSize="15sp" />
 
     </LinearLayout>

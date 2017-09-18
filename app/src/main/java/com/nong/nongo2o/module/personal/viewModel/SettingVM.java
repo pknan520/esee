@@ -44,11 +44,11 @@ public class SettingVM implements ViewModel {
     public SettingVM(SettingFragment fragment) {
         this.fragment = fragment;
 
-        initFakeData();
+        initData();
     }
 
 
-    private void initFakeData() {
+    private void initData() {
 
         RetrofitHelper.getUserAPI().userProfile()
                 .subscribeOn(Schedulers.io())

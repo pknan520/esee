@@ -21,10 +21,12 @@ public class OrderListFragment extends RxBaseFragment {
     private FragmentOrderListBinding binding;
     private OrderListVM vm;
     private int status;
+    private boolean isMerchantMode;
 
-    public static OrderListFragment newInstance(int status) {
+    public static OrderListFragment newInstance(int status,boolean isMerchantMode) {
         Bundle args = new Bundle();
         args.putInt("status", status);
+        args.putBoolean("isMerchantMode",isMerchantMode);
         OrderListFragment fragment = new OrderListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -34,8 +36,10 @@ public class OrderListFragment extends RxBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         status = getArguments().getInt("status");
+        isMerchantMode = getArguments().getBoolean("isMerchantMode",false);
+
         if (vm == null) {
-            vm = new OrderListVM(this, status);
+            vm = new OrderListVM(this, status,isMerchantMode);
         }
     }
 

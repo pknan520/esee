@@ -11,6 +11,7 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.fragment.CreateOrderFragment;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
@@ -25,6 +26,7 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
 public class CreateOrderVM implements ViewModel {
 
     private CreateOrderFragment fragment;
+    private OrderDetail orderDetail;
     //  收货信息
     public final ObservableField<String> receiver = new ObservableField<>();
     public final ObservableField<String> receivePhone = new ObservableField<>();
@@ -44,8 +46,9 @@ public class CreateOrderVM implements ViewModel {
     public final ObservableField<String> orderInfo = new ObservableField<>();
     public final ObservableField<String> moneyInfo = new ObservableField<>();
 
-    public CreateOrderVM(CreateOrderFragment fragment) {
+    public CreateOrderVM(CreateOrderFragment fragment, OrderDetail orderDetail) {
         this.fragment = fragment;
+        this.orderDetail = orderDetail;
 
         initFakeData();
     }
@@ -70,7 +73,7 @@ public class CreateOrderVM implements ViewModel {
         summary.set("这家伙很懒，什么都没留下~");
 
         for (int i = 0; i < 2; i++) {
-            itemGoodsVMs.add(new ItemOrderGoodsListVM(ItemOrderGoodsListVM.FROM_ORDER_DETAIL, fragment));
+            itemGoodsVMs.add(new ItemOrderGoodsListVM(orderDetail,ItemOrderGoodsListVM.FROM_ORDER_DETAIL, fragment));
         }
 
         transFee.set(10.00);

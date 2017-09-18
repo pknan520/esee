@@ -12,9 +12,11 @@ import com.nong.nongo2o.module.personal.fragment.OrderListTotalFragment;
 public class OrderCenterVM implements ViewModel {
 
     private OrderListTotalFragment fragment;
+    private boolean isMerchantMode;
 
-    public OrderCenterVM(OrderListTotalFragment fragment) {
+    public OrderCenterVM(OrderListTotalFragment fragment,boolean isMerchantMode) {
         this.fragment = fragment;
+        this.isMerchantMode = isMerchantMode;
     }
 
     public class ItemTabVM implements ViewModel {

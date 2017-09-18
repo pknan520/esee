@@ -6,6 +6,7 @@ import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
@@ -22,6 +23,8 @@ import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -33,21 +36,23 @@ import io.reactivex.schedulers.Schedulers;
 public class PersonalVM implements ViewModel {
 
     private PersonalFragment fragment;
+    private Gson gson;
+    private String userCode="";
 
     @DrawableRes
     public final int headPlaceHolder = R.mipmap.head_wode_98;
     public final ObservableField<String> headUri = new ObservableField<>();
     public final ObservableField<String> name = new ObservableField<>();
     public final ObservableField<BigDecimal> balance = new ObservableField<>();
-    public final ObservableField<String> unpaidBadge = new ObservableField<>();
-    public final ObservableField<String> deliveryBadge = new ObservableField<>();
-    public final ObservableField<String> takeoverBadge = new ObservableField<>();
-    public final ObservableField<String> evaBadge = new ObservableField<>();
+    public final ObservableField<Integer> unpaidBadge = new ObservableField<>();
+    public final ObservableField<Integer> deliveryBadge = new ObservableField<>();
+    public final ObservableField<Integer> takeoverBadge = new ObservableField<>();
+    public final ObservableField<Integer> evaBadge = new ObservableField<>();
 //    public final ObservableField<String> authenticationStatus = new ObservableField<>();
 
     public PersonalVM(PersonalFragment fragment) {
         this.fragment = fragment;
-
+        gson = new Gson();
         initData();
     }
 
@@ -70,6 +75,8 @@ public class PersonalVM implements ViewModel {
                     name.set(resp.getUserNick());
                     balance.set(resp.getBalance());
                     viewStyle.isSaler.set( resp.getUserType() == 1);
+                    userCode = resp.getUserCode();
+                    getOrderCount(userCode);
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 }, () -> {});
@@ -79,22 +86,61 @@ public class PersonalVM implements ViewModel {
         name.set(User.getInstance().getUserNick());
         balance.set(User.getInstance().getBalance() == null ? BigDecimal.ZERO : User.getInstance().getBalance());*/
 
-        unpaidBadge.set("12");
-        deliveryBadge.set("3");
-        takeoverBadge.set("25");
-        evaBadge.set("99+");
 
 //        authenticationStatus.set(R.string.saler_authentication);
     }
 
+    private void getOrderCount(String userCode){
+        reSet();
+        String type = "";
+        Map<String,String> paramMap = new HashMap<>();
+        if(viewStyle.isMerchantMode.get()){
+            type = "saler_order_status";
+            paramMap.put("salerCode",userCode);
+        }else{
+            type = "buyer_order_status";
+            paramMap.put("buyerCode",userCode);
+        }
+        RetrofitHelper.getUserAPI().userDbWrapper(type,gson.toJson(paramMap))
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resp -> {
+                    for(Map<String,Object> countMap : resp){
+                        switch ((int)Double.parseDouble(countMap.get("order_status").toString()) ){
+                            case 0:
+                                unpaidBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                break;
+                            case 1:
+                                deliveryBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                break;
+                            case 2:
+                                takeoverBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                break;
+                            case 3:
+                                evaBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                break;
+                        }
+                    }
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }, () -> {});
+    }
     /**
      * 切换模式
      */
     public final ReplyCommand switchModeClick = new ReplyCommand(() -> {
         viewStyle.isMerchantMode.set(!viewStyle.isMerchantMode.get());
         fragment.startWaveAnim();
+        getOrderCount(userCode);
     });
 
+    private void reSet(){
+        unpaidBadge.set(0);
+        deliveryBadge.set(0);
+        takeoverBadge.set(0);
+        evaBadge.set(0);
+    }
 
     /**
      * 去账单
@@ -114,7 +160,7 @@ public class PersonalVM implements ViewModel {
     /**
      * 去订单管理
      */
-    public final ReplyCommand toOrderCenterClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity())));
+    public final ReplyCommand toOrderCenterClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(),viewStyle.isMerchantMode.get())));
 
     /**
      * 去地址管理

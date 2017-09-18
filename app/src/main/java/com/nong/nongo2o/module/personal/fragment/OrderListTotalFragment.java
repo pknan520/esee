@@ -33,16 +33,26 @@ public class OrderListTotalFragment extends RxFragment {
 
     private FragmentOrderListTotalBinding binding;
     private OrderCenterVM vm;
+    private boolean isMerchantMode;
 
-    public static OrderListTotalFragment newInstance() {
-        return new OrderListTotalFragment();
+    public static OrderListTotalFragment newInstance(boolean isMerchantMode) {
+        Bundle args = new Bundle();
+        args.putBoolean("isMerchantMode", isMerchantMode);
+
+        OrderListTotalFragment orderListTotalFragment = new OrderListTotalFragment();
+        orderListTotalFragment.setArguments(args);
+
+        return orderListTotalFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        isMerchantMode = getArguments().getBoolean("isMerchantMode",false);
+
         if (vm == null) {
-            vm = new OrderCenterVM(this);
+            vm = new OrderCenterVM(this,isMerchantMode);
         }
     }
 
@@ -58,13 +68,13 @@ public class OrderListTotalFragment extends RxFragment {
         ((OrderCenterActivity) getActivity()).setToolbarTitle("我的订单");
 
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(OrderListFragment.newInstance(0));
-        fragmentList.add(OrderListFragment.newInstance(1));
-        fragmentList.add(OrderListFragment.newInstance(2));
-        fragmentList.add(OrderListFragment.newInstance(3));
-        fragmentList.add(OrderListFragment.newInstance(4));
-        fragmentList.add(OrderListFragment.newInstance(5));
-        fragmentList.add(OrderListFragment.newInstance(6));
+        fragmentList.add(OrderListFragment.newInstance(-99,isMerchantMode));
+        fragmentList.add(OrderListFragment.newInstance(0,isMerchantMode));
+        fragmentList.add(OrderListFragment.newInstance(1,isMerchantMode));
+        fragmentList.add(OrderListFragment.newInstance(2,isMerchantMode));
+        fragmentList.add(OrderListFragment.newInstance(3,isMerchantMode));
+        fragmentList.add(OrderListFragment.newInstance(4,isMerchantMode));
+        fragmentList.add(OrderListFragment.newInstance(-1,isMerchantMode));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);

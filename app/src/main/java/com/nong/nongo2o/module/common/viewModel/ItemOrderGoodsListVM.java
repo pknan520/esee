@@ -45,25 +45,21 @@ public class ItemOrderGoodsListVM implements ViewModel {
         this.fromTag = fromTag;
         this.fragment = fragment;
 
-        initFakeData();
+        initData();
     }
 
-
-    private void initFakeData() {
+    /**
+     * 初始化数据
+     */
+    private void initData() {
         if(null != orderDetail.getGoods() && null != orderDetail.getGoods().getCovers()){
             List<String> list = gson.fromJson(orderDetail.getGoods().getCovers(),new TypeToken<List<String>>() { }.getType());
             imgUri.set(list.get(0));
         }
-
         name.set(orderDetail.getGoodsSpec().getTitle());
         standard.set(orderDetail.getGoodsSpec().getDetail());
         price.set(orderDetail.getUnitPrice());
         num.set(orderDetail.getGoodsNum());
-        /*imgUri.set(uriArray[(int) (Math.random() * 4)]);
-        name.set("墨西哥进口牛油果");
-        standard.set("精装4只/每盒");
-        price.set(48.80);
-        num.set(4);*/
     }
 
     /**

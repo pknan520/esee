@@ -6,6 +6,8 @@ import android.content.Intent;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nong.nongo2o.service.InitDataService;
 import com.nong.nongo2o.uils.Constant;
+import com.nong.nongo2o.uils.SPUtils;
+import com.nong.nongo2o.uils.dbUtils.DbUtils;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
@@ -31,6 +33,11 @@ public class AdventurerApp extends Application {
         Fresco.initialize(this);
         regToWx();
         follows = new HashSet<>();
+
+        //  复制数据表
+        if (!SPUtils.contains(getApplicationContext(), "city_database") || !(boolean) SPUtils.get(getApplicationContext(), "city_database", false)) {
+            DbUtils.copyDBToDatabases(getApplicationContext());
+        }
     }
 
     private void regToWx() {

@@ -36,13 +36,6 @@ public class PersonalHomeVM implements ViewModel {
     @DrawableRes
     public final int isFocus = R.mipmap.icon_like;
 
-    // TODO: 2017-9-18 临时容错，以后删除
-    public PersonalHomeVM(PersonalHomeFragment fragment) {
-        this.fragment = fragment;
-
-        initData();
-    }
-
     public PersonalHomeVM(PersonalHomeFragment fragment, SimpleUser user) {
         this.fragment = fragment;
         this.user = user;

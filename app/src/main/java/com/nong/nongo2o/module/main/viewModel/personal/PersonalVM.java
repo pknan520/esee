@@ -85,10 +85,11 @@ public class PersonalVM implements ViewModel {
                 }, () -> {
                 });
 
-        unpaidBadge.set("12");
-        deliveryBadge.set("3");
-        takeoverBadge.set("25");
-        evaBadge.set("99+");
+        // TODO: 2017-9-18 合并代码出现问题
+//        unpaidBadge.set("12");
+//        deliveryBadge.set("3");
+//        takeoverBadge.set("25");
+//        evaBadge.set("99+");
 
 //        authenticationStatus.set(R.string.saler_authentication);
     }
@@ -168,7 +169,7 @@ public class PersonalVM implements ViewModel {
     /**
      * 去地址管理
      */
-    public final ReplyCommand toAddressMgrClick = new ReplyCommand(() -> startActivityClick(AddressMgrActivity.newIntent(fragment.getActivity())));
+    public final ReplyCommand toAddressMgrClick = new ReplyCommand(() -> startActivityClick(AddressMgrActivity.newIntent(fragment.getActivity(), AddressMgrActivity.ADDR_MGR)));
 
     /**
      * 去商品管理

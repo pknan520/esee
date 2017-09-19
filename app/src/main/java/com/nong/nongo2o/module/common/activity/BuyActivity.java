@@ -13,6 +13,9 @@ import com.nong.nongo2o.databinding.ActivityBuyBinding;
 import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.fragment.CreateOrderFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2017-7-17.
  */
@@ -21,9 +24,15 @@ public class BuyActivity extends RxBaseToolbarActivity {
 
     private ActivityBuyBinding binding;
 
-    private OrderDetail orderDetail;
+    // TODO: 2017-9-18 临时容错，以后删除
     public static Intent newIntent(Context context) {
         return new Intent(context, BuyActivity.class);
+    }
+
+    public static Intent newIntent(Context context, ArrayList<OrderDetail> orderDetails) {
+        Intent intent = new Intent(context, BuyActivity.class);
+        intent.putExtra("orderDetails", orderDetails);
+        return intent;
     }
 
     @Override
@@ -44,8 +53,7 @@ public class BuyActivity extends RxBaseToolbarActivity {
     }
 
     private void initView() {
-        //-TODO orderDetail
-        replaceFragment(R.id.fl, CreateOrderFragment.newInstance(orderDetail), CreateOrderFragment.TAG);
+        replaceFragment(R.id.fl, CreateOrderFragment.newInstance((ArrayList<OrderDetail>) getIntent().getSerializableExtra("orderDetails")), CreateOrderFragment.TAG);
     }
 
     @Override

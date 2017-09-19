@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.common.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,10 +11,15 @@ import android.view.ViewGroup;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentCreateOrderBinding;
+import com.nong.nongo2o.entity.domain.Activity;
+import com.nong.nongo2o.entity.domain.Address;
 import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.activity.BuyActivity;
 import com.nong.nongo2o.module.common.viewModel.CreateOrderVM;
+import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
+
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017-7-17.
@@ -25,8 +31,8 @@ public class CreateOrderFragment extends RxBaseFragment {
 
     private FragmentCreateOrderBinding binding;
     private CreateOrderVM vm;
-    private OrderDetail orderDetail;
 
+    // TODO: 2017-9-18 临时容错，以后删除
     public static CreateOrderFragment newInstance(OrderDetail orderDetail) {
         CreateOrderFragment createOrderFragment = new CreateOrderFragment();
         Bundle bundle = new Bundle();
@@ -35,12 +41,19 @@ public class CreateOrderFragment extends RxBaseFragment {
         return createOrderFragment;
     }
 
+    public static CreateOrderFragment newInstance(ArrayList<OrderDetail> orderDetails) {
+        Bundle args = new Bundle();
+        args.putSerializable("orderDetails", orderDetails);
+        CreateOrderFragment fragment = new CreateOrderFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        orderDetail = (OrderDetail) getArguments().getSerializable("orderDetail");
         if (vm == null) {
-            vm = new CreateOrderVM(this ,orderDetail);
+            vm = new CreateOrderVM(this , (ArrayList<OrderDetail>) getArguments().getSerializable("orderDetails"));
         }
     }
 
@@ -64,5 +77,14 @@ public class CreateOrderFragment extends RxBaseFragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) ((BuyActivity) getActivity()).setToolbarTitle("确认订单");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                if (resultCode == -1 && vm != null) vm.setAddrInfo((Address) data.getSerializableExtra("address"));
+                break;
+        }
     }
 }

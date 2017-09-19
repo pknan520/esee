@@ -12,9 +12,17 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.common.Area;
+import com.nong.nongo2o.entity.domain.City;
+import com.nong.nongo2o.greenDaoGen.CityDao;
 import com.nong.nongo2o.module.common.activity.SelectAreaActivity;
 import com.nong.nongo2o.module.common.fragment.SelectAreaListFragment;
+import com.nong.nongo2o.uils.dbUtils.GreenDaoManager;
 
+import org.greenrobot.greendao.rx.RxQuery;
+
+import java.util.List;
+
+import io.reactivex.Observable;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 /**
@@ -25,71 +33,115 @@ public class SelectAreaListVM implements ViewModel {
 
     private SelectAreaListFragment fragment;
     private int level;
-    private Area areaP, areaC;
+    private City cityP, cityC, cityD;
 
-    public SelectAreaListVM(SelectAreaListFragment fragment, int level, Area areaP, Area areaC) {
+    //  城市列表
+    public final ObservableList<ItemAreaListVM> itemAreaListVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemAreaListVM> itemAreaListBinding = ItemBinding.of(BR.viewModel, R.layout.item_area_list);
+
+    private CityDao cityDao;
+
+    public SelectAreaListVM(SelectAreaListFragment fragment, int level, City cityP, City cityC, City cityD) {
         this.fragment = fragment;
         this.level = level;
-        this.areaP = areaP;
-        this.areaC = areaC;
-        //  假数据
-        initFakeData();
+        this.cityP = cityP;
+        this.cityC = cityC;
+        this.cityD = cityD;
+
+        cityDao = GreenDaoManager.getInstance().getSession().getCityDao();
+        initData();
     }
 
-    private void initFakeData() {
+    /**
+     * 初始化数据
+     */
+    private void initData() {
         switch (level) {
             case SelectAreaActivity.AREA_PROVINCE:
-                for (int i = 0; i < 20; i++) {
-                    itemAreaListVMs.add(new ItemAreaListVM(new Area(i, 0, "省-父编号：" + 0 + "，子编号：" + i)));
+                List<City> citiesP = cityDao.queryBuilder().where(CityDao.Properties.Parent_code.eq("0")).list();
+                for (City city : citiesP) {
+                    itemAreaListVMs.add(new ItemAreaListVM(city));
                 }
                 break;
             case SelectAreaActivity.AREA_CITY:
-                for (int i = 0; i < 20; i++) {
-                    itemAreaListVMs.add(new ItemAreaListVM(new Area(i, areaP.getAreaCode(), "市-父编号" + areaP.getAreaCode() + "，子编号：" + i)));
+                List<City> citiesC = cityDao.queryBuilder().where(CityDao.Properties.Parent_code.eq(cityP.getCity_code())).list();
+                for (City city : citiesC) {
+                    itemAreaListVMs.add(new ItemAreaListVM(city));
                 }
                 break;
             case SelectAreaActivity.AREA_DISTRICT:
-                for (int i = 0; i < 20; i++) {
-                    itemAreaListVMs.add(new ItemAreaListVM(new Area(i, areaC.getAreaCode(), "区-父编号" + areaC.getAreaCode() + "，子编号：" + i)));
+                List<City> citiesD = cityDao.queryBuilder().where(CityDao.Properties.Parent_code.eq(cityC.getCity_code())).list();
+                for (City city : citiesD) {
+                    itemAreaListVMs.add(new ItemAreaListVM(city));
+                }
+                break;
+            case SelectAreaActivity.AREA_STREET:
+                List<City> citiesS = cityDao.queryBuilder().where(CityDao.Properties.Parent_code.eq(cityD.getCity_code())).list();
+                for (City city : citiesS) {
+                    itemAreaListVMs.add(new ItemAreaListVM(city));
                 }
                 break;
         }
     }
 
-    public final ObservableList<ItemAreaListVM> itemAreaListVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemAreaListVM> itemAreaListBinding = ItemBinding.of(BR.viewModel, R.layout.item_area_list);
+    /**
+     * 获取当前等级
+     */
+    public int getLevel() {
+        return level;
+    }
+
+    /**
+     * 降低当前等级，并刷新数据
+     */
+    public void downLevel() {
+        level--;
+        itemAreaListVMs.clear();
+        initData();
+    }
 
     public class ItemAreaListVM implements ViewModel {
 
-        private Area area;
+        private City mCity;
 
         public final ObservableField<String> areaName = new ObservableField<>();
 
-        public ItemAreaListVM(Area area) {
-            this.area = area;
-            this.areaName.set(area.getAreaName());
+        public ItemAreaListVM(City city) {
+            this.mCity = city;
+            this.areaName.set(city.getCity_name());
         }
 
         public final ReplyCommand itemClick = new ReplyCommand(() -> {
             switch (level) {
                 case SelectAreaActivity.AREA_PROVINCE:
-                    ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
-                            SelectAreaListFragment.newInstance(SelectAreaActivity.AREA_CITY, area, null), SelectAreaListFragment.TAG);
+                    cityP = mCity;
+                    upLevel();
                     break;
                 case SelectAreaActivity.AREA_CITY:
-                    ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
-                            SelectAreaListFragment.newInstance(SelectAreaActivity.AREA_DISTRICT, areaP, area), SelectAreaListFragment.TAG);
+                    cityC = mCity;
+                    upLevel();
                     break;
                 case SelectAreaActivity.AREA_DISTRICT:
+                    cityD = mCity;
+                    upLevel();
+                    break;
+                case SelectAreaActivity.AREA_STREET:
                     Intent intent = new Intent();
-                    intent.putExtra("areaP", areaP);
-                    intent.putExtra("areaC", areaC);
-                    intent.putExtra("areaD", area);
+                    intent.putExtra("cityP", cityP);
+                    intent.putExtra("cityC", cityC);
+                    intent.putExtra("cityD", cityD);
+                    intent.putExtra("cityS", mCity);
                     fragment.getActivity().setResult(Activity.RESULT_OK, intent);
                     fragment.getActivity().finish();
                     fragment.getActivity().overridePendingTransition(0, R.anim.anim_right_out);
                     break;
             }
         });
+
+        private void upLevel() {
+            level++;
+            itemAreaListVMs.clear();
+            initData();
+        }
     }
 }

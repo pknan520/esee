@@ -11,6 +11,7 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentSelectAreaListBinding;
 import com.nong.nongo2o.entities.common.Area;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.module.common.viewModel.SelectAreaListVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
 
@@ -25,11 +26,12 @@ public class SelectAreaListFragment extends RxBaseFragment {
     private SelectAreaListVM vm;
     private FragmentSelectAreaListBinding binding;
 
-    public static SelectAreaListFragment newInstance(int level, @Nullable Area areaP, @Nullable Area areaC) {
+    public static SelectAreaListFragment newInstance(int level, @Nullable City cityP, @Nullable City cityC, @Nullable City cityD) {
         Bundle args = new Bundle();
         args.putInt("level", level);
-        args.putParcelable("areaP", areaP);
-        args.putParcelable("areaC", areaC);
+        args.putSerializable("cityP", cityP);
+        args.putSerializable("cityC", cityC);
+        args.putSerializable("cityD", cityD);
         SelectAreaListFragment fragment = new SelectAreaListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -39,7 +41,8 @@ public class SelectAreaListFragment extends RxBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new SelectAreaListVM(this, getArguments().getInt("level"), getArguments().getParcelable("areaP"), getArguments().getParcelable("areaC"));
+            vm = new SelectAreaListVM(this, getArguments().getInt("level"), (City) getArguments().getSerializable("cityP"),
+                    (City) getArguments().getSerializable("cityC"), (City) getArguments().getSerializable("cityC"));
         }
     }
 
@@ -55,5 +58,9 @@ public class SelectAreaListFragment extends RxBaseFragment {
     private void initView() {
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.addItemDecoration(new LinearItemDecoration(getActivity(), LinearLayoutManager.VERTICAL, R.drawable.shape_vertical_divider));
+    }
+
+    public SelectAreaListVM getVm() {
+        return vm;
     }
 }

@@ -68,7 +68,7 @@ public class PersonalDynamicVM implements ViewModel {
         viewStyle.isRefreshing.set(true);
 
         RetrofitHelper.getDynamicAPI()
-                .getUserDynamicList(2, user.getUserCode(), page, pageSize)
+                .getUserDynamicList(3, user.getUserCode(), page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())

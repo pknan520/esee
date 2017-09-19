@@ -13,6 +13,7 @@ import com.nong.nongo2o.databinding.FragmentAddressEditBinding;
 import com.nong.nongo2o.databinding.PopupAreaBinding;
 import com.nong.nongo2o.entities.common.Area;
 import com.nong.nongo2o.entity.domain.Address;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.module.common.popup.AreaPopup;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.module.personal.viewModel.AddressEditVM;
@@ -29,16 +30,13 @@ public class AddressEditFragment extends RxBaseFragment {
     private FragmentAddressEditBinding binding;
     private AddressEditVM vm;
 
-    private PopupWindow popupArea;
-    private PopupAreaBinding popupBinding;
-
     public static AddressEditFragment newInstance() {
         return new AddressEditFragment();
     }
 
     public static AddressEditFragment newInstance(Address address) {
         Bundle args = new Bundle();
-        args.putParcelable("address", address);
+        args.putSerializable("address", address);
         AddressEditFragment fragment = new AddressEditFragment();
         fragment.setArguments(args);
         return fragment;
@@ -48,7 +46,7 @@ public class AddressEditFragment extends RxBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (vm == null) {
-            vm = new AddressEditVM(this, getArguments() != null ? getArguments().getParcelable("address") : null);
+            vm = new AddressEditVM(this, getArguments() != null ? (Address) getArguments().getSerializable("address") : null);
         }
     }
 
@@ -78,10 +76,8 @@ public class AddressEditFragment extends RxBaseFragment {
         switch (requestCode) {
             case GET_AREA:
                 if (resultCode == -1) {
-                    vm.viewStyle.hasSelectArea.set(true);
-                    vm.city.set(((Area) data.getParcelableExtra("areaP")).getAreaName() + " " +
-                            ((Area) data.getParcelableExtra("areaC")).getAreaName() + " " +
-                            ((Area) data.getParcelableExtra("areaD")).getAreaName());
+                    vm.setCities((City) data.getSerializableExtra("cityP"), (City) data.getSerializableExtra("cityC"),
+                            (City) data.getSerializableExtra("cityD"), (City) data.getSerializableExtra("cityS"));
                 }
                 break;
         }

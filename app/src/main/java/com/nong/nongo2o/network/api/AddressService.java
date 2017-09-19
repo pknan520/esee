@@ -22,6 +22,7 @@ public interface AddressService {
 
     /**
      * 获取用户收货地址
+     *
      * @return
      */
     @GET("user/address/search")
@@ -30,6 +31,7 @@ public interface AddressService {
 
     /**
      * 新增用户地址
+     *
      * @param body
      * @return
      */
@@ -39,6 +41,7 @@ public interface AddressService {
 
     /**
      * 更新用户地址
+     *
      * @param body
      * @return
      */
@@ -48,9 +51,18 @@ public interface AddressService {
 
     /**
      * 删除用户地址
+     *
      * @param id
      * @return
      */
     @DELETE("user/address")
     Observable<ApiResponse<String>> deleteUserAddress(@Query("id") String id);
+
+    /**
+     * 获取用户默认地址
+     *
+     * @return 发挥默认地址
+     */
+    @GET("user/address/default")
+    Observable<ApiResponse<Address>> getDefAddr();
 }

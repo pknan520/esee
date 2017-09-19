@@ -119,3 +119,9 @@ dependencies {
     //  百度定位
     compile files('libs/BaiduLBS_Android.jar')
 }
+
+greendao {
+    schemaVersion 1
+    daoPackage 'com.nong.nongo2o.greenDaoGen'
+    targetGenDir 'src/main/java'
+}

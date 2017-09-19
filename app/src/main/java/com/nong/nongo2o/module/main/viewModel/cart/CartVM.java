@@ -15,9 +15,11 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.SimpleUser;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Cart;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.activity.BuyActivity;
 import com.nong.nongo2o.module.main.fragment.cart.CartFragment;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
@@ -112,9 +114,37 @@ public class CartVM implements ViewModel {
      * 提交订单
      */
     public final ReplyCommand submitOrderClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity()));
+        fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), createOrderDetails()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
+
+    /**
+     * 生成订单信息
+     */
+    private ArrayList<OrderDetail> createOrderDetails() {
+        ArrayList<OrderDetail> orderDetails = new ArrayList<>();
+
+        for (ItemCartMerchantVM itemMerchant : itemCartMerchantVMs) {
+            for (ItemCartMerchantVM.ItemCartMerchantGoodsVM itemGoods : itemMerchant.itemCartMerchantGoodsVMs) {
+                if (itemGoods.viewStyle.isSelect.get()) {
+                    OrderDetail detail = new OrderDetail();
+                    detail.setUserCode(UserInfo.getInstance().getUserCode());
+                    detail.setSaleUserCode(itemGoods.getCart().getSaleUserCode());
+                    detail.setSale(itemGoods.getCart().getSaleUser());
+                    detail.setGoodsCode(itemGoods.getCart().getGoodsCode());
+                    detail.setGoods(itemGoods.getCart().getGoods());
+                    detail.setSpecCode(itemGoods.getCart().getSpecCode());
+                    detail.setGoodsSpec(itemGoods.getCart().getGoodsSpec());
+                    detail.setGoodsNum(itemGoods.getCart().getGoodsNum());
+                    detail.setUnitPrice(itemGoods.getCart().getGoodsSpec().getPrice());
+                    detail.setTotalPrice(itemGoods.getCart().getGoodsSpec().getPrice().multiply(new BigDecimal(itemGoods.getCart().getGoodsNum())));
+                    orderDetails.add(detail);
+                }
+            }
+        }
+
+        return orderDetails;
+    }
 
     public class ItemCartMerchantVM implements ViewModel {
 
@@ -269,7 +299,6 @@ public class CartVM implements ViewModel {
 
                 return "¥" + total.toString();
             }
-
 
             public Cart getCart() {
                 return cart;

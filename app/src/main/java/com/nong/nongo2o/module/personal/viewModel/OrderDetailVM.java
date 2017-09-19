@@ -100,8 +100,8 @@ public class OrderDetailVM implements ViewModel {
      * 跳转地址管理
      */
     public final ReplyCommand toAddrMgrClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(AddressMgrActivity.newIntent(fragment.getActivity()));
-        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+//        fragment.getActivity().startActivity(AddressMgrActivity.newIntent(fragment.getActivity()));
+//        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
     /**

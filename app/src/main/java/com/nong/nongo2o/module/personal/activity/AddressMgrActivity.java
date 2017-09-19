@@ -21,9 +21,9 @@ public class AddressMgrActivity extends RxBaseToolbarActivity {
 
     private ActivityAddressMgrBinding binding;
 
-    public static Intent newIntent(Context context) {
+    public static Intent newIntent(Context context, int status) {
         Intent intent = new Intent(context, AddressMgrActivity.class);
-        intent.putExtra("status", ADDR_MGR);
+        intent.putExtra("status", status);
         return intent;
     }
 

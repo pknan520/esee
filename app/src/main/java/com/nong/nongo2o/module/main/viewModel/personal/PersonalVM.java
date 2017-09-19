@@ -85,16 +85,11 @@ public class PersonalVM implements ViewModel {
                 }, () -> {
                 });
 
-        unpaidBadge.set("12");
-        deliveryBadge.set("3");
-        takeoverBadge.set("25");
-        evaBadge.set("99+");
-
 //        authenticationStatus.set(R.string.saler_authentication);
     }
 
     private void getOrderCount(String userCode){
-        reSet();
+        reset();
         String type = "";
         Map<String,String> paramMap = new HashMap<>();
         if(viewStyle.isMerchantMode.get()){
@@ -138,7 +133,7 @@ public class PersonalVM implements ViewModel {
         getOrderCount(userCode);
     });
 
-    private void reSet(){
+    private void reset(){
         unpaidBadge.set(0);
         deliveryBadge.set(0);
         takeoverBadge.set(0);

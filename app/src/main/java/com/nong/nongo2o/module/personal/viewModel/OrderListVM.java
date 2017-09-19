@@ -54,9 +54,6 @@ public class OrderListVM implements ViewModel {
         this.fragment = fragment;
         this.status.set(String.valueOf(status));
         this.isMerchantMode.set(isMerchantMode);
-        /*for (int i = 0; i < 20; i++) {
-            itemOrderVMs.add(new ItemOrderVM());
-        }*/
         initData();
     }
 
@@ -79,11 +76,14 @@ public class OrderListVM implements ViewModel {
             page = 1;
         }
         RetrofitHelper.getOrderAPI()
-                .userOrderSearch(Integer.parseInt(status.get()),isMerchantMode.get() ? 1 : 0,page,pageSize)
+                .userOrderSearch(("-99".equals(status.get()) ? null :Integer.parseInt(status.get())),isMerchantMode.get() ? 1 : 0,page,pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
+                    if(force){
+                        itemOrderVMs.clear();
+                    }
                     total = resp.getTotal();
                     for (Order order : resp.getRows()) {
                         itemOrderVMs.add(new ItemOrderVM(order));
@@ -91,7 +91,10 @@ public class OrderListVM implements ViewModel {
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);
-                }, () -> viewStyle.isRefreshing.set(false));
+                }, () -> {
+                    page ++;
+                    viewStyle.isRefreshing.set(false);
+                });
     }
     /**
      * 下拉刷新
@@ -101,9 +104,6 @@ public class OrderListVM implements ViewModel {
     private void refreshData() {
         viewStyle.isRefreshing.set(true);
         searchDate(true);
-        /*Observable.just(0)
-                .delay(3000, TimeUnit.MILLISECONDS)
-                .subscribe(integer -> viewStyle.isRefreshing.set(false));*/
     }
 
     /**
@@ -112,10 +112,9 @@ public class OrderListVM implements ViewModel {
     public final ReplyCommand<Integer> onLoadMoreCommand = new ReplyCommand<>(integer -> loadMoreData());
 
     private void loadMoreData() {
-        /*for (int i = 0; i < 10; i++) {
-            itemOrderVMs.add(new ItemOrderVM());
-        }*/
-        searchDate(false);
+        if(total > (page-1) * pageSize){
+            searchDate(false);
+        }
     }
 
     /**
@@ -180,9 +179,6 @@ public class OrderListVM implements ViewModel {
 
                 itemOrderGoodsListVMs.add(new ItemOrderGoodsListVM(orderDetail,ItemOrderGoodsListVM.FROM_ORDER_LIST, fragment));
             }
-            /*for (int i = 0; i < (int) (Math.random() * 2) + 1; i++) {
-                itemOrderGoodsListVMs.add(new ItemOrderGoodsListVM(ItemOrderGoodsListVM.FROM_ORDER_LIST, fragment));
-            }*/
 
             orderInfo.set("共"+goodNum+"件，合计¥ "+order.getTotalPrice());
 

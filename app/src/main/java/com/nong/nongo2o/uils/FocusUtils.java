@@ -1,6 +1,8 @@
 package com.nong.nongo2o.uils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -35,7 +37,7 @@ public class FocusUtils {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        callbackResult(isFocus, callback);
+                        callbackResult(context, isFocus, callback);
                         if (AdventurerApp.getInstance().containFollow(targetCode)) AdventurerApp.getInstance().deleteFollow(targetCode);
                     }, throwable -> {
                         Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -51,7 +53,7 @@ public class FocusUtils {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        callbackResult(isFocus, callback);
+                        callbackResult(context, isFocus, callback);
                         if (!AdventurerApp.getInstance().containFollow(targetCode)) AdventurerApp.getInstance().addFollow(targetCode);
                     }, throwable -> Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show());
         }
@@ -60,7 +62,12 @@ public class FocusUtils {
         return false;
     }
 
-    private static void callbackResult(boolean isFocus, focusCallBack call) {
+    private static void callbackResult(Context context, boolean isFocus, focusCallBack call) {
+        Intent intent = new Intent();
+        intent.setAction("refreshDynamicList");
+        intent.setAction("refreshMerchantList");
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
         if (call != null) {
             call.callback(!isFocus);
         }

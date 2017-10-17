@@ -1,1 +1,1 @@
-include ':app', 'MVVMLib'
+include ':app', 'MVVMLib', 'easeui'

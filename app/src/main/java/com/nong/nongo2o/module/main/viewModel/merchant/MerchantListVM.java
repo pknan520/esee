@@ -4,6 +4,8 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
@@ -14,12 +16,19 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.ApiListResponse;
 import com.nong.nongo2o.entity.bean.SalerInfo;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Activity;
+import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.common.viewModel.ItemMerchantListVM;
+import com.nong.nongo2o.module.login.LoginActivity;
+import com.nong.nongo2o.module.main.fragment.merchant.MerchantFragment;
 import com.nong.nongo2o.module.main.fragment.merchant.MerchantListFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -44,6 +53,11 @@ public class MerchantListVM implements ViewModel {
     public final ObservableList<ItemMerchantListVM> itemMerchantListVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemMerchantListVM> itemMerchantBinding = ItemBinding.of(BR.viewModel, R.layout.item_merchant_list);
 
+    @DrawableRes
+    public final int emptyImg = R.mipmap.news_guanzhu_default;
+    @DrawableRes
+    public final int notLoginImg = R.mipmap.default_error;
+
     private int pageSize = 10;
     private int total = 0;
 
@@ -58,17 +72,23 @@ public class MerchantListVM implements ViewModel {
 
     public class ViewStyle {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
+        public final ObservableBoolean isMyFocus = new ObservableBoolean(false);
+
+        public final ObservableBoolean isEmpty = new ObservableBoolean(false);
+        public final ObservableBoolean notLogin = new ObservableBoolean(false);
     }
 
     /**
      * 初始化数据
      */
-    private void initData() {
-        getActivities(1);
+    public void initData() {
+        viewStyle.isMyFocus.set(type == 1);
+        viewStyle.notLogin.set(type == 1 && TextUtils.isEmpty(UserInfo.getInstance().getSessionToken()));
 
+        getActivities(1);
         adText.set("活动期间注册账户将有机会获得奖励");
 
-        getMerchantList(1, true);
+        if (!viewStyle.notLogin.get()) getMerchantList(1, true);
     }
 
     /**
@@ -116,6 +136,7 @@ public class MerchantListVM implements ViewModel {
                         for (SalerInfo saller : resp.getRows()) {
                             itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
                         }
+                        viewStyle.isEmpty.set(itemMerchantListVMs.isEmpty());
                     }, throwable -> {
                         viewStyle.isRefreshing.set(false);
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -134,6 +155,7 @@ public class MerchantListVM implements ViewModel {
                         for (SalerInfo saller : resp.getRows()) {
                             itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
                         }
+                        viewStyle.isEmpty.set(itemMerchantListVMs.isEmpty());
                     }, throwable -> {
                         viewStyle.isRefreshing.set(false);
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -147,7 +169,8 @@ public class MerchantListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        getMerchantList(1, true);
+        if (!viewStyle.notLogin.get()) getMerchantList(1, true);
+        else viewStyle.isRefreshing.set(false);
     }
 
     /**
@@ -166,4 +189,16 @@ public class MerchantListVM implements ViewModel {
         }
     }
 
+    /**
+     * 空白或无登录按钮
+     */
+    public final ReplyCommand errorClick = new ReplyCommand(() -> {
+        if (viewStyle.notLogin.get()) {
+            fragment.getActivity().startActivity(LoginActivity.newIntent(fragment.getActivity(), true));
+        } else {
+//            fragment.getActivity().startActivity(AddFocusActivity.newIntent(fragment.getActivity()));
+            ((MerchantFragment) fragment.getParentFragment()).switchToAll();
+        }
+        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
 }

@@ -86,7 +86,7 @@ public class ItemFansListVM implements ViewModel {
      * 查看个人主页
      */
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity()));
+        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), status == FansMgrActivity.MY_FOCUS ? follow.getTarget() : follow.getUser()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 

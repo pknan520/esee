@@ -8,8 +8,11 @@ import com.nong.nongo2o.entity.domain.Order;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 /**
@@ -34,17 +37,27 @@ public interface OrderService {
      * @param body CreateOrderRequest
      * @return 返回操作成功/失败
      */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @POST("user/order")
-    Observable<ApiResponse<WechatPayInfo>> userOrder(@Body RequestBody body);
+    Observable<ApiResponse<Order>> userOrder(@Body RequestBody body);
 
     /**
      * 删除订单
      *
      * @param id 订单ID
-     * @return
+     * @return 返回操作成功/失败
      */
-    @POST("user/order")
+    @DELETE("user/order")
     Observable<ApiResponse<String>> delUserOrder(@Query("id") String id);
+
+    /**
+     * 更新订单
+     * @param body  UpdateOrderRequest
+     * @return  返回操作成功/失败
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @PUT("user/order")
+    Observable<ApiResponse<String>> updateOrder(@Body RequestBody body);
 
 
 }

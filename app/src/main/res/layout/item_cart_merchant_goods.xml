@@ -30,7 +30,7 @@
                 android:paddingStart="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                app:placeholderImageRes="@{viewModel.viewStyle.isSelect ? viewModel.isSelect : viewModel.notSelect}"
+                app:placeholderImageRes="@{viewModel.mViewStyle.isSelect ? viewModel.isSelect : viewModel.notSelect}"
                 app:clickCommand="@{viewModel.checkClick}"/>
 
             <com.facebook.drawee.view.SimpleDraweeView
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="10dp"
-                android:visibility="@{viewModel.viewStyle.isEdit ? View.GONE : View.VISIBLE}">
+                android:visibility="@{viewModel.mViewStyle.isEdit ? View.GONE : View.VISIBLE}">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -95,7 +95,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.viewStyle.isEdit ? View.VISIBLE : View.GONE}">
+                android:visibility="@{viewModel.mViewStyle.isEdit ? View.VISIBLE : View.GONE}">
 
                 <LinearLayout
                     android:layout_width="0dp"

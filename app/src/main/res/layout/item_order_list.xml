@@ -9,6 +9,7 @@
             type="com.nong.nongo2o.module.personal.viewModel.OrderListVM.ItemOrderVM" />
 
         <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
@@ -31,16 +32,16 @@
             app:clickCommand="@{viewModel.personalHomeClick}">
 
             <com.facebook.drawee.view.SimpleDraweeView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:roundedCornerRadius="5dp"
                 app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                 app:uri="@{viewModel.headUri}" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -54,6 +55,7 @@
                     style="@style/TextListSummary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:text="@{viewModel.summary}" />
 
             </LinearLayout>
@@ -88,6 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
+            android:visibility="@{viewModel.viewStyle.btnVisi ? View.VISIBLE : View.GONE}"
             android:gravity="end"
             android:padding="10dp">
 

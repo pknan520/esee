@@ -17,6 +17,8 @@ public class UserInfo extends Model {
     private UserInfo() {
     }
 
+    private String id;
+
     /**
      * 用户编码
      */
@@ -94,6 +96,14 @@ public class UserInfo extends Model {
 
     public static void setOurInstance(UserInfo ourInstance) {
         UserInfo.ourInstance = ourInstance;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserCode() {
@@ -230,5 +240,9 @@ public class UserInfo extends Model {
 
     public void setSessionToken(String sessionToken) {
         this.sessionToken = sessionToken;
+    }
+
+    public void clearUser() {
+        setOurInstance(new UserInfo());
     }
 }

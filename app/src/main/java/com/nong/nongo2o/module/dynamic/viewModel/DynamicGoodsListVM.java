@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
+import android.support.annotation.DrawableRes;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
@@ -53,6 +54,8 @@ public class DynamicGoodsListVM implements ViewModel {
     private int total = 0;
     private final int pageSize = 10;
     private Goods selectGoods;
+    @DrawableRes
+    public final int emptyImg = R.mipmap.default_none;
 
     public DynamicGoodsListVM(DynamicGoodsListFragment fragment, int status) {
         this.fragment = fragment;
@@ -65,6 +68,7 @@ public class DynamicGoodsListVM implements ViewModel {
 
     public class ViewStyle {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
+        public final ObservableBoolean isEmpty = new ObservableBoolean(false);
     }
 
     /**
@@ -93,6 +97,7 @@ public class DynamicGoodsListVM implements ViewModel {
                         for (Goods good : resp.getRows()) {
                             itemSelectGoodsVMs.add(new ItemSelectGoodsVM(fragment, listener, good));
                         }
+                        viewStyle.isEmpty.set(itemSelectGoodsVMs.isEmpty());
                     }, throwable -> {
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         viewStyle.isRefreshing.set(false);
@@ -110,6 +115,7 @@ public class DynamicGoodsListVM implements ViewModel {
                         for (Goods good : resp.getRows()) {
                             itemSelectGoodsVMs.add(new ItemSelectGoodsVM(fragment, listener, good));
                         }
+                        viewStyle.isEmpty.set(itemSelectGoodsVMs.isEmpty());
                     }, throwable -> {
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         viewStyle.isRefreshing.set(false);

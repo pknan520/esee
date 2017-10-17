@@ -34,7 +34,7 @@ public class MerchantGoodsFragment extends RxFragment {
 
     public static final String TAG = "MerchantGoodsFragment";
 
-    private static final int EVA_ALL = 0, EVA_GOOD = 1, EVA_NORMAL = 2, EVA_BAD = 3;
+    public static final int EVA_ALL = 0, EVA_GOOD = 1, EVA_NORMAL = 2, EVA_BAD = 3;
     private static final String[] tabArray = {"商品", "详情", "评价"};
     private static final String[] evaArray = {"全部", "好评", "中评", "差评"};
 
@@ -47,11 +47,6 @@ public class MerchantGoodsFragment extends RxFragment {
         MerchantGoodsFragment fragment = new MerchantGoodsFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    // TODO: 2017-9-13 临时容错，以后删除
-    public static MerchantGoodsFragment newInstance() {
-        return new MerchantGoodsFragment();
     }
 
     @Override

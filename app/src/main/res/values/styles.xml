@@ -87,8 +87,12 @@
     </style>
 
     <style name="SimplePrimaryButton" parent="SimpleTextButton">
-        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:background">@drawable/shape_round_primary_button</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="RoundPrimaryButton" parent="SimplePrimaryButton">
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="SimpleAccentButton" parent="SimpleTextButton">
@@ -111,7 +115,7 @@
         <item name="android:windowEnterAnimation">@animator/push_bottom_in</item>
         <item name="android:windowExitAnimation">@animator/push_bottom_out</item>
     </style>
-    
+
     <!--Switch-->
     <style name="GreenSwitch" parent="Theme.AppCompat.Light">
         <!-- switch 打开时的按钮的颜色 轨迹颜色默认为30%（看效果就明白30%是怎么回事了）这个颜色 -->
@@ -128,5 +132,24 @@
         <item name="android:minHeight">16dp</item>
         <item name="android:maxHeight">16dp</item>
     </style>
+
+    <style name="BigRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/big_rating_star</item>
+        <item name="android:minHeight">24dp</item>
+        <item name="android:maxHeight">24dp</item>
+    </style>
+
+    <!-- 自定义Loading Dialog -->
+    <style name="loading_dialog_style" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

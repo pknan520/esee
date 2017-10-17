@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.nong.nongo2o.module.common.viewModel.CreateOrderVM" />
+            type="com.nong.nongo2o.module.common.buy.viewModel.CreateOrderVM" />
 
         <import type="android.view.View"/>
     </data>
@@ -104,7 +104,7 @@
                         <com.facebook.drawee.view.SimpleDraweeView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:layout_marginLeft="10dp"
+                            app:roundedCornerRadius="5dp"
                             app:placeholderImageRes="@{viewModel.merchantHeadPlaceHolder}"
                             app:uri="@{viewModel.merchantHeadUri}" />
 
@@ -125,6 +125,7 @@
                                 style="@style/TextListSummary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:maxLines="1"
                                 android:text="@{viewModel.summary}" />
 
                         </LinearLayout>
@@ -138,7 +139,8 @@
                             android:padding="@dimen/text_padding"
                             android:text="联系TA"
                             android:textColor="@color/colorComplementaryText"
-                            android:textSize="@dimen/text_normal" />
+                            android:textSize="@dimen/text_normal"
+                            app:clickCommand="@{viewModel.contactClick}"/>
 
                     </LinearLayout>
                     <!--商品信息-->
@@ -199,6 +201,7 @@
                 android:layout_height="wrap_content"
                 android:background="@{viewModel.viewStyle.isComplete ? @color/colorComplementaryOrange : @color/colorDisableButton}"
                 android:clickable="@{viewModel.viewStyle.isComplete}"
+                app:clickCommand="@{viewModel.orderClick}"
                 android:text="去结算" />
 
         </LinearLayout>

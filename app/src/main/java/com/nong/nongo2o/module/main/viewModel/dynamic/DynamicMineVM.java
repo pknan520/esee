@@ -5,6 +5,7 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -13,6 +14,7 @@ import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.DynamicDetail;
 import com.nong.nongo2o.entities.response.User;
@@ -21,6 +23,7 @@ import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.viewModel.ItemDynamicListVM;
 import com.nong.nongo2o.module.dynamic.activity.DynamicDetailActivity;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
+import com.nong.nongo2o.module.login.LoginActivity;
 import com.nong.nongo2o.module.main.fragment.dynamic.DynamicFragment;
 import com.nong.nongo2o.module.main.fragment.dynamic.DynamicMineFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -58,6 +61,11 @@ public class DynamicMineVM implements ViewModel {
     public final ObservableField<String> summary = new ObservableField<>();
     public final ObservableField<Integer> dynamicNum = new ObservableField<>();
 
+    @DrawableRes
+    public final int emptyImg = R.mipmap.default_none;
+    @DrawableRes
+    public final int notLoginImg = R.mipmap.default_error;
+
     public DynamicMineVM(DynamicMineFragment fragment) {
         this.fragment = fragment;
 
@@ -68,17 +76,23 @@ public class DynamicMineVM implements ViewModel {
 
     public class ViewStyle {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
+
+        public final ObservableBoolean isEmpty = new ObservableBoolean(false);
+        public final ObservableBoolean notLogin = new ObservableBoolean(false);
     }
 
     /**
      * 初始化数据
      */
     public void initData() {
-        headUri.set(UserInfo.getInstance().getAvatar());
-        name.set(UserInfo.getInstance().getUserNick());
-        summary.set(UserInfo.getInstance().getProfile());
+        viewStyle.notLogin.set(TextUtils.isEmpty(UserInfo.getInstance().getSessionToken()));
+        if (!viewStyle.notLogin.get()) {
+            headUri.set(UserInfo.getInstance().getAvatar());
+            name.set(UserInfo.getInstance().getUserNick());
+            summary.set(UserInfo.getInstance().getProfile());
 
-        getDynamicList(1, true);
+            getDynamicList(1, true);
+        }
     }
 
     /**
@@ -127,26 +141,17 @@ public class DynamicMineVM implements ViewModel {
          * 编辑按钮
          */
         public final ReplyCommand editClick = new ReplyCommand(() -> {
-            fragment.getActivity().startActivityForResult(DynamicPublishActivity.newIntent(fragment.getActivity(), dynamic), DynamicFragment.PUBLISH_RESULT);
+            fragment.getActivity().startActivity(DynamicPublishActivity.newIntent(fragment.getActivity(), dynamic));
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         });
 
         /**
          * 删除按钮
          */
-        public final ReplyCommand deleteClick = new ReplyCommand(this::deleteDynamic);
-
-        /**
-         * 查看详情
-         */
-        public final ReplyCommand detailClick = new ReplyCommand(() -> {
-            fragment.getActivity().startActivity(DynamicDetailActivity.newIntent(fragment.getActivity(), dynamic));
-            fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+        public final ReplyCommand deleteClick = new ReplyCommand(() -> {
+            ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(this::deleteDynamic);
         });
 
-        /**
-         * 删除动态
-         */
         private void deleteDynamic() {
             viewStyle.isRefreshing.set(true);
 
@@ -160,11 +165,21 @@ public class DynamicMineVM implements ViewModel {
 
                         total--;
                         dynamicNum.set(total);
+
+                        viewStyle.isEmpty.set(itemDynamicMineVMs.isEmpty());
                     }, throwable -> {
                         viewStyle.isRefreshing.set(false);
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }, () -> viewStyle.isRefreshing.set(false));
         }
+
+        /**
+         * 查看详情
+         */
+        public final ReplyCommand detailClick = new ReplyCommand(() -> {
+            fragment.getActivity().startActivity(DynamicDetailActivity.newIntent(fragment.getActivity(), dynamic));
+            fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+        });
     }
 
     /**
@@ -172,9 +187,6 @@ public class DynamicMineVM implements ViewModel {
      */
     private void getDynamicList(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
-        if (force) {
-            itemDynamicMineVMs.clear();
-        }
 
         RetrofitHelper.getDynamicAPI()
                 .getMyDynamicList(page, pageSize)
@@ -182,11 +194,13 @@ public class DynamicMineVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
+                    if (force) itemDynamicMineVMs.clear();
                     total = resp.getTotal();
                     dynamicNum.set(total);
                     for (Moment dynamic : resp.getRows()) {
                         itemDynamicMineVMs.add(new ItemDynamicMineVM(dynamic));
                     }
+                    viewStyle.isEmpty.set(itemDynamicMineVMs.isEmpty());
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);
@@ -199,7 +213,7 @@ public class DynamicMineVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        getDynamicList(1, true);
+        if (!viewStyle.notLogin.get()) getDynamicList(1, true);
     }
 
     /**
@@ -214,4 +228,13 @@ public class DynamicMineVM implements ViewModel {
             Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public final ReplyCommand errorClick = new ReplyCommand(() -> {
+        if (viewStyle.notLogin.get()) {
+            fragment.getActivity().startActivity(LoginActivity.newIntent(fragment.getActivity(), true));
+        } else {
+            fragment.getActivity().startActivity(DynamicPublishActivity.newIntent(fragment.getActivity()));
+        }
+        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
 }

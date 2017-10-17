@@ -52,6 +52,9 @@ public class AddressListVM implements ViewModel {
     public final ObservableList<ItemAddressVM> itemAddressVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemAddressVM> itemAddressBinding = ItemBinding.of(BR.viewModel, R.layout.item_address_list);
 
+    @DrawableRes
+    public final int emptyImg = R.mipmap.default_none;
+
     public AddressListVM(AddressListFragment fragment, int status) {
         this.fragment = fragment;
         this.status = status;
@@ -63,6 +66,8 @@ public class AddressListVM implements ViewModel {
 
     public class ViewStyle {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
+
+        public final ObservableBoolean isEmpty = new ObservableBoolean(false);
     }
 
     /**
@@ -92,6 +97,7 @@ public class AddressListVM implements ViewModel {
                             itemAddressVMs.add(new ItemAddressVM(address));
                         }
                     }
+                    viewStyle.isEmpty.set(itemAddressVMs.isEmpty());
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);

@@ -38,6 +38,7 @@ public class ItemEvaluateVM implements ViewModel {
      */
     private void initData() {
         rating.set(Float.parseFloat(String.valueOf(comment.getStar())));
+        headUri.set(comment.getUser().getAvatar());
         name.set(comment.getUser().getUserNick());
         content.set(comment.getContent());
         time.set(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(comment.getCreateTime()));

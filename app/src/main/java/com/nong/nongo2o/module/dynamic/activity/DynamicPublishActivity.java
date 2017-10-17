@@ -74,8 +74,4 @@ public class DynamicPublishActivity extends RxBaseToolbarActivity {
         return binding.tabToolbar;
     }
 
-    public void returnResultOK() {
-        setResult(RESULT_OK);
-        finish();
-    }
 }

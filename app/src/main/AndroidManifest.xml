@@ -5,54 +5,82 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!-- 这个权限用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!-- 这个权限用于访问GPS定位-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 环信 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".AdventurerApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/android_template"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
+        <!-- 设置百度地图应用的AppKey -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="AK" />
 
-        <activity android:name=".module.login.LoginActivity">
+        <!-- 设置环信应用的AppKey -->
+        <meta-data
+            android:name="EASEMOB_APPKEY"
+            android:value="1104170926115179#pk-esee" />
+
+        <activity android:name=".module.welcome.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!--Main-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.nong.nongo2o.updateprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
+
+        <activity
+            android:name=".module.welcome.GuideActivity"
+            android:label="@string/title_activity_guide"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".module.login.LoginActivity" />
+        <!-- Main -->
         <activity
             android:name=".module.main.MainActivity"
             android:launchMode="singleTask" />
-        <service android:name=".service.InitDataService"/>
-        <!--Dynamic-->
+
+        <service android:name=".service.InitDataService" />
+        <!-- Dynamic -->
         <activity android:name=".module.dynamic.activity.DynamicDetailActivity" />
         <activity android:name=".module.dynamic.activity.DynamicPublishActivity" />
         <activity android:name=".module.dynamic.activity.DynamicAddFriendsActivity" />
-        <!--Share-->
+        <!-- Share -->
         <activity android:name=".module.share.activity.SharePublishActivity" />
         <activity android:name=".module.share.activity.ShareDetailActivity" />
-        <!--Merchant-->
+        <!-- Merchant -->
         <activity android:name=".module.merchant.activity.MerchantGoodsActivity" />
-        <!--Personal-->
+        <!-- Personal -->
         <activity android:name=".module.personal.activity.SettingActivity" />
         <activity android:name=".module.personal.activity.GoodsManagerActivity" />
         <activity android:name=".module.personal.activity.OrderCenterActivity" />
@@ -62,12 +90,16 @@
         <activity android:name=".module.personal.activity.BillActivity" />
         <activity android:name=".module.personal.activity.FansMgrActivity" />
         <activity android:name=".module.common.activity.SelectAreaActivity" />
-        <!--Message-->
+        <activity android:name=".module.personal.activity.InviteActivity" />
+        <!-- Message -->
         <activity android:name=".module.message.activity.SysMsgActivity" />
-        <!--Common-->
-        <activity android:name=".module.common.activity.BuyActivity" />
+        <activity android:name=".module.message.activity.ChatActivity" />
+        <activity android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity" />
+        <!-- Common -->
+        <activity android:name=".module.common.buy.activity.BuyActivity" />
         <activity android:name=".module.common.activity.AddFocusActivity" />
-        <!--图片选择-->
+        <service android:name=".service.VersionUpdateService"/>
+        <!-- 图片选择 -->
         <activity
             android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
             android:exported="true"
@@ -75,11 +107,38 @@
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait" />
-        <!--百度定位-->
+        <!-- 百度定位 -->
+        <!--<service-->
+            <!--android:name="com.baidu.location.f"-->
+            <!--android:enabled="true"-->
+            <!--android:process=":remote" />-->
+        <!-- 微信 -->
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:label="@string/app_name" />
+        <!-- 环信 -->
+        <!-- 声明SDK所需的service SDK核心功能 -->
         <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote"/>
+            android:name="com.hyphenate.chat.EMChatService"
+            android:exported="true" />
+        <service
+            android:name="com.hyphenate.chat.EMJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!-- 声明SDK所需的receiver -->
+        <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+            <!-- 可选filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

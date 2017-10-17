@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -39,6 +40,7 @@ public class PersonalHomeFragment extends RxFragment {
 
     private FragmentPersonalHomeBinding binding;
     private PersonalHomeVM vm;
+    private SimpleUser user;
 
     private LocalBroadcastManager lbm;
 
@@ -58,8 +60,9 @@ public class PersonalHomeFragment extends RxFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        user = (SimpleUser) getArguments().getSerializable("user");
         if (vm == null) {
-            vm = new PersonalHomeVM(this, (SimpleUser) getArguments().getSerializable("user"));
+            vm = new PersonalHomeVM(this, user);
         }
         registerReceiver();
     }
@@ -79,6 +82,10 @@ public class PersonalHomeFragment extends RxFragment {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
         binding.toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
+
+        binding.collapsingToolbar.setTitle(user.getUserNick());
+        binding.collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT);
+        binding.collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
 
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));

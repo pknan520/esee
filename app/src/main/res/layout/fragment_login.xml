@@ -3,31 +3,120 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="viewModel"
-            type="com.nong.nongo2o.module.login.viewModel.LoginVM"/>
+            type="com.nong.nongo2o.module.login.viewModel.LoginVM" />
+
+        <import type="android.view.View" />
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:background="@android:color/white">
 
-        <Button
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding"
+            android:src="@mipmap/login_close"
+            android:visibility="@{viewModel.viewStyle.canClose ? View.VISIBLE : View.GONE}"
+            app:clickCommand="@{viewModel.closeClick}" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/item_padding"
+            android:text="请登录"
+            android:textColor="@color/colorText"
+            android:textSize="@dimen/text_title" />
+
+        <ImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:src="@mipmap/login_logo" />
+
+        <LinearLayout
+            android:id="@+id/btn_wechat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="登录"
-            app:clickCommand="@{viewModel.loginClick}"
-            style="@style/SimpleAccentButton"/>
+            android:layout_below="@+id/iv_logo"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/shape_round_green"
+            android:gravity="center"
+            android:padding="@dimen/text_padding"
+            app:clickCommand="@{viewModel.loginClick}">
 
-        <Button
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/item_padding"
+                android:drawableStart="@mipmap/login_btn_wechat"
+                android:gravity="center"
+                android:text="微信登录"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_title_small" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_experience"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="测试"
-            app:clickCommand="@{viewModel.testClick}"
-            style="@style/SimpleAccentButton"/>
+            android:layout_below="@+id/btn_wechat"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shape_round_light_green"
+            android:gravity="center"
+            android:padding="@dimen/text_padding"
+            app:clickCommand="@{viewModel.experienceClick}">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/item_padding"
+                android:drawableStart="@mipmap/login_btn_experience"
+                android:gravity="center"
+                android:text="立即体验"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_title_small" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_experience"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shape_round_light_green"
+            android:gravity="center"
+            android:padding="@dimen/text_padding"
+            app:clickCommand="@{viewModel.testClick}">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/item_padding"
+                android:drawableStart="@mipmap/login_btn_experience"
+                android:gravity="center"
+                android:text="测试登录"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_title_small" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </layout>

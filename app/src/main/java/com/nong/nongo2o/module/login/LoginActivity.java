@@ -1,6 +1,8 @@
 package com.nong.nongo2o.module.login;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -33,6 +35,12 @@ public class LoginActivity extends RxBaseActivity {
     private List<String> permissionList = new ArrayList<>();
     private boolean mShowRequestPermission = true;//用户是否禁止权限
 
+    public static Intent newIntent(Context context, boolean canClose) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.putExtra("canClose", canClose);
+        return intent;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +72,7 @@ public class LoginActivity extends RxBaseActivity {
     }
 
     private void initView() {
-        replaceFragment(R.id.fl, LoginFragment.newInstance(), LoginFragment.TAG);
+        replaceFragment(R.id.fl, LoginFragment.newInstance(getIntent().getBooleanExtra("canClose", false)), LoginFragment.TAG);
     }
 
     @Override

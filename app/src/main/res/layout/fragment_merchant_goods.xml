@@ -27,14 +27,17 @@
             <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                app:roundAsCircle="true"
+                app:roundingBorderWidth="2dp"
+                app:roundingBorderColor="#96e6eb"
                 app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                 app:uri="@{viewModel.headUri}" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 

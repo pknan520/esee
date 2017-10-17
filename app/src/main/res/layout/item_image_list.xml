@@ -9,13 +9,21 @@
             type="com.nong.nongo2o.module.common.viewModel.ItemImageTextVM.ItemImageListVM" />
     </data>
 
-    <com.facebook.drawee.view.SimpleDraweeView
+    <!--<com.facebook.drawee.view.SimpleDraweeView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/line_space"-->
+        <!--android:adjustViewBounds="true"-->
+        <!--android:scaleType="fitXY"-->
+        <!--app:placeholderImageRes="@{viewModel.imgPlaceHolder}"-->
+        <!--app:uri="@{viewModel.imgUri}" />-->
+
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/line_space"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
-        app:uri="@{viewModel.imgUri}" />
+        app:glideUri="@{viewModel.imgUri}"/>
 
 </layout>

@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.facebook.common.executors.UiThreadImmediateExecutorService;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
@@ -18,6 +20,7 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.kelin.mvvmlight.command.ReplyCommand;
+import com.nong.nongo2o.uils.AppManager;
 import com.nong.nongo2o.uils.MyFrescoImageLoader;
 
 /**
@@ -25,6 +28,14 @@ import com.nong.nongo2o.uils.MyFrescoImageLoader;
  */
 
 public class ViewBindingAdapter {
+
+    @BindingAdapter(value = {"glideUri", "placeholderImageRes"}, requireAll = false)
+    public static void glideLoadImage(final ImageView iv, String uri, @DrawableRes int placeholderImageRes) {
+        Glide.with(AppManager.getAppManager().currentActivity())
+                .load(uri)
+                .placeholder(placeholderImageRes)
+                .into(iv);
+    }
 
     @BindingAdapter(value = {"uri", "placeholderImageRes", "request_width", "request_height", "onSuccessCommand", "onFailureCommand"}, requireAll = false)
     public static void loadImage(final SimpleDraweeView imageView, String uri,

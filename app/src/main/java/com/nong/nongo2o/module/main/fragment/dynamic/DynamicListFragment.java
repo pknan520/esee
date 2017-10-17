@@ -1,7 +1,12 @@
 package com.nong.nongo2o.module.main.fragment.dynamic;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +26,8 @@ public class DynamicListFragment extends RxFragment {
     private FragmentDynamicListBinding binding;
     private DynamicListVM vm;
 
+    private LocalBroadcastManager lbm;
+
     public static DynamicListFragment newInstance(int status) {
         Bundle args = new Bundle();
         args.putInt("status", status);
@@ -36,6 +43,7 @@ public class DynamicListFragment extends RxFragment {
         if (vm == null) {
             vm = new DynamicListVM(this, status);
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -52,14 +60,28 @@ public class DynamicListFragment extends RxFragment {
         binding.rv.addItemDecoration(new StaggerItemDecoration(24));
     }
 
-    public void showEmptyView() {
-        binding.rv.setVisibility(View.GONE);
-        binding.llEmpty.setVisibility(View.VISIBLE);
+    /**
+     * 刷新广播接收器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("loginSuccess");
+        filter.addAction("refreshDynamicList");
+        lbm.registerReceiver(loginReceiver, filter);
     }
 
-    public void showContentView() {
-        binding.rv.setVisibility(View.VISIBLE);
-        binding.llEmpty.setVisibility(View.GONE);
+    private BroadcastReceiver loginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (vm != null) vm.initData();
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        lbm.unregisterReceiver(loginReceiver);
     }
 
 }

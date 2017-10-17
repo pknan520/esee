@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.nong.nongo2o.module.personal.viewModel.SettingVM"/>
+            type="com.nong.nongo2o.module.personal.viewModel.SettingVM" />
     </data>
 
     <LinearLayout
@@ -40,6 +41,7 @@
                 <com.facebook.drawee.view.SimpleDraweeView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
+                    app:roundAsCircle="true"
                     app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                     app:uri="@{viewModel.headUri}" />
 
@@ -89,52 +91,61 @@
                 style="@style/EditNormal"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:gravity="start"
                 android:layout_marginTop="@dimen/line_space"
+                android:gravity="start"
                 android:hint="说的什么吧~"
                 android:text="@={viewModel.summary}" />
 
         </LinearLayout>
 
-        <Button
-            style="@style/SimpleTextButton"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/vertical_space"
             android:background="@android:color/white"
             android:drawableEnd="@mipmap/right_grey"
-            android:padding="@dimen/item_padding"
             android:gravity="start"
+            android:padding="@dimen/item_padding"
+            android:text="@{viewModel.city}"
+            android:textColor="@color/colorText"
+            android:textSize="@dimen/text_normal"
             app:clickCommand="@{viewModel.selectCityClick}"
-            android:text="@{viewModel.city}" />
+            android:visibility="gone"
+            tools:text="广东佛山顺德" />
 
-        <Button
-            style="@style/SimpleTextButton"
+        <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/vertical_space"
             android:background="@android:color/white"
-            android:drawableEnd="@mipmap/right_grey"
-            android:gravity="start"
-            app:clickCommand="@{viewModel.feedbackClick}"
-            android:padding="@dimen/item_padding"
-            android:text="意见反馈" />
+            android:divider="@drawable/shape_vertical_divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/colorDivider" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@mipmap/right_grey"
+                android:gravity="start"
+                android:padding="@dimen/item_padding"
+                android:text="意见反馈"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal"
+                app:clickCommand="@{viewModel.feedbackClick}" />
 
-        <Button
-            style="@style/SimpleTextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:drawableEnd="@mipmap/right_grey"
-            android:gravity="start"
-            app:clickCommand="@{viewModel.aboutClick}"
-            android:padding="@dimen/item_padding"
-            android:text="关于我们" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@mipmap/right_grey"
+                android:gravity="start"
+                android:padding="@dimen/item_padding"
+                android:text="关于我们"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal"
+                app:clickCommand="@{viewModel.aboutClick}" />
+
+        </LinearLayout>
 
         <Button
             style="@style/SimpleOrangeButton"
@@ -142,20 +153,20 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:padding="@dimen/item_padding"
-            app:clickCommand="@{viewModel.saveUserProfileClick}"
             android:text="保存"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            app:clickCommand="@{viewModel.saveUserProfileClick}" />
 
         <Button
             style="@style/SimpleAccentButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             android:padding="@dimen/item_padding"
-            app:clickCommand="@{viewModel.logoutClick}"
             android:text="退出登录"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            app:clickCommand="@{viewModel.logoutClick}" />
 
     </LinearLayout>
 

@@ -54,11 +54,18 @@
             android:orientation="horizontal"
             android:padding="@dimen/item_padding">
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <!--<com.facebook.drawee.view.SimpleDraweeView-->
+                <!--android:layout_width="60dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--app:placeholderImageRes="@{viewModel.imgPlaceHolder}"-->
+                <!--app:uri="@{viewModel.imgUri}" />-->
+
+            <ImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:scaleType="centerCrop"
                 app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
-                app:uri="@{viewModel.imgUri}" />
+                app:glideUri="@{viewModel.imgUri}" />
 
             <LinearLayout
                 android:layout_marginStart="@dimen/vertical_space"
@@ -78,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/line_space"
                     android:text="@{viewModel.summary}"
-                    android:maxLines="2"/>
+                    android:maxLines="1"/>
 
             </LinearLayout>
 

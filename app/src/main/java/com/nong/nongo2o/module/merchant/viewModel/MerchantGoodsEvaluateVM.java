@@ -14,6 +14,7 @@ import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsComment;
 import com.nong.nongo2o.module.common.viewModel.ItemEvaluateVM;
 import com.nong.nongo2o.module.merchant.fragment.MerchantGoodsEvaluateFragment;
+import com.nong.nongo2o.module.merchant.fragment.MerchantGoodsFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
@@ -31,7 +32,7 @@ public class MerchantGoodsEvaluateVM implements ViewModel {
 
     private MerchantGoodsEvaluateFragment fragment;
     private Goods good;
-    private int star;
+    private int status;
 
     //  评价列表
     public final ObservableList<ItemEvaluateVM> itemEvaluateVMs = new ObservableArrayList<>();
@@ -39,11 +40,12 @@ public class MerchantGoodsEvaluateVM implements ViewModel {
 
     private int total;
     private int pageSize = 20;
+    private String starStr;
 
-    public MerchantGoodsEvaluateVM(MerchantGoodsEvaluateFragment fragment, Goods good, int star) {
+    public MerchantGoodsEvaluateVM(MerchantGoodsEvaluateFragment fragment, Goods good, int status) {
         this.fragment = fragment;
         this.good = good;
-        this.star = star;
+        this.status = status;
 
         initData();
     }
@@ -58,12 +60,30 @@ public class MerchantGoodsEvaluateVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
+        switch (status) {
+            case MerchantGoodsFragment.EVA_ALL:
+                starStr = "1,2,3,4,5";
+                break;
+            case MerchantGoodsFragment.EVA_BAD:
+                starStr = "1,2";
+                break;
+            case MerchantGoodsFragment.EVA_NORMAL:
+                starStr = "3,4";
+                break;
+            case MerchantGoodsFragment.EVA_GOOD:
+                starStr = "5";
+                break;
+            default:
+                starStr = "1,2,3,4,5";
+                break;
+        }
+
         getEvaluation(1);
     }
 
     private void getEvaluation(int page) {
         RetrofitHelper.getGoodsAPI()
-                .getGoodsComment(good.getGoodsCode(), star, page, pageSize)
+                .getGoodsComment(good.getGoodsCode(), starStr, page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -76,7 +96,6 @@ public class MerchantGoodsEvaluateVM implements ViewModel {
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-
     }
 
     /**

@@ -16,6 +16,7 @@ import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
@@ -191,6 +192,8 @@ public class GoodsManagerDetailVM implements ViewModel {
      * 上传图片
      */
     private void uploadFile(Goods good, boolean isNew) {
+        ((RxBaseActivity) fragment.getActivity()).showLoading();
+
         Map<String, RequestBody> picMap = new LinkedHashMap<>();
         for (File file : bannerFileList) {
             RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
@@ -214,7 +217,10 @@ public class GoodsManagerDetailVM implements ViewModel {
                                 }.getType());
                                 postGood(createGood(good, picUriList), isNew);
                             },
-                            throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                            throwable -> {
+                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                            });
         } else {
             postGood(createGood(good, null), isNew);
         }
@@ -224,26 +230,29 @@ public class GoodsManagerDetailVM implements ViewModel {
      * 创建新good
      */
     private Goods createGood(Goods good, List<FileResponse> picUriList) {
-        int i = 0;
-        int hasAdd = 0;
-        for (; i < bannerFileList.size(); i++) {
-            covers.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
-            hasAdd++;
-        }
-        for (int j = 0; j < itemDescVMs.size(); j++) {
-            ItemDescVM item = itemDescVMs.get(j);
-            if (contentList == null || contentList.size() < (j + 1)) {
-                contentList.add(new ImgTextContent());
+        if (picUriList != null && picUriList.size() > 0) {
+            int i = 0;
+            int hasAdd = 0;
+            for (; i < bannerFileList.size(); i++) {
+                covers.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                hasAdd++;
             }
-            ImgTextContent content = contentList.get(j);
+            for (int j = 0; j < itemDescVMs.size(); j++) {
+                ItemDescVM item = itemDescVMs.get(j);
+                if (contentList == null || contentList.size() < (j + 1)) {
+                    contentList.add(new ImgTextContent());
+                }
+                ImgTextContent content = contentList.get(j);
 
-            content.setContent(item.goodsDesc.get());
-            if (content.getImg() == null) content.setImg(new ArrayList<>());
-            for (; i < hasAdd + item.getNewPicList().size(); i++) {
-                content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                content.setContent(item.goodsDesc.get());
+                if (content.getImg() == null) content.setImg(new ArrayList<>());
+                for (; i < hasAdd + item.getNewPicList().size(); i++) {
+                    content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                }
+                hasAdd += item.getNewPicList().size();
             }
-            hasAdd += item.getNewPicList().size();
         }
+
         List<GoodsSpec> specList = new ArrayList<>();
         for (ItemStandardVM itemStandardVM : itemStandardVMs) {
             GoodsSpec spec = new GoodsSpec();
@@ -258,7 +267,8 @@ public class GoodsManagerDetailVM implements ViewModel {
         good.setTitle(goodsName.get());
         good.setGoodsSpecs(specList);
         good.setDetail(new Gson().toJson(contentList));
-        good.setFreight(new BigDecimal(transFee.get()));
+        //  默认运费
+        good.setFreight(new BigDecimal(0.0));
         //  默认分类
         good.setCategoryCode("code001");
 
@@ -283,7 +293,8 @@ public class GoodsManagerDetailVM implements ViewModel {
                         sendUpdateBroadcast();
                     }, throwable -> {
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
         } else {
             RetrofitHelper.getGoodsAPI()
                     .updateUserGoods(requestBody)
@@ -295,7 +306,8 @@ public class GoodsManagerDetailVM implements ViewModel {
                         sendUpdateBroadcast();
                     }, throwable -> {
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
         }
     }
 

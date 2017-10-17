@@ -88,7 +88,7 @@
                         style="@style/TextListTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="商品内容" />
+                        android:text="动态内容" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/rv_desc"
@@ -107,7 +107,7 @@
                         style="@style/SimpleTextButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="+  增加商品内容"
+                        android:text="+  增加动态内容"
                         android:textColor="@color/colorPrimary"
                         app:clickCommand="@{viewModel.addDescClick}" />
 
@@ -141,7 +141,7 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@mipmap/icon_pin"
                         android:drawablePadding="@dimen/line_space"
-                        android:text="你的地区" />
+                        android:text="@{viewModel.areaName}" />
 
                     <TextView
                         android:layout_width="match_parent"

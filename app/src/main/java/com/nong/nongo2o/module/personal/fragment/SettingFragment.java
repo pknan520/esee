@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.personal.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentSettingBinding;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.module.personal.activity.SettingActivity;
 import com.nong.nongo2o.module.personal.viewModel.SettingVM;
 
@@ -18,6 +20,7 @@ import com.nong.nongo2o.module.personal.viewModel.SettingVM;
 public class SettingFragment extends RxBaseFragment {
 
     public static final String TAG = "SettingFragment";
+    public static final int GET_AREA = 100;
 
     private FragmentSettingBinding binding;
     private SettingVM vm;
@@ -52,6 +55,17 @@ public class SettingFragment extends RxBaseFragment {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             ((SettingActivity) getActivity()).setToolbarTitle("个人资料");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case GET_AREA:
+                if (resultCode == -1 && vm != null) {
+                    vm.setCities((City) data.getSerializableExtra("cityP"), (City) data.getSerializableExtra("cityC"), (City) data.getSerializableExtra("cityD"));
+                }
+                break;
         }
     }
 }

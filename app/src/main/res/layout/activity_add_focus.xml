@@ -32,7 +32,6 @@
             android:layout_height="match_parent"
             android:id="@+id/fl"/>
 
-
     </LinearLayout>
 
 </layout>

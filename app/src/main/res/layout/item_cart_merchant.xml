@@ -29,6 +29,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="10dp"
+                app:roundedCornerRadius="5dp"
                 app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                 app:uri="@{viewModel.headUri}" />
 
@@ -49,6 +50,7 @@
                     style="@style/TextListSummary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:text="@{viewModel.summary}" />
 
             </LinearLayout>
@@ -61,7 +63,8 @@
                 android:padding="@dimen/text_padding"
                 android:text="联系TA"
                 android:textColor="@color/colorComplementaryText"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                app:clickCommand="@{viewModel.contactClick}"/>
 
         </LinearLayout>
 

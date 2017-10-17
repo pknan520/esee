@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.personal.viewModel.OrderDetailVM" />
+        <import type="android.view.View"/>
     </data>
 
     <com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout
@@ -55,8 +57,8 @@
                     android:layout_marginTop="@dimen/vertical_space"
                     android:background="@android:color/white"
                     android:orientation="vertical"
-                    app:clickCommand="@{viewModel.toAddrMgrClick}"
-                    android:padding="@dimen/item_padding">
+                    android:padding="@dimen/item_padding"
+                    app:clickCommand="@{viewModel.toAddrMgrClick}">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -109,16 +111,16 @@
                         app:clickCommand="@{viewModel.personalHomeClick}">
 
                         <com.facebook.drawee.view.SimpleDraweeView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:roundedCornerRadius="5dp"
                             app:placeholderImageRes="@{viewModel.merchantHeadPlaceHolder}"
                             app:uri="@{viewModel.merchantHeadUri}" />
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:orientation="vertical">
 
@@ -126,13 +128,16 @@
                                 style="@style/TextListTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{viewModel.name}" />
+                                android:text="@{viewModel.name}"
+                                tools:text="usernick0000001" />
 
                             <TextView
                                 style="@style/TextListSummary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{viewModel.summary}" />
+                                android:maxLines="1"
+                                android:text="@{viewModel.summary}"
+                                tools:text="我是农产品商家，欢迎关注我的小店小店" />
 
                         </LinearLayout>
 
@@ -145,7 +150,8 @@
                             android:padding="@dimen/text_padding"
                             android:text="联系TA"
                             android:textColor="@color/colorComplementaryText"
-                            android:textSize="@dimen/text_normal" />
+                            android:textSize="@dimen/text_normal"
+                            app:clickCommand="@{viewModel.contactClick}"/>
 
                     </LinearLayout>
                     <!--商品信息-->
@@ -194,7 +200,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_space"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.viewStyle.showLogisticsInfo ? View.VISIBLE : View.GONE}">
                     <!--物流状态-->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -208,7 +215,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="@dimen/item_padding"
-                            android:text="物流轨迹"
+                            android:text="物流信息"
                             android:textColor="@color/colorText"
                             android:textSize="@dimen/text_normal" />
 
@@ -226,7 +233,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@{@string/trans_order_no + viewModel.transOrderNo}"
+                                    android:text="快递公司"
                                     android:textColor="@color/colorText"
                                     android:textSize="@dimen/text_normal" />
 
@@ -234,50 +241,65 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:gravity="end"
-                                    android:text="@{viewModel.transStatus}"
+                                    android:text="@{viewModel.exName}"
                                     android:textColor="@color/colorPrimary"
                                     android:textSize="@dimen/text_normal" />
 
                             </LinearLayout>
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/line_space"
-                                android:text="@{@string/create_date + viewModel.transCreateDate}"
-                                android:textColor="@color/colorComplementaryText"
-                                android:textSize="@dimen/text_normal_small" />
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="快递单号"
+                                    android:textColor="@color/colorText"
+                                    android:textSize="@dimen/text_normal" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="end"
+                                    android:text="@{viewModel.exNumber}"
+                                    android:textColor="@color/colorPrimary"
+                                    android:textSize="@dimen/text_normal" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
                     </LinearLayout>
                     <!--物流轨迹-->
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/rv_trans"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/vertical_space"
-                        android:background="@android:color/white"
-                        android:padding="@dimen/item_padding"
-                        app:itemBinding="@{viewModel.itemTransBinding}"
-                        app:items="@{viewModel.itemTransListVMs}" />
+                    <!--<android.support.v7.widget.RecyclerView-->
+                        <!--android:id="@+id/rv_trans"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginTop="@dimen/vertical_space"-->
+                        <!--android:background="@android:color/white"-->
+                        <!--android:padding="@dimen/item_padding"-->
+                        <!--app:itemBinding="@{viewModel.itemTransBinding}"-->
+                        <!--app:items="@{viewModel.itemTransListVMs}" />-->
 
                 </LinearLayout>
                 <!--操作按钮-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/item_padding"
                     android:layout_marginTop="@dimen/vertical_space"
-                    android:background="@android:color/white">
+                    android:background="@android:color/white"
+                    android:visibility="@{viewModel.viewStyle.btnVisi ? View.VISIBLE : View.GONE}"
+                    android:padding="@dimen/item_padding">
 
                     <Button
+                        style="@style/SimpleOrangeButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/SimpleOrangeButton"
                         android:padding="@dimen/text_padding"
-                        app:clickCommand="@{viewModel.operateClick}"
-                        android:text="操作按钮" />
+                        android:text="@{viewModel.btnStr}"
+                        app:clickCommand="@{viewModel.operateClick}"/>
 
                 </LinearLayout>
 

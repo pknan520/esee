@@ -51,7 +51,7 @@ public class MerchantGoodsActivity extends RxBaseToolbarActivity {
     }
 
     private void initView() {
-        binding.tvToolbarTitle.setText("商品标题");
+        binding.tvToolbarTitle.setText(good.getTitle());
         replaceFragment(R.id.fl, MerchantGoodsFragment.newInstance(good == null ? null : good), MerchantGoodsFragment.TAG);
     }
 

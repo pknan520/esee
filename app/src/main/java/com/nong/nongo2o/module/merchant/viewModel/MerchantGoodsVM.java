@@ -17,6 +17,7 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hyphenate.chat.EMClient;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
@@ -25,13 +26,15 @@ import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.entity.request.CreateCartRequest;
-import com.nong.nongo2o.module.common.activity.BuyActivity;
 import com.nong.nongo2o.module.common.viewModel.ItemImageTextVM;
 import com.nong.nongo2o.module.merchant.fragment.MerchantGoodsFragment;
+import com.nong.nongo2o.module.message.activity.ChatActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.FocusUtils;
+import com.nong.nongo2o.uils.imUtils.IMCallback;
+import com.nong.nongo2o.uils.imUtils.IMUtils;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 
@@ -39,8 +42,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
@@ -212,7 +213,22 @@ public class MerchantGoodsVM implements ViewModel {
      * 咨询商家
      */
     public final ReplyCommand consultClick = new ReplyCommand(() -> {
+        IMUtils.checkIMLogin(isSuccess -> {
+            if (isSuccess) {
+                String userName = good.getSale().getId();
+                if (userName.equals(EMClient.getInstance().getCurrentUser())) {
+                    Toast.makeText(fragment.getActivity(), "您不能自言自语了啦^.^", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
+                Intent intent = new Intent(fragment.getActivity(), ChatActivity.class);
+                intent.putExtra("userId", userName);
+                fragment.getActivity().startActivity(intent);
+                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+            } else {
+                Toast.makeText(fragment.getActivity(), "聊天可能有点问题，请稍候再试", Toast.LENGTH_SHORT).show();
+            }
+        });
     });
 
     /**

@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.main.viewModel.cart.CartVM" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
@@ -32,6 +33,33 @@
                 android:text="购物车" />
 
         </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{(viewModel.viewStyle.isEmpty || viewModel.viewStyle.notLogin) ? View.VISIBLE : View.GONE}"
+            app:clickCommand="@{viewModel.onRefreshCommand}">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:placeholderImageRes="@{viewModel.viewStyle.isEmpty ? viewModel.emptyImg : viewModel.notLoginImg}" />
+
+            <Button
+                style="@style/SimplePrimaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@drawable/shape_round_primary_button"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:text="马上登录"
+                android:visibility="@{viewModel.viewStyle.notLogin ? View.VISIBLE : View.GONE}"
+                app:clickCommand="@{viewModel.toLogin}" />
+
+        </LinearLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:layout_width="match_parent"

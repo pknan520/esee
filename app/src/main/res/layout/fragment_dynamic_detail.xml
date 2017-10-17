@@ -42,7 +42,7 @@
                     android:layout_height="match_parent"
                     app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:contentScrim="@color/colorPrimary"
-                    app:expandedTitleMarginStart="48dp"
+                    app:expandedTitleMarginStart="24dp"
                     app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -105,13 +105,13 @@
                         android:background="@android:color/white"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="@dimen/text_padding"
+                        android:padding="@dimen/item_padding"
                         app:clickCommand="@{viewModel.personalHomeClick}">
 
                         <com.facebook.drawee.view.SimpleDraweeView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:layout_marginLeft="10dp"
+                            app:roundedCornerRadius="5dp"
                             app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                             app:uri="@{viewModel.headUri}" />
 
@@ -132,6 +132,7 @@
                                 style="@style/TextListSummary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:maxLines="1"
                                 android:text="@{viewModel.summary}" />
 
                         </LinearLayout>
@@ -141,8 +142,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            app:clickCommand="@{viewModel.focusClick}"
-                            android:padding="@dimen/text_padding">
+                            android:padding="@dimen/text_padding"
+                            app:clickCommand="@{viewModel.focusClick}">
 
                             <com.facebook.drawee.view.SimpleDraweeView
                                 android:layout_width="wrap_content"

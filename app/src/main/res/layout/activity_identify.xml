@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:padding="@dimen/item_padding"
-            android:text="退出登录"
+            android:text="提交资料"
             android:textSize="15sp"
             app:clickCommand="@{viewModel.submitClick}" />
 

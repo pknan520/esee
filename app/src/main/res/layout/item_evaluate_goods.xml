@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.OrderEvaluateVM.ItemGoodsVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:divider="@drawable/shape_vertical_divider"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:uri="@{viewModel.goodsImg}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <RatingBar
+                    style="@style/BigRatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:rating="@={viewModel.rating}"
+                    android:stepSize="1" />
+
+                <RelativeLayout
+                    android:layout_width="195dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/item_padding"
+                    android:paddingEnd="7.5dp"
+                    android:paddingStart="7.5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:text="差评"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="中评"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="好评"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <EditText
+            android:gravity="start"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@android:color/white"
+            android:hint="亲，商品这么赞，快来评论吧"
+            android:padding="@dimen/item_padding"
+            android:text="@={viewModel.content}"
+            android:textColor="@color/colorText"
+            android:textColorHint="@color/colorHintText"
+            android:textSize="@dimen/text_normal" />
+
+    </LinearLayout>
+
+</layout>

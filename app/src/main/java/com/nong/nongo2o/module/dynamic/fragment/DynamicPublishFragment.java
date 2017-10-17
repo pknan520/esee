@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentDynamicPublishBinding;
 import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
@@ -36,6 +37,7 @@ import com.trello.rxlifecycle2.components.RxFragment;
 public class DynamicPublishFragment extends RxFragment {
 
     public static final String TAG = "DynamicPublishFragment";
+    public static final int GET_AREA = 100;
 
     private FragmentDynamicPublishBinding binding;
     protected DynamicPublishVM vm;
@@ -108,7 +110,8 @@ public class DynamicPublishFragment extends RxFragment {
     private BroadcastReceiver selectGoodsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (vm != null && intent.getSerializableExtra("Goods") != null) vm.setSelectedGoods((Goods) intent.getSerializableExtra("Goods"));
+            if (vm != null && intent.getSerializableExtra("Goods") != null)
+                vm.setSelectedGoods((Goods) intent.getSerializableExtra("Goods"));
         }
     };
 
@@ -116,5 +119,16 @@ public class DynamicPublishFragment extends RxFragment {
     public void onDetach() {
         super.onDetach();
         lbm.unregisterReceiver(selectGoodsReceiver);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case GET_AREA:
+                if (resultCode == -1 && vm != null) {
+                    vm.setCities((City) data.getSerializableExtra("cityP"), (City) data.getSerializableExtra("cityC"), (City) data.getSerializableExtra("cityD"));
+                }
+                break;
+        }
     }
 }

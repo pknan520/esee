@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.main.viewModel.merchant.MerchantListVM" />
+        <import type="android.view.View"/>
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -24,14 +25,15 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <com.daimajia.slider.library.SliderLayout
                     android:id="@+id/slider"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    app:defaultSliderView="@{viewModel.sliderList}" />
+                    app:defaultSliderView="@{viewModel.sliderList}"
+                    android:visibility="@{viewModel.viewStyle.isMyFocus ? View.GONE : View.VISIBLE}"/>
 
                 <TextView
                     style="@style/TextListTitle"
@@ -41,7 +43,42 @@
                     android:drawablePadding="@dimen/line_space"
                     android:drawableStart="@mipmap/activity_notice"
                     android:padding="@dimen/text_padding"
-                    android:text="@{viewModel.adText}" />
+                    android:text="@{viewModel.adText}"
+                    android:visibility="@{viewModel.viewStyle.isMyFocus ? View.GONE : View.VISIBLE}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="480dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="@{(viewModel.viewStyle.isEmpty || viewModel.viewStyle.notLogin) ? View.VISIBLE : View.GONE}">
+
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:placeholderImageRes="@{viewModel.viewStyle.isEmpty ? viewModel.emptyImg : viewModel.notLoginImg}"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_space"
+                        android:gravity="center"
+                        android:text="@{viewModel.viewStyle.isEmpty ? `你还没关注好友~\n关注好友后动态将会实时显示哦~` : ``}"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <Button
+                        style="@style/SimplePrimaryButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_space"
+                        android:background="@drawable/shape_round_primary_button"
+                        android:paddingEnd="20dp"
+                        android:paddingStart="20dp"
+                        android:text="@{viewModel.viewStyle.isEmpty ? `马上关注` : `马上登陆`}"
+                        app:clickCommand="@{viewModel.errorClick}" />
+
+                </LinearLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv"

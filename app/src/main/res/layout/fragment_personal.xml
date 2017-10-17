@@ -34,6 +34,9 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_centerVertical="true"
+                    app:roundAsCircle="true"
+                    app:roundingBorderWidth="2dp"
+                    app:roundingBorderColor="#96e6eb"
                     app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                     app:uri="@{viewModel.headUri}" />
 
@@ -42,6 +45,7 @@
                     android:layout_height="50dp"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/iv_head"
+                    android:layout_marginStart="@dimen/item_padding"
                     android:padding="5dp">
 
                     <TextView
@@ -70,8 +74,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="@{viewModel.viewStyle.isMerchantMode ? @string/exit_manager : @string/shop_manager}"
-                    android:visibility="@{viewModel.viewStyle.isSaler ? View.VISIBLE : View.GONE }"
                     android:textColor="@android:color/white"
+                    android:visibility="@{viewModel.viewStyle.isSaler ? View.VISIBLE : View.GONE }"
                     app:clickCommand="@{viewModel.switchModeClick}" />
 
             </RelativeLayout>
@@ -114,8 +118,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/item_padding"
-                    app:clickCommand="@{viewModel.toBillClick}"
-                    android:text="账单" />
+                    android:text="账单"
+                    app:clickCommand="@{viewModel.toBillClick}" />
 
                 <Button
                     style="@style/SimpleTextButton"
@@ -151,8 +155,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:drawablePadding="@dimen/line_space"
                         android:drawableEnd="@mipmap/right_grey"
+                        android:drawablePadding="@dimen/line_space"
                         android:text="全部订单"
                         android:textColor="@color/colorComplementaryText"
                         android:textSize="@dimen/text_normal"
@@ -178,9 +182,10 @@
                         android:text="待付款"
                         android:textColor="@color/colorComplementaryText"
                         android:textSize="@dimen/text_normal_small"
+                        app:badgeText="@{String.valueOf(viewModel.unpaidBadge)}"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{String.valueOf(viewModel.unpaidBadge)}"/>
+                        app:clickCommand="@{viewModel.toUnPaidOrderClick}" />
 
                     <cn.bingoogolapple.badgeview.BGABadgeTextView
                         android:layout_width="0dp"
@@ -193,9 +198,10 @@
                         android:text="待发货"
                         android:textColor="@color/colorComplementaryText"
                         android:textSize="@dimen/text_normal_small"
+                        app:badgeText="@{String.valueOf(viewModel.deliveryBadge)}"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{String.valueOf(viewModel.deliveryBadge)}" />
+                        app:clickCommand="@{viewModel.toUnSendOrderClick}" />
 
 
                     <cn.bingoogolapple.badgeview.BGABadgeTextView
@@ -209,9 +215,10 @@
                         android:text="待收货"
                         android:textColor="@color/colorComplementaryText"
                         android:textSize="@dimen/text_normal_small"
+                        app:badgeText="@{String.valueOf(viewModel.takeoverBadge)}"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{String.valueOf(viewModel.takeoverBadge)}"/>
+                        app:clickCommand="@{viewModel.toUnReceiveOrderClick}" />
 
 
                     <cn.bingoogolapple.badgeview.BGABadgeTextView
@@ -225,9 +232,10 @@
                         android:text="待评价"
                         android:textColor="@color/colorComplementaryText"
                         android:textSize="@dimen/text_normal_small"
+                        app:badgeText="@{String.valueOf(viewModel.evaBadge)}"
                         app:badge_gravity="rightTop"
                         app:badge_horizontalMargin="15dp"
-                        app:badgeText="@{String.valueOf(viewModel.evaBadge)}" />
+                        app:clickCommand="@{viewModel.toUnEvaOrderClick}" />
 
                 </LinearLayout>
 
@@ -259,8 +267,8 @@
                     android:padding="@dimen/item_padding"
                     android:text="我的关注"
                     android:textColor="@color/colorText"
-                    app:clickCommand="@{viewModel.toFansMgrClick}"
-                    android:textSize="@dimen/text_normal" />
+                    android:textSize="@dimen/text_normal"
+                    app:clickCommand="@{viewModel.toFansMgrClick}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -268,9 +276,19 @@
                     android:drawableEnd="@mipmap/right_grey"
                     android:padding="@dimen/item_padding"
                     android:text="数据统计"
-                    android:visibility="@{viewModel.viewStyle.isMerchantMode ? View.VISIBLE : View.GONE}"
                     android:textColor="@color/colorText"
-                    android:textSize="@dimen/text_normal" />
+                    android:textSize="@dimen/text_normal"
+                    android:visibility="@{viewModel.viewStyle.isMerchantMode ? View.VISIBLE : View.GONE}"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@mipmap/right_grey"
+                    android:padding="@dimen/item_padding"
+                    android:text="邀请码"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal"
+                    app:clickCommand="@{viewModel.toInviteClick}"/>
 
             </LinearLayout>
             <!--认证栏-->

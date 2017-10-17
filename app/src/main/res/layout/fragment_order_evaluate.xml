@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.OrderEvaluateVM" />
+    </data>
+
+    <com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/colorWindowBg">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:itemBinding="@{viewModel.itemBinding}"
+            app:items="@{viewModel.itemVMs}" />
+
+        <Button
+            style="@style/SimpleOrangeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="30dp"
+            app:clickCommand="@{viewModel.submitClick}"
+            android:padding="@dimen/item_padding"
+            android:text="提交"
+            android:textSize="@dimen/text_title_small" />
+
+        <!--<android.support.v4.widget.NestedScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical">-->
+
+        <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/rv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@android:color/white" />-->
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/item_padding"-->
+        <!--android:background="@android:color/white"-->
+        <!--android:gravity="center_horizontal"-->
+        <!--android:orientation="vertical"-->
+        <!--android:padding="@dimen/item_padding">-->
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="对购买的商品还满意么"-->
+        <!--android:textColor="@color/colorText"-->
+        <!--android:textSize="@dimen/text_normal" />-->
+
+        <!--<RatingBar-->
+        <!--android:id="@+id/ratingBar"-->
+        <!--style="@style/BigRatingBar"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/item_padding"-->
+        <!--android:isIndicator="true"-->
+        <!--android:numStars="5"-->
+        <!--android:stepSize="1"-->
+        <!--android:rating="@{viewModel.rating}" />-->
+
+        <!--<RelativeLayout-->
+        <!--android:id="@+id/rl_text"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/item_padding">-->
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:text="差评"-->
+        <!--android:textColor="@color/colorComplementaryText"-->
+        <!--android:textSize="@dimen/text_normal" />-->
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="中评"-->
+        <!--android:textColor="@color/colorComplementaryText"-->
+        <!--android:textSize="@dimen/text_normal" />-->
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:text="好评"-->
+        <!--android:textColor="@color/colorComplementaryText"-->
+        <!--android:textSize="@dimen/text_normal" />-->
+
+        <!--</RelativeLayout>-->
+
+        <!--</LinearLayout>-->
+
+        <!--<EditText-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:layout_marginTop="@dimen/item_padding"-->
+        <!--android:background="@android:color/white"-->
+        <!--android:hint="亲，商品这么赞，快来评论吧"-->
+        <!--android:padding="@dimen/item_padding"-->
+        <!--android:text="@={viewModel.content}"-->
+        <!--android:textColor="@color/colorText"-->
+        <!--android:textColorHint="@color/colorHintText"-->
+        <!--android:textSize="@dimen/text_normal" />-->
+
+        <!--<Button-->
+        <!--style="@style/SimpleOrangeButton"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="15dp"-->
+        <!--android:layout_marginStart="15dp"-->
+        <!--android:layout_marginTop="30dp"-->
+        <!--android:padding="@dimen/item_padding"-->
+        <!--android:text="提交"-->
+        <!--android:clickable="@{viewModel.submitClick}"-->
+        <!--android:textSize="@dimen/text_title_small" />-->
+
+        <!--</LinearLayout>-->
+
+        <!--</android.support.v4.widget.NestedScrollView>-->
+
+    </com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout>
+
+</layout>

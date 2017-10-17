@@ -6,6 +6,8 @@ import com.nong.nongo2o.entity.bean.SalerInfo;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsComment;
 
+import org.reactivestreams.Publisher;
+
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
@@ -99,8 +101,19 @@ public interface GoodsService {
      * @return 返回评论列表
      */
     @GET("goods/comment/search")
-    Observable<ApiResponse<ApiListResponse<GoodsComment>>> getGoodsComment(@Query("goodsCode") String goodsCode, @Query("star") int star,
+    Observable<ApiResponse<ApiListResponse<GoodsComment>>> getGoodsComment(@Query("goodsCode") String goodsCode, @Query("starStr") String starStr,
                                                                            @Query("page") int page, @Query("pageSize") int pageSize);
+
+
+    /**
+     * 发表商品评论
+     *
+     * @param body CreateGoodsCommentRequest
+     * @return 返回操作成功/失败
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @POST("/user/goods/comment")
+    Observable<ApiResponse<String>> postGoodsComment(@Body RequestBody body);
 
     /**
      * 获取我买到的商品列表

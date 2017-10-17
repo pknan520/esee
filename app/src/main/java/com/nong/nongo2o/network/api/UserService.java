@@ -28,6 +28,7 @@ import retrofit2.http.Query;
 public interface UserService {
     /**
      * 获取验证码
+     *
      * @param phone
      * @return
      */
@@ -36,6 +37,7 @@ public interface UserService {
 
     /**
      * 用户注册
+     *
      * @param body
      * @return
      */
@@ -45,6 +47,7 @@ public interface UserService {
 
     /**
      * 检索商家
+     *
      * @param body
      * @return
      */
@@ -53,6 +56,7 @@ public interface UserService {
 
     /**
      * 商家认证
+     *
      * @param body
      * @return
      */
@@ -62,21 +66,24 @@ public interface UserService {
 
     /**
      * 获取当前登录用户信息
+     *
      * @return
      */
     @GET("user/profile")
     Observable<ApiResponse<User>> userProfile();
 
     /**
-     *  查询用户信息
+     * 查询用户信息
+     *
      * @param id 传userCode
      * @return
      */
     @GET("profile")
-    Observable<ApiResponse<User>> profile(@Query("id")String id);
+    Observable<ApiResponse<SimpleUser>> profile(@Query("id") String id);
 
     /**
      * 登录成功后，获取用户信息
+     *
      * @return
      */
     @GET("user/keeplive")
@@ -84,6 +91,7 @@ public interface UserService {
 
     /**
      * 更新用户信息
+     *
      * @param body
      * @return
      */
@@ -92,16 +100,18 @@ public interface UserService {
     Observable<ApiResponse<String>> updateUserPofile(@Body RequestBody body);
 
     /**
-     *  报表
-     * @param type 后台配置的类型【必传】
+     * 报表
+     *
+     * @param type  后台配置的类型【必传】
      * @param param Map<String,String>参数 k-v
      * @return
      */
-    @GET("user/db/wrapper")
-    Observable<ApiResponse<List<Map<String, Object>>>> userDbWrapper(@Query("type")String type, @Query("param")String param );
+    @GET("db/wrapper")
+    Observable<ApiResponse<List<Map<String, Object>>>> userDbWrapper(@Query("type") String type, @Query("param") String param);
 
     /**
      * 更新用户信息
+     *
      * @param body 请求参数
      * @return 返回
      */
@@ -111,27 +121,30 @@ public interface UserService {
 
     /**
      * 查询关注列表
+     *
      * @param userCode 用户编码（自己）
-     * @param page  页码
-     * @param pageSize  每页数量
-     * @return  返回关注列表
+     * @param page     页码
+     * @param pageSize 每页数量
+     * @return 返回关注列表
      */
     @GET("follow/search")
     Observable<ApiResponse<ApiListResponse<Fans>>> searchFocus(@Query("userCode") String userCode, @Query("page") int page, @Query("pageSize") int pageSize);
 
     /**
      * 查询粉丝列表
-     * @param targetCode  目标用户编码（自己）
-     * @param page  页码
-     * @param pageSize  每页数量
-     * @return  返回粉丝列表
+     *
+     * @param targetCode 目标用户编码（自己）
+     * @param page       页码
+     * @param pageSize   每页数量
+     * @return 返回粉丝列表
      */
     @GET("follow/search")
     Observable<ApiResponse<ApiListResponse<Fans>>> searchFans(@Query("targetCode") String targetCode, @Query("page") int page, @Query("pageSize") int pageSize);
 
     /**
      * 取消关注
-     * @param userCode 自己的userCode
+     *
+     * @param userCode   自己的userCode
      * @param targetCode 对方的userCode
      * @return 返回成功/失败
      */
@@ -140,6 +153,7 @@ public interface UserService {
 
     /**
      * 关注
+     *
      * @param body 请求体
      * @return 返回成功/失败
      */
@@ -149,18 +163,20 @@ public interface UserService {
 
     /**
      * 查询收货地址列表
-     * @param userCode  用户编号
-     * @param page  页码
-     * @param pageSize  每页数量
-     * @return  返回地址列表
+     *
+     * @param userCode 用户编号
+     * @param page     页码
+     * @param pageSize 每页数量
+     * @return 返回地址列表
      */
     @GET("address/search")
     Observable<ApiResponse<ApiListResponse<Address>>> searchAddress(@Query("userCode") String userCode, @Query("page") int page, @Query("pageSize") int pageSize);
 
     /**
      * 添加地址
-     * @param body  请求体
-     * @return  返回成功/失败
+     *
+     * @param body 请求体
+     * @return 返回成功/失败
      */
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @POST("address")
@@ -168,8 +184,9 @@ public interface UserService {
 
     /**
      * 编辑地址
-     * @param body  请求体
-     * @return  返回成功/失败
+     *
+     * @param body 请求体
+     * @return 返回成功/失败
      */
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @PUT("address")
@@ -177,10 +194,41 @@ public interface UserService {
 
     /**
      * 删除地址
-     * @param addressCode  地址编号
-     * @return  返回成功/失败
+     *
+     * @param addressCode 地址编号
+     * @return 返回成功/失败
      */
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @POST("address")
     Observable<ApiResponse<String>> deleteAddress(@Query("addressCode") String addressCode);
+
+    /**
+     * 获取验证码
+     *
+     * @param phone  电话
+     * @param openId 微信openId
+     * @return 返回验证码
+     */
+    @GET("validcode")
+    Observable<ApiResponse<String>> getValidCode(@Query("phone") String phone, @Query("openId") String openId);
+
+    /**
+     * 注册用户
+     *
+     * @param body CreateUserRequest
+     * @return 返回操作成功/失败
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @POST("address")
+    Observable<ApiResponse<String>> registerUser(@Body RequestBody body);
+
+    /**
+     * 绑定邀请码
+     *
+     * @param inviteCode 邀请码
+     * @return 返回操作成功/失败
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @PUT("user/invitecode")
+    Observable<ApiResponse<String>> bindInviteCode(@Query("inviteCode") String inviteCode);
 }

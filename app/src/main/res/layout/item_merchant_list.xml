@@ -33,7 +33,7 @@
             <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
+                app:roundedCornerRadius="5dp"
                 app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                 app:uri="@{viewModel.headUri}" />
 
@@ -54,6 +54,7 @@
                     style="@style/TextListSummary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:text="@{viewModel.summary}" />
 
             </LinearLayout>

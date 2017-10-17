@@ -1,7 +1,12 @@
 package com.nong.nongo2o.module.main.fragment.merchant;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +27,8 @@ public class MerchantListFragment extends RxFragment {
     private FragmentMerchantListBinding binding;
     private MerchantListVM vm;
 
+    private LocalBroadcastManager lbm;
+
     public static MerchantListFragment newInstance(int type) {
         Bundle args = new Bundle();
         args.putInt("type", type);
@@ -36,6 +43,7 @@ public class MerchantListFragment extends RxFragment {
         if (vm == null) {
             vm = new MerchantListVM(this, getArguments().getInt("type"));
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -53,5 +61,29 @@ public class MerchantListFragment extends RxFragment {
 
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rv.setNestedScrollingEnabled(false);
+    }
+
+    /**
+     * 刷新广播接收器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("loginSuccess");
+        filter.addAction("refreshMerchantList");
+        lbm.registerReceiver(loginReceiver, filter);
+    }
+
+    private BroadcastReceiver loginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (vm != null) vm.initData();
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        lbm.unregisterReceiver(loginReceiver);
     }
 }

@@ -2,6 +2,7 @@ package com.nong.nongo2o.network.api;
 
 import com.nong.nongo2o.entity.bean.ApiListResponse;
 import com.nong.nongo2o.entity.bean.ApiResponse;
+import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.entity.domain.Follow;
 
 import java.util.List;
@@ -23,10 +24,9 @@ public interface FollowService {
 
 
     /**
-     *
-     * @param type 1：我的粉丝；2：我的关注
-     * @param page 页码
-     * @param pageSize  分页大小
+     * @param type     1：我的粉丝；2：我的关注
+     * @param page     页码
+     * @param pageSize 分页大小
      * @return
      */
     @GET("user/follow/search")
@@ -62,4 +62,5 @@ public interface FollowService {
      */
     @DELETE("user/follow")
     Observable<ApiResponse<String>> cancelFocus(@Query("id") String id);
+
 }

@@ -114,7 +114,7 @@ public class CartFragment extends RxFragment {
 
         for (CartVM.ItemCartMerchantVM itemMerchant : vm.itemCartMerchantVMs) {
             for (CartVM.ItemCartMerchantVM.ItemCartMerchantGoodsVM itemGoods : itemMerchant.itemCartMerchantGoodsVMs) {
-                itemGoods.viewStyle.isEdit.set(vm.viewStyle.isEdit.get());
+                itemGoods.mViewStyle.isEdit.set(vm.viewStyle.isEdit.get());
             }
         }
 
@@ -122,6 +122,7 @@ public class CartFragment extends RxFragment {
             item.setTitle("完成");
         } else {
             item.setTitle("编辑");
+            if (vm != null) vm.updateCartList();
         }
     }
 
@@ -132,6 +133,7 @@ public class CartFragment extends RxFragment {
         lbm = LocalBroadcastManager.getInstance(getActivity());
         IntentFilter filter = new IntentFilter();
         filter.addAction("updateCart");
+        filter.addAction("loginSuccess");
         lbm.registerReceiver(updateReceiver, filter);
     }
 

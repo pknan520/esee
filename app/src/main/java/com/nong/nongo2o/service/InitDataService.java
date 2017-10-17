@@ -45,9 +45,11 @@ public class InitDataService extends Service {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    AdventurerApp.getInstance().clearFollow();
-                    for (String userCode : resp) {
-                        AdventurerApp.getInstance().addFollow(userCode);
+                    if (resp != null && !resp.isEmpty()) {
+                        AdventurerApp.getInstance().clearFollow();
+                        for (String userCode : resp) {
+                            AdventurerApp.getInstance().addFollow(userCode);
+                        }
                     }
                 }, throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
 

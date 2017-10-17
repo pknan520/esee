@@ -99,12 +99,8 @@ public class DynamicFragment extends RxFragment{
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case PUBLISH_RESULT:
-                if (resultCode == RESULT_OK && mineFragment != null) mineFragment.initData();
-                break;
-        }
+    public void switchToAll() {
+        binding.vp.setCurrentItem(1);
     }
+
 }

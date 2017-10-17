@@ -3,6 +3,7 @@ package com.nong.nongo2o.module.personal.viewModel;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
+import android.support.annotation.DrawableRes;
 import android.widget.Toast;
 
 import com.kelin.mvvmlight.base.ViewModel;
@@ -34,6 +35,9 @@ public class FansListVM implements ViewModel {
     public final ObservableList<ItemFansListVM> itemFansListVMs = new ObservableArrayList<>();
     public ItemBinding<ItemFansListVM> itemFansListBinding = ItemBinding.of(BR.viewModel, R.layout.item_fans_list);
 
+    @DrawableRes
+    public final int emptyImg = R.mipmap.default_none;
+
     public FansListVM(FansListFragment fragment, int status) {
         this.fragment = fragment;
         this.status = status;
@@ -45,6 +49,8 @@ public class FansListVM implements ViewModel {
 
     public class ViewStyle {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
+
+        public final ObservableBoolean isEmpty = new ObservableBoolean(false);
     }
 
     /**
@@ -52,9 +58,9 @@ public class FansListVM implements ViewModel {
      */
     private void initData() {
         if (status == FansMgrActivity.MY_FOCUS) {
-            searchFocus(1);
+            searchFocus(1, true);
         } else {
-            searchFans(1);
+            searchFans(1, true);
         }
     }
 
@@ -64,11 +70,10 @@ public class FansListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        itemFansListVMs.clear();
         if (status == FansMgrActivity.MY_FOCUS) {
-            searchFocus(1);
+            searchFocus(1, true);
         } else {
-            searchFans(1);
+            searchFans(1, true);
         }
     }
 
@@ -80,9 +85,9 @@ public class FansListVM implements ViewModel {
     private void loadMoreData() {
         if (itemFansListVMs.size() < total) {
             if (status == FansMgrActivity.MY_FOCUS) {
-                searchFocus(itemFansListVMs.size() / pageSize + 1);
+                searchFocus(itemFansListVMs.size() / pageSize + 1, false);
             } else {
-                searchFans(itemFansListVMs.size() / pageSize + 1);
+                searchFans(itemFansListVMs.size() / pageSize + 1, false);
             }
         }
     }
@@ -90,18 +95,21 @@ public class FansListVM implements ViewModel {
     /**
      * 获取关注列表
      */
-    private void searchFocus(int page) {
+    private void searchFocus(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
+
         RetrofitHelper.getFollowAPI()
                 .userFollowSearch(2,page,pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
+                    if (force) itemFansListVMs.clear();
                     total = resp.getTotal();
                     for (Follow follow : resp.getRows()) {
                         itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FOCUS));
                     }
+                    viewStyle.isEmpty.set(itemFansListVMs.isEmpty());
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);
@@ -111,18 +119,21 @@ public class FansListVM implements ViewModel {
     /**
      * 获取粉丝列表
      */
-    private void searchFans(int page) {
+    private void searchFans(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
+
         RetrofitHelper.getFollowAPI()
                 .userFollowSearch(1,page,pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
+                    if (force) itemFansListVMs.clear();
                     total = resp.getTotal();
                     for (Follow follow : resp.getRows()) {
                         itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FANS));
                     }
+                    viewStyle.isEmpty.set(itemFansListVMs.isEmpty());
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);

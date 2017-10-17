@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -12,12 +13,14 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.module.login.LoginActivity;
 import com.nong.nongo2o.module.main.fragment.personal.PersonalFragment;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
 import com.nong.nongo2o.module.personal.activity.BillActivity;
 import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.activity.GoodsManagerActivity;
 import com.nong.nongo2o.module.personal.activity.IdentifyActivity;
+import com.nong.nongo2o.module.personal.activity.InviteActivity;
 import com.nong.nongo2o.module.personal.activity.OrderCenterActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.module.personal.activity.SettingActivity;
@@ -30,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -40,7 +44,7 @@ public class PersonalVM implements ViewModel {
 
     private PersonalFragment fragment;
     private Gson gson;
-    private String userCode="";
+    private String userCode = "";
 
     @DrawableRes
     public final int headPlaceHolder = R.mipmap.head_wode_98;
@@ -66,9 +70,24 @@ public class PersonalVM implements ViewModel {
         public final ObservableBoolean hasAuthentication = new ObservableBoolean(false);
         public final ObservableBoolean isMerchantMode = new ObservableBoolean(false);
         public final ObservableBoolean isSaler = new ObservableBoolean(false);
+
+        public final ObservableBoolean notLogin = new ObservableBoolean(false);
     }
 
-    private void initData() {
+    public void initData() {
+        viewStyle.notLogin.set(TextUtils.isEmpty(UserInfo.getInstance().getSessionToken()));
+
+        if (!viewStyle.notLogin.get()) getPersonalInfo();
+        else {
+            name.set("请登录");
+            balance.set(new BigDecimal(0.0));
+            viewStyle.isSaler.set(false);
+        }
+
+//        authenticationStatus.set(R.string.saler_authentication);
+    }
+
+    private void getPersonalInfo() {
         RetrofitHelper.getUserAPI().userProfile()
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
@@ -77,53 +96,51 @@ public class PersonalVM implements ViewModel {
                     headUri.set(resp.getAvatar());
                     name.set(resp.getUserNick());
                     balance.set(resp.getBalance());
-                    viewStyle.isSaler.set( resp.getUserType() == 1);
+                    viewStyle.isSaler.set(resp.getUserType() == 1);
                     userCode = resp.getUserCode();
                     getOrderCount(userCode);
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }, () -> {
                 });
-
-//        authenticationStatus.set(R.string.saler_authentication);
     }
 
-    private void getOrderCount(String userCode){
+    private void getOrderCount(String userCode) {
         reset();
         String type = "";
-        Map<String,String> paramMap = new HashMap<>();
-        if(viewStyle.isMerchantMode.get()){
+        Map<String, String> paramMap = new HashMap<>();
+        if (viewStyle.isMerchantMode.get()) {
             type = "saler_order_status";
-            paramMap.put("salerCode",userCode);
-        }else{
+            paramMap.put("salerCode", userCode);
+        } else {
             type = "buyer_order_status";
-            paramMap.put("buyerCode",userCode);
+            paramMap.put("buyerCode", userCode);
         }
-        RetrofitHelper.getUserAPI().userDbWrapper(type,gson.toJson(paramMap))
+        RetrofitHelper.getUserAPI()
+                .userDbWrapper(type, gson.toJson(paramMap))
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    for(Map<String,Object> countMap : resp){
-                        switch ((int)Double.parseDouble(countMap.get("order_status").toString()) ){
+                    for (Map<String, Object> countMap : resp) {
+                        switch ((int) Double.parseDouble(countMap.get("order_status").toString())) {
                             case 0:
-                                unpaidBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                unpaidBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
                                 break;
                             case 1:
-                                deliveryBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                deliveryBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
                                 break;
                             case 2:
-                                takeoverBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                takeoverBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
                                 break;
                             case 3:
-                                evaBadge.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                evaBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
                                 break;
                         }
                     }
-                }, throwable -> {
-                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }, () -> {});
+                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show())
+        ;
     }
+
     /**
      * 切换模式
      */
@@ -133,7 +150,7 @@ public class PersonalVM implements ViewModel {
         getOrderCount(userCode);
     });
 
-    private void reset(){
+    private void reset() {
         unpaidBadge.set(0);
         deliveryBadge.set(0);
         takeoverBadge.set(0);
@@ -158,7 +175,27 @@ public class PersonalVM implements ViewModel {
     /**
      * 去订单管理
      */
-    public final ReplyCommand toOrderCenterClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(),viewStyle.isMerchantMode.get())));
+    public final ReplyCommand toOrderCenterClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 0)));
+
+    /**
+     * 去待付款订单
+     */
+    public final ReplyCommand toUnPaidOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 1)));
+
+    /**
+     * 去待发货订单
+     */
+    public final ReplyCommand toUnSendOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 2)));
+
+    /**
+     * 去待收货订单
+     */
+    public final ReplyCommand toUnReceiveOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 3)));
+
+    /**
+     * 去待评价订单
+     */
+    public final ReplyCommand toUnEvaOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 4)));
 
     /**
      * 去地址管理
@@ -176,12 +213,19 @@ public class PersonalVM implements ViewModel {
     public final ReplyCommand toFansMgrClick = new ReplyCommand(() -> startActivityClick(FansMgrActivity.newIntent(fragment.getActivity())));
 
     /**
+     * 去邀请码
+     */
+    public final ReplyCommand toInviteClick = new ReplyCommand(() -> startActivityClick(InviteActivity.newIntent(fragment.getActivity())));
+
+    /**
      * 去实名认证
      */
     public final ReplyCommand toIdentifyClick = new ReplyCommand(() -> startActivityClick(IdentifyActivity.newIntent(fragment.getActivity())));
 
     private void startActivityClick(Intent intent) {
-        fragment.getActivity().startActivity(intent);
+        if (!viewStyle.notLogin.get()) fragment.getActivity().startActivity(intent);
+        else
+            fragment.getActivity().startActivity(LoginActivity.newIntent(fragment.getActivity(), true));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     }
 }

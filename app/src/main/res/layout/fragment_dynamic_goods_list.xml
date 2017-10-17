@@ -7,45 +7,68 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.dynamic.viewModel.DynamicGoodsListVM" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/shape_vertical_divider"
-        android:orientation="vertical"
-        android:showDividers="middle">
-
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:refreshing="@{viewModel.viewStyle.isRefreshing}"
-            app:onRefreshCommand="@{viewModel.onRefreshCommand}">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:itemBinding="@{viewModel.itemSelectGoodsBinding}"
-                app:items="@{viewModel.itemSelectGoodsVMs}"
-                app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
-
-        </android.support.v4.widget.SwipeRefreshLayout>
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/text_padding">
+            android:visibility="@{(viewModel.viewStyle.isEmpty ? View.VISIBLE : View.GONE)}"
+            app:clickCommand="@{viewModel.onRefreshCommand}">
 
-            <Button
-                style="@style/SimpleOrangeButton"
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:placeholderImageRes="@{viewModel.emptyImg}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/shape_vertical_divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+                app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:itemBinding="@{viewModel.itemSelectGoodsBinding}"
+                    app:items="@{viewModel.itemSelectGoodsVMs}"
+                    app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="确定添加"
-                app:clickCommand="@{viewModel.confirmClick}" />
+                android:background="@android:color/white"
+                android:orientation="vertical"
+                android:padding="@dimen/text_padding">
+
+                <Button
+                    style="@style/SimpleOrangeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="确定添加"
+                    app:clickCommand="@{viewModel.confirmClick}" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

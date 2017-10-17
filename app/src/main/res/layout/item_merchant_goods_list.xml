@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/line_space"
             android:maxLines="2"
+            android:lines="2"
             android:textColor="@color/colorText"
             android:textSize="@dimen/text_normal_small"
             android:text="@{viewModel.goodsName}"/>

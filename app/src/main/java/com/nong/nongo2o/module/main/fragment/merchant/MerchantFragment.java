@@ -62,4 +62,8 @@ public class MerchantFragment extends RxFragment {
             }
         }
     }
+
+    public void switchToAll() {
+        binding.vp.setCurrentItem(1);
+    }
 }

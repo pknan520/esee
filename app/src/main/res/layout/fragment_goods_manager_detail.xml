@@ -106,6 +106,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:padding="@dimen/item_padding">
 
                     <TextView
@@ -129,7 +130,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/vertical_space"
                     android:background="@android:color/white"
                     android:orientation="vertical"
                     android:paddingEnd="@dimen/item_padding"

@@ -20,6 +20,7 @@ import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entities.response.User;
 import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.entity.domain.MomentComment;
@@ -33,6 +34,7 @@ import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.AddressUtils;
 import com.nong.nongo2o.uils.BeanUtils;
 import com.nong.nongo2o.uils.FocusUtils;
 import com.nong.nongo2o.uils.MyTimeUtils;
@@ -154,7 +156,11 @@ public class DynamicDetailVM implements ViewModel {
             }
         }
 
-        city.set("佛山|顺德");
+        if (!TextUtils.isEmpty(dynamic.getProvinceCode()) && !TextUtils.isEmpty(dynamic.getCityCode()) && !TextUtils.isEmpty(dynamic.getAreaCode())) {
+            List<City> cityList = AddressUtils.getCities(new String[]{dynamic.getProvinceCode(), dynamic.getCityCode(), dynamic.getAreaCode()});
+            city.set(AddressUtils.getCityName(cityList));
+        }
+
         time.set(MyTimeUtils.formatTime(dynamic.getCreateTime()));
 //        viewStyle.isLike.set(dynamic.getIsFavorite() == 1);
 

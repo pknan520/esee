@@ -1,15 +1,17 @@
 package com.nong.nongo2o.module.dynamic.viewModel;
 
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
@@ -17,35 +19,37 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.response.DynamicContent;
-import com.nong.nongo2o.entities.response.DynamicDetail;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.Moment;
+import com.nong.nongo2o.module.common.activity.SelectAreaActivity;
 import com.nong.nongo2o.module.common.fragment.SelectAreaFragment;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicPublishFragment;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicSelectGoodsFragment;
+import com.nong.nongo2o.module.personal.fragment.AddressEditFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.AddressUtils;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 /**
@@ -64,8 +68,17 @@ public class DynamicPublishVM implements ViewModel {
     private List<File> bannerFileList = new ArrayList<>();
 
     public final ObservableField<String> title = new ObservableField<>();
+    public final ObservableField<String> areaName = new ObservableField<>();
+    //  动态Banner
+    public final ObservableList<ItemPicVM> itemBannerVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemPicVM> itemBannerBinding = ItemBinding.of(BR.viewModel, R.layout.item_pic);
+    //  动态图文
+    public final ObservableList<ItemDescVM> itemDescVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemDescVM> itemDescBinding = ItemBinding.of(BR.viewModel, R.layout.item_dynamic_publish_desc);
 
     private String selectedGoodsCode = "";
+
+    private City cityP, cityC, cityA;
 
     public DynamicPublishVM(DynamicPublishFragment fragment, Moment dynamic) {
         this.fragment = fragment;
@@ -127,27 +140,35 @@ public class DynamicPublishVM implements ViewModel {
                 itemDescVMs.add(new ItemDescVM(content));
             }
         }
+
+        if (!TextUtils.isEmpty(dynamic.getProvinceCode()) && !TextUtils.isEmpty(dynamic.getCityCode()) && !TextUtils.isEmpty(dynamic.getAreaCode())) {
+            List<City> cityList = AddressUtils.getCities(new String[]{dynamic.getProvinceCode(), dynamic.getCityCode(), dynamic.getAreaCode()});
+            if (cityList != null && cityList.size() > 2) {
+                cityP = cityList.get(0);
+                cityC = cityList.get(1);
+                cityA = cityList.get(2);
+            }
+            areaName.set(AddressUtils.getCityNameWithSpace(cityList));
+        }
     }
 
     /**
      * 地区选择
      */
     public final ReplyCommand areaSelectClick = new ReplyCommand(() -> {
-        ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
-                SelectAreaFragment.newInstance(), SelectAreaFragment.TAG);
+        fragment.startActivityForResult(SelectAreaActivity.newIntent(fragment.getActivity()), DynamicPublishFragment.GET_AREA);
+        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
     /**
-     * 动态Banner
+     * 设置城市
      */
-    public final ObservableList<ItemPicVM> itemBannerVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemPicVM> itemBannerBinding = ItemBinding.of(BR.viewModel, R.layout.item_pic);
-
-    /**
-     * 动态图文
-     */
-    public final ObservableList<ItemDescVM> itemDescVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemDescVM> itemDescBinding = ItemBinding.of(BR.viewModel, R.layout.item_dynamic_publish_desc);
+    public void setCities(City cityP, City cityC, City cityA) {
+        this.cityP = cityP;
+        this.cityC = cityC;
+        this.cityA = cityA;
+        areaName.set(cityP.getCity_name() + " " + cityC.getCity_name() + " " + cityA.getCity_name());
+    }
 
     /**
      * 添加动态图文
@@ -242,13 +263,44 @@ public class DynamicPublishVM implements ViewModel {
      * 发布按钮
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
+        if (itemBannerVMs.size() < 1) {
+            Toast.makeText(fragment.getActivity(), "请选择最少一张主图", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(title.get())) {
+            Toast.makeText(fragment.getActivity(), "请输入文章标题", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (itemDescVMs.size() < 1 || allContentEmpty()) {
+            Toast.makeText(fragment.getActivity(), "请输入文章内容", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (cityP == null || cityC == null || cityA == null) {
+            Toast.makeText(fragment.getActivity(), "请选择您所在地区", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         uploadFile(dynamic == null ? new Moment() : dynamic, dynamic == null);
     });
+
+    private boolean allContentEmpty() {
+        for (ItemDescVM item : itemDescVMs) {
+            if (!TextUtils.isEmpty(item.desc.get()) || item.itemDescPicVMs.size() > 1) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * 上传图片
      */
     private void uploadFile(Moment dynamic, boolean isNew) {
+        ((RxBaseActivity) fragment.getActivity()).showLoading();
+
         Map<String, RequestBody> picMap = new LinkedHashMap<>();
         for (File file : bannerFileList) {
             RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
@@ -261,48 +313,61 @@ public class DynamicPublishVM implements ViewModel {
             }
         }
 
-        RetrofitHelper.getFileAPI()
-                .uploadFile(picMap)
-                .subscribeOn(Schedulers.io())
-                .map(new ApiResponseFunc<>())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
-                            List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
-                            }.getType());
-                            postDynamic(createDynamic(dynamic, picUriList), isNew);
-                        },
-                        throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+        if (picMap.size() > 0) {
+            RetrofitHelper.getFileAPI()
+                    .uploadFile(picMap)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> {
+                                List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
+                                }.getType());
+                                postDynamic(createDynamic(dynamic, picUriList), isNew);
+                            },
+                            throwable -> {
+                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                            });
+        } else {
+            postDynamic(createDynamic(dynamic, null), isNew);
+        }
     }
 
     /**
      * 创建新dynamic
      */
     private Moment createDynamic(Moment dynamic, List<FileResponse> picUriList) {
-        int i = 0;
-        int hasAdd = 0;
-        for (; i < bannerFileList.size(); i++) {
-            headerImgList.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
-            hasAdd++;
-        }
-        for (int j = 0; j < itemDescVMs.size(); j++) {
-            ItemDescVM item = itemDescVMs.get(j);
-            if (contentList == null || contentList.size() < (j + 1)) {
-                contentList.add(new DynamicContent());
+        if (picUriList != null && picUriList.size() > 0) {
+            int i = 0;
+            int hasAdd = 0;
+            for (; i < bannerFileList.size(); i++) {
+                headerImgList.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                hasAdd++;
             }
-            DynamicContent content = contentList.get(j);
+            for (int j = 0; j < itemDescVMs.size(); j++) {
+                ItemDescVM item = itemDescVMs.get(j);
+                if (contentList == null || contentList.size() < (j + 1)) {
+                    contentList.add(new DynamicContent());
+                }
+                DynamicContent content = contentList.get(j);
 
-            content.setContent(item.desc.get());
-            if (content.getImg() == null) content.setImg(new ArrayList<>());
-            for (; i < hasAdd + item.getNewPicList().size(); i++) {
-                content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                content.setContent(item.desc.get());
+                if (content.getImg() == null) content.setImg(new ArrayList<>());
+                for (; i < hasAdd + item.getNewPicList().size(); i++) {
+                    content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                }
+                hasAdd += item.getNewPicList().size();
             }
-            hasAdd += item.getNewPicList().size();
         }
 
         dynamic.setHeaderImg(new Gson().toJson(headerImgList));
         dynamic.setTitle(title.get());
         dynamic.setContent(new Gson().toJson(contentList));
         dynamic.setGoodsCode(TextUtils.isEmpty(selectedGoodsCode) ? "" : selectedGoodsCode);
+
+        dynamic.setProvinceCode(cityP.getCity_code());
+        dynamic.setCityCode(cityC.getCity_code());
+        dynamic.setAreaCode(cityA.getCity_code());
 
         return dynamic;
     }
@@ -320,20 +385,28 @@ public class DynamicPublishVM implements ViewModel {
                     .subscribeOn(Schedulers.io())
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> ((DynamicPublishActivity) fragment.getActivity()).returnResultOK(),
-                            throwable -> {
-                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
+                    .subscribe(s -> {
+                        Intent intent = new Intent("refreshMyDynamic");
+                        LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+                        fragment.getActivity().finish();
+                    }, throwable -> {
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
         } else {
             RetrofitHelper.getDynamicAPI()
                     .updateDynamic(requestBody)
                     .subscribeOn(Schedulers.io())
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> ((DynamicPublishActivity) fragment.getActivity()).returnResultOK(),
-                            throwable -> {
-                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
+                    .subscribe(s -> {
+                        Intent intent = new Intent("refreshMyDynamic");
+                        LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+                        fragment.getActivity().finish();
+                    }, throwable -> {
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
         }
     }
 }

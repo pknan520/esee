@@ -1,5 +1,7 @@
 package com.nong.nongo2o.network.api;
 
+import android.databinding.ObservableField;
+
 import com.nong.nongo2o.entity.bean.ApiListResponse;
 import com.nong.nongo2o.entity.bean.ApiResponse;
 import com.nong.nongo2o.entity.domain.Cart;
@@ -58,4 +60,14 @@ public interface CartService {
      */
     @DELETE("user/cart")
     Observable<ApiResponse<String>> deleteCart(@Query("id") String cartCode);
+
+    /**
+     * 批量更新购物车
+     *
+     * @param body UpdateCartBatchRequest
+     * @return 返回操作成功/失败
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @PUT("user/cartbatch")
+    Observable<ApiResponse<String>> updateCartList(@Body RequestBody body);
 }

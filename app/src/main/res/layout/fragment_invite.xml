@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.InviteVM" />
+        <import type="android.view.View"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary">
+
+            <RelativeLayout
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/shape_invite_bg"
+                android:padding="@dimen/item_padding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="专属邀请码"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_title_small" />
+
+                    <TextView
+                        android:id="@+id/tv_invite_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_space"
+                        android:text="@{viewModel.inviteCode}"
+                        android:textColor="@color/colorComplementaryOrange"
+                        android:textSize="@dimen/text_title"
+                        tools:text="615274" />
+
+                    <ImageView
+                        android:id="@+id/iv_code"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_marginTop="@dimen/vertical_space"
+                        android:background="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/vertical_space"
+                        android:text="扫一扫获取邀请码"
+                        android:textColor="@color/colorComplementaryText"
+                        android:textSize="@dimen/text_normal" />
+
+                </LinearLayout>
+
+                <Button
+                    style="@style/SimpleTextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorPrimary"
+                    android:padding="@dimen/text_padding"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:text="复制"
+                    android:textColor="@android:color/white"
+                    app:clickCommand="@{viewModel.copyClick}" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@{viewModel.viewStyle.hasBind ? @string/your_inviter : @string/input_invite_code}"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_title_small" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/shape_invite_input"
+                android:gravity="center_vertical"
+                android:padding="@dimen/item_padding"
+                android:visibility="@{viewModel.viewStyle.hasBind ? View.VISIBLE : View.GONE}"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/inviter + viewModel.inviter}"
+                    tools:text="邀请人：261273"
+                    android:textSize="@dimen/text_normal"
+                    android:textColor="@color/colorText"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/shape_invite_input"
+                android:visibility="@{viewModel.viewStyle.hasBind ? View.GONE : View.VISIBLE}"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/item_padding"
+                    android:src="@mipmap/invite_scan"
+                    app:clickCommand="@{viewModel.scanClick}" />
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:hint="在此输入邀请码"
+                    android:padding="@dimen/item_padding"
+                    android:text="@={viewModel.inviteInput}"
+                    android:textColor="@color/colorText"
+                    android:textColorHint="@color/colorHintText"
+                    android:textSize="@dimen/text_normal"
+                    app:afterTextChangedCommand="@{viewModel.afterInputChange}" />
+
+                <Button
+                    android:id="@+id/btn_invite"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@{viewModel.viewStyle.confirmClickable ? @drawable/shape_circle_green : @drawable/shape_circle_grey}"
+                    android:clickable="@{viewModel.viewStyle.confirmClickable}"
+                    android:gravity="center"
+                    android:text="确认"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_normal_small"
+                    app:clickCommand="@{viewModel.inviteClick}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="@dimen/item_padding">
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="查看我邀请的人" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</layout>

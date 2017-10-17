@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.main.viewModel.cart;
 
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -10,22 +11,29 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hyphenate.chat.EMClient;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Cart;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.entity.domain.OrderDetail;
-import com.nong.nongo2o.module.common.activity.BuyActivity;
+import com.nong.nongo2o.entity.request.IdRequest;
+import com.nong.nongo2o.entity.request.UpdateCartBatchRequest;
+import com.nong.nongo2o.module.common.buy.activity.BuyActivity;
+import com.nong.nongo2o.module.login.LoginActivity;
 import com.nong.nongo2o.module.main.fragment.cart.CartFragment;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
+import com.nong.nongo2o.module.message.activity.ChatActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.imUtils.IMUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -34,9 +42,13 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  * Created by Administrator on 2017-6-22.
@@ -52,6 +64,11 @@ public class CartVM implements ViewModel {
     public final ObservableList<ItemCartMerchantVM> itemCartMerchantVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemCartMerchantVM> itemCartMerchantBinding = ItemBinding.of(BR.viewModel, R.layout.item_cart_merchant);
 
+    @DrawableRes
+    public final int emptyImg = R.mipmap.default_none;
+    @DrawableRes
+    public final int notLoginImg = R.mipmap.default_error;
+
     public CartVM(CartFragment fragment) {
         this.fragment = fragment;
 
@@ -63,13 +80,17 @@ public class CartVM implements ViewModel {
     public class ViewStyle {
         public final ObservableBoolean isRefreshing = new ObservableBoolean(false);
         public final ObservableBoolean isEdit = new ObservableBoolean(false);
+
+        public final ObservableBoolean isEmpty = new ObservableBoolean(false);
+        public final ObservableBoolean notLogin = new ObservableBoolean(false);
     }
 
     /**
      * 初始化数据
      */
     public void initData() {
-        getCartList();
+        viewStyle.notLogin.set(TextUtils.isEmpty(UserInfo.getInstance().getSessionToken()));
+        if (!viewStyle.notLogin.get()) getCartList();
 
         totalPrice.set("¥0");
         transFee.set("运费：¥0");
@@ -99,6 +120,8 @@ public class CartVM implements ViewModel {
                     for (String key : cartMap.keySet()) {
                         itemCartMerchantVMs.add(new ItemCartMerchantVM(cartMap.get(key)));
                     }
+
+                    viewStyle.isEmpty.set(itemCartMerchantVMs.isEmpty());
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     viewStyle.isRefreshing.set(false);
@@ -108,14 +131,52 @@ public class CartVM implements ViewModel {
     /**
      * 下拉刷新
      */
-    public final ReplyCommand onRefreshCommand = new ReplyCommand(this::getCartList);
+    public final ReplyCommand onRefreshCommand = new ReplyCommand(() -> {
+        if (!viewStyle.notLogin.get()) getCartList();
+    });
+
+    /**
+     * 批量更新购物车
+     */
+    public void updateCartList() {
+        List<Cart> cartList = new ArrayList<>();
+        if (itemCartMerchantVMs.size() > 0) {
+            for (ItemCartMerchantVM itemM : itemCartMerchantVMs) {
+                if (itemM.itemCartMerchantGoodsVMs.size() > 0) {
+                    for (ItemCartMerchantVM.ItemCartMerchantGoodsVM itemG : itemM.itemCartMerchantGoodsVMs) {
+                        Cart cart = new Cart();
+                        cart.setCartCode(itemG.cart.getCartCode());
+                        cart.setSpecCode(itemG.cart.getSpecCode());
+                        cart.setGoodsNum(itemG.cart.getGoodsNum());
+                        cartList.add(cart);
+                    }
+                }
+            }
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(new UpdateCartBatchRequest(cartList)));
+
+        RetrofitHelper.getCartAPI()
+                .updateCartList(requestBody)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> Toast.makeText(fragment.getActivity(), "购物车修改成功", Toast.LENGTH_SHORT).show(),
+                        throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+    }
 
     /**
      * 提交订单
      */
     public final ReplyCommand submitOrderClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), createOrderDetails()));
-        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+        ArrayList<OrderDetail> orderDetails = createOrderDetails();
+        if (orderDetails != null && !orderDetails.isEmpty()) {
+            fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), createOrderDetails()));
+            fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+        } else {
+            Toast.makeText(fragment.getActivity(), "请选择商品", Toast.LENGTH_SHORT).show();
+        }
     });
 
     /**
@@ -126,7 +187,7 @@ public class CartVM implements ViewModel {
 
         for (ItemCartMerchantVM itemMerchant : itemCartMerchantVMs) {
             for (ItemCartMerchantVM.ItemCartMerchantGoodsVM itemGoods : itemMerchant.itemCartMerchantGoodsVMs) {
-                if (itemGoods.viewStyle.isSelect.get()) {
+                if (itemGoods.mViewStyle.isSelect.get()) {
                     OrderDetail detail = new OrderDetail();
                     detail.setUserCode(UserInfo.getInstance().getUserCode());
                     detail.setSaleUserCode(itemGoods.getCart().getSaleUserCode());
@@ -145,6 +206,14 @@ public class CartVM implements ViewModel {
 
         return orderDetails;
     }
+
+    /**
+     * 跳转登录
+     */
+    public final ReplyCommand toLogin = new ReplyCommand(() -> {
+        fragment.getActivity().startActivity(LoginActivity.newIntent(fragment.getActivity(), true));
+        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
 
     public class ItemCartMerchantVM implements ViewModel {
 
@@ -190,11 +259,32 @@ public class CartVM implements ViewModel {
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         });
 
+        /**
+         * 联系商家
+         */
+        public final ReplyCommand contactClick = new ReplyCommand(() -> {
+            IMUtils.checkIMLogin(isSuccess -> {
+                if (isSuccess) {
+                    String userName = cartList.get(0).getSaleUser().getId();
+                    if (userName.equals(EMClient.getInstance().getCurrentUser())) {
+                        Toast.makeText(fragment.getActivity(), "您不能自言自语了啦^.^", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Intent intent = new Intent(fragment.getActivity(), ChatActivity.class);
+                    intent.putExtra("userId", userName);
+                    fragment.getActivity().startActivity(intent);
+                    fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                } else {
+                    Toast.makeText(fragment.getActivity(), "聊天可能有点问题，请稍候再试", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
         public class ItemCartMerchantGoodsVM implements ViewModel {
 
             private ItemCartMerchantVM merchantVM;
             private Cart cart;
-            private List<GoodsSpec> specList;
             private GoodsSpec currentSpec;
 
             @DrawableRes
@@ -217,7 +307,7 @@ public class CartVM implements ViewModel {
                 initData();
             }
 
-            public final ViewStyle viewStyle = new ViewStyle();
+            public final ViewStyle mViewStyle = new ViewStyle();
 
             public class ViewStyle {
                 public final ObservableBoolean isSelect = new ObservableBoolean(false);
@@ -234,10 +324,7 @@ public class CartVM implements ViewModel {
             private void refreshData() {
                 if (cart != null && cart.getGoods() != null) {
                     Goods good = cart.getGoods();
-                    if (good.getGoodsSpecs() != null && good.getGoodsSpecs().size() > 0) {
-                        specList = good.getGoodsSpecs();
-                        currentSpec = getCurrentSpec();
-                    }
+                    currentSpec = cart.getGoodsSpec();
                     if (!TextUtils.isEmpty(good.getCovers())) {
                         List<String> covers = new Gson().fromJson(good.getCovers(), new TypeToken<List<String>>() {
                         }.getType());
@@ -253,27 +340,18 @@ public class CartVM implements ViewModel {
                 }
             }
 
-            private GoodsSpec getCurrentSpec() {
-                for (GoodsSpec spec : specList) {
-                    if (spec.getSpecCode().equals(cart.getSpecCode())) {
-                        return spec;
-                    }
-                }
-                return null;
-            }
-
             /**
              * 勾选事件
              */
             public final ReplyCommand checkClick = new ReplyCommand(new Action() {
                 @Override
                 public void run() throws Exception {
-                    viewStyle.isSelect.set(!viewStyle.isSelect.get());
-                    if (viewStyle.isSelect.get()) {
+                    mViewStyle.isSelect.set(!mViewStyle.isSelect.get());
+                    if (mViewStyle.isSelect.get()) {
                         for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
                             if (itemMerchantVM != merchantVM) {
                                 for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
-                                    itemGoodsVM.viewStyle.isSelect.set(false);
+                                    itemGoodsVM.mViewStyle.isSelect.set(false);
                                 }
                             }
                         }
@@ -291,7 +369,7 @@ public class CartVM implements ViewModel {
                 BigDecimal total = new BigDecimal(0);
                 for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
                     for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
-                        if (itemGoodsVM.viewStyle.isSelect.get()) {
+                        if (itemGoodsVM.mViewStyle.isSelect.get()) {
                             total = total.add(itemGoodsVM.goodsPrice.get().multiply(new BigDecimal(itemGoodsVM.goodsNum.get())));
                         }
                     }
@@ -303,6 +381,7 @@ public class CartVM implements ViewModel {
             public Cart getCart() {
                 return cart;
             }
+
             /**
              * 计算运费
              */
@@ -310,7 +389,7 @@ public class CartVM implements ViewModel {
                 BigDecimal total = new BigDecimal(0);
                 for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
                     for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
-                        if (itemGoodsVM.viewStyle.isSelect.get()) {
+                        if (itemGoodsVM.mViewStyle.isSelect.get()) {
                             total = total.add(itemGoodsVM.getCart().getGoods().getFreight());
                         }
                     }
@@ -332,6 +411,7 @@ public class CartVM implements ViewModel {
              */
             public final ReplyCommand addOneClick = new ReplyCommand(() -> {
                 goodsNum.set(goodsNum.get() + 1);
+                cart.setGoodsNum(goodsNum.get());
             });
 
             /**
@@ -340,6 +420,7 @@ public class CartVM implements ViewModel {
             public final ReplyCommand subtractOneClick = new ReplyCommand(() -> {
                 if (goodsNum.get() > 1) {
                     goodsNum.set(goodsNum.get() - 1);
+                    cart.setGoodsNum(goodsNum.get());
                 }
             });
 
@@ -349,6 +430,7 @@ public class CartVM implements ViewModel {
             public ReplyCommand standardClick = new ReplyCommand(() -> {
                 fragment.showPopupStandard(cart, spec -> {
                     cart.setSpecCode(spec.getSpecCode());
+                    cart.setGoodsSpec(spec);
                     refreshData();
                 });
             });
@@ -356,7 +438,9 @@ public class CartVM implements ViewModel {
             /**
              * 删除
              */
-            public final ReplyCommand deleteClick = new ReplyCommand(this::deleteGoods);
+            public final ReplyCommand deleteClick = new ReplyCommand(() -> {
+                ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(ItemCartMerchantGoodsVM.this::deleteGoods);
+            });
 
             private void deleteGoods() {
                 RetrofitHelper.getCartAPI()
@@ -369,6 +453,7 @@ public class CartVM implements ViewModel {
                             if (itemCartMerchantGoodsVMs.size() == 0) {
                                 itemCartMerchantVMs.remove(merchantVM);
                             }
+                            viewStyle.isEmpty.set(itemCartMerchantVMs.isEmpty());
                         }, throwable -> {
                             Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         });

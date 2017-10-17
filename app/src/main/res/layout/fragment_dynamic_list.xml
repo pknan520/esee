@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.main.viewModel.dynamic.DynamicListVM" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
@@ -15,61 +16,53 @@
         android:background="@color/colorWindowBg"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{(viewModel.viewStyle.isEmpty || viewModel.viewStyle.notLogin) ? View.VISIBLE : View.GONE}">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:placeholderImageRes="@{viewModel.viewStyle.isEmpty ? viewModel.emptyImg : viewModel.notLoginImg}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:gravity="center"
+                android:text="@{viewModel.viewStyle.isEmpty ? `你还没关注好友~\n关注好友后动态将会实时显示哦~` : ``}"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="@dimen/text_normal" />
+
+            <Button
+                style="@style/SimplePrimaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@drawable/shape_round_primary_button"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:text="@{viewModel.viewStyle.isEmpty ? `马上关注` : `马上登陆`}"
+                app:clickCommand="@{viewModel.errorClick}" />
+
+        </LinearLayout>
+
         <android.support.v4.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:refreshing="@{viewModel.viewStyle.isRefreshing}"
             app:onRefreshCommand="@{viewModel.onRefreshCommand}">
 
-            <FrameLayout
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:id="@+id/ll_empty"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/news_guanzhu_default" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/vertical_space"
-                        android:gravity="center"
-                        android:text="你还没关注好友~\n关注好友后动态将会实时显示哦~"
-                        android:textColor="@color/colorComplementaryText"
-                        android:textSize="@dimen/text_normal" />
-
-                    <Button
-                        style="@style/SimplePrimaryButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/vertical_space"
-                        android:background="@drawable/shape_round_primary_button"
-                        android:paddingEnd="20dp"
-                        android:paddingStart="20dp"
-                        android:text="马上关注"
-                        app:clickCommand="@{viewModel.addFriendsClick}" />
-
-                </LinearLayout>
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    app:itemBinding="@{viewModel.itemDynamicBinding}"
-                    app:items="@{viewModel.itemDynamicVMs}"
-                    app:onLoadMoreCommand="@{viewModel.omLoadMoreCommand}" />
-
-            </FrameLayout>
+                android:layout_height="match_parent"
+                app:itemBinding="@{viewModel.itemDynamicBinding}"
+                app:items="@{viewModel.itemDynamicVMs}"
+                app:onLoadMoreCommand="@{viewModel.omLoadMoreCommand}" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

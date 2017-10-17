@@ -251,18 +251,22 @@ public class GoodsManagerVM implements ViewModel {
                         break;
 
                     case "删除":
-                        RetrofitHelper.getGoodsAPI().delUserGoods(goods.getId())
-                                .subscribeOn(Schedulers.io())
-                                .map(new ApiResponseFunc<>())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(resp -> {
-                                    Toast.makeText(fragment.getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
-//                                    initFakeData(true);
-                                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                        ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(this::deleteGoods);
                         break;
                 }
                 popup.dismiss();
             });
+
+            private void deleteGoods() {
+                RetrofitHelper.getGoodsAPI().delUserGoods(goods.getId())
+                        .subscribeOn(Schedulers.io())
+                        .map(new ApiResponseFunc<>())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(resp -> {
+                            getGoodsList(1, true);
+                            Toast.makeText(fragment.getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
+                        }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+            }
         }
     }
 }

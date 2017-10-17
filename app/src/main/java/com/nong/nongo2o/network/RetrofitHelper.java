@@ -11,9 +11,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.network.api.AccountService;
 import com.nong.nongo2o.network.api.ActivityService;
+import com.nong.nongo2o.network.api.AppService;
 import com.nong.nongo2o.network.api.CartService;
 import com.nong.nongo2o.network.api.AddressService;
 import com.nong.nongo2o.network.api.DynamicService;
@@ -21,18 +21,18 @@ import com.nong.nongo2o.network.api.FileService;
 import com.nong.nongo2o.network.api.FollowService;
 import com.nong.nongo2o.network.api.GoodsService;
 import com.nong.nongo2o.network.api.OrderService;
+import com.nong.nongo2o.network.api.PaymentService;
 import com.nong.nongo2o.network.api.UserService;
+import com.nong.nongo2o.network.api.WxService;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
-import com.nong.nongo2o.network.interceptor.CacheInterceptor;
 import com.nong.nongo2o.network.interceptor.HeaderInterceptor;
 import com.nong.nongo2o.network.interceptor.LoggerInterceptor;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Cache;
+import me.jessyan.progressmanager.ProgressManager;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -48,6 +48,10 @@ public class RetrofitHelper {
 
     static {
         initOkHttpClient();
+    }
+
+    public static AppService getAppAPI() {
+        return createApi(AppService.class, ApiConstants.BASE_URL);
     }
 
     public static FileService getFileAPI() {
@@ -90,6 +94,14 @@ public class RetrofitHelper {
         return createApi(OrderService.class, ApiConstants.BASE_URL);
     }
 
+    public static PaymentService getPaymentAPI() {
+        return createApi(PaymentService.class, ApiConstants.BASE_URL);
+    }
+
+    public static WxService getWxServiceAPI() {
+        return createApi(WxService.class, ApiConstants.WX_URL);
+    }
+
     /**
      * 根据传入的baseUrl，和api创建retrofit
      */
@@ -125,7 +137,8 @@ public class RetrofitHelper {
                     //设置Http缓存
 //                    Cache cache = new Cache(new File(AdventurerApp.getInstance().getCacheDir(), "HttpCache"), 1024 * 1024 * 10);
 
-                    okHttpClient = new OkHttpClient.Builder()
+                    okHttpClient = ProgressManager.getInstance()
+                            .with(new OkHttpClient.Builder())
 //                            .cache(cache)
 //                            .addNetworkInterceptor(new CacheInterceptor())
                             .addNetworkInterceptor(new StethoInterceptor())

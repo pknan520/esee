@@ -45,8 +45,10 @@ public class MyFrescoImageLoader implements AbsImageLoader {
         if (width > 0 && height > 0) {
             builder.setResizeOptions(new ResizeOptions(width, height));
         }
-        ImageRequest request = builder.setRotationOptions(RotationOptions.autoRotate())
+        ImageRequest request = builder
+                .setRotationOptions(RotationOptions.autoRotate())
                 .setLowestPermittedRequestLevel(ImageRequest.RequestLevel.FULL_FETCH)
+                .setProgressiveRenderingEnabled(true)
                 .build();
 
         DraweeController controller;
@@ -66,6 +68,7 @@ public class MyFrescoImageLoader implements AbsImageLoader {
                     .setTapToRetryEnabled(true)
                     .setImageRequest(request)
                     .setControllerListener(listener)
+                    .setOldController(simpleDraweeView.getController())
                     .build();
         } else {
             controller = Fresco.newDraweeControllerBuilder()

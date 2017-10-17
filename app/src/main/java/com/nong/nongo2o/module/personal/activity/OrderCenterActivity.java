@@ -20,9 +20,10 @@ public class OrderCenterActivity extends RxBaseToolbarActivity {
 
     private ActivityOrderCenterBinding binding;
     private boolean isMerchantMode;
-    public static Intent newIntent(Context context,boolean isMerchantMode) {
+    public static Intent newIntent(Context context,boolean isMerchantMode, int pos) {
         Intent intent = new Intent(context, OrderCenterActivity.class);
         intent.putExtra("isMerchantMode",isMerchantMode);
+        intent.putExtra("pos", pos);
         return intent;
     }
 
@@ -45,7 +46,7 @@ public class OrderCenterActivity extends RxBaseToolbarActivity {
     }
 
     private void initView() {
-        replaceFragment(R.id.fl, OrderListTotalFragment.newInstance(isMerchantMode), OrderListTotalFragment.TAG);
+        replaceFragment(R.id.fl, OrderListTotalFragment.newInstance(isMerchantMode, getIntent().getIntExtra("pos", 0)), OrderListTotalFragment.TAG);
     }
 
     @Override

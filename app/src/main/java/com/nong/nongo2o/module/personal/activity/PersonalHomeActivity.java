@@ -22,11 +22,6 @@ public class PersonalHomeActivity extends RxBaseActivity {
 
     private ActivityPersonalHomeBinding binding;
 
-    // TODO: 2017-9-15 临时容错，以后删除
-    public static Intent newIntent(Context context) {
-        return new Intent(context, PersonalHomeActivity.class);
-    }
-
     public static Intent newIntent(Context context, SimpleUser user) {
         Intent intent = new Intent(context, PersonalHomeActivity.class);
         intent.putExtra("user", user);

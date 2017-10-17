@@ -1,8 +1,13 @@
 package com.nong.nongo2o.module.main.fragment.personal;
 
 import android.animation.Animator;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +28,8 @@ public class PersonalFragment extends RxFragment {
     private FragmentPersonalBinding binding;
     private PersonalVM vm;
 
+    private LocalBroadcastManager lbm;
+
     public static PersonalFragment newInstance() {
         return new PersonalFragment();
     }
@@ -33,6 +40,7 @@ public class PersonalFragment extends RxFragment {
         if (vm == null) {
             vm = new PersonalVM(this);
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -60,5 +68,36 @@ public class PersonalFragment extends RxFragment {
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.setDuration(1500);
         animator.start();
+    }
+
+    /**
+     * 刷新广播接收器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("loginSuccess");
+        filter.addAction("Identifying");
+        lbm.registerReceiver(loginReceiver, filter);
+    }
+
+    private BroadcastReceiver loginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case "loginSuccess":
+                    if (vm != null) vm.initData();
+                    break;
+                case "Identifying":
+
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        lbm.unregisterReceiver(loginReceiver);
     }
 }

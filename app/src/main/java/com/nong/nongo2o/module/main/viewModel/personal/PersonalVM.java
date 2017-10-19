@@ -5,6 +5,7 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -28,13 +29,17 @@ import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.BeanUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.http.Url;
 
 /**
  * Created by Administrator on 2017-6-22.
@@ -115,30 +120,35 @@ public class PersonalVM implements ViewModel {
             type = "buyer_order_status";
             paramMap.put("buyerCode", userCode);
         }
-        RetrofitHelper.getUserAPI()
-                .userDbWrapper(type, gson.toJson(paramMap))
-                .subscribeOn(Schedulers.io())
-                .map(new ApiResponseFunc<>())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(resp -> {
-                    for (Map<String, Object> countMap : resp) {
-                        switch ((int) Double.parseDouble(countMap.get("order_status").toString())) {
-                            case 0:
-                                unpaidBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 1:
-                                deliveryBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 2:
-                                takeoverBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 3:
-                                evaBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                break;
+        Log.d("Personal", "param: " + gson.toJson(paramMap));
+        try {
+            RetrofitHelper.getUserAPI()
+                    .userDbWrapper(type, URLEncoder.encode(gson.toJson(paramMap), "utf-8"))
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        for (Map<String, Object> countMap : resp) {
+                            switch ((int) Double.parseDouble(countMap.get("order_status").toString())) {
+                                case 0:
+                                    unpaidBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 1:
+                                    deliveryBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 2:
+                                    takeoverBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 3:
+                                    evaBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                            }
                         }
-                    }
-                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show())
-        ;
+                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show())
+            ;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

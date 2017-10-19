@@ -108,7 +108,7 @@ public class LoginVM implements ViewModel {
                         intent.setAction("loginSuccess");
                         UserInfo.setOurInstance(new UserInfo(userResp.getData()));
                     } else {
-                        intent.setAction("loginFail");
+                        intent.setAction("bindMobile");
                     }
                     LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
                 }, throwable -> {

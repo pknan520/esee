@@ -132,11 +132,15 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                         intent.setAction("loginSuccess");
                         finish();
                     } else {
-                        intent.setAction("loginFail");
+                        intent.setAction("bindMobile");
                         finish();
                     }
                     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                }, throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                }, throwable -> {
+                    intent.setAction("loginFail");
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
 }

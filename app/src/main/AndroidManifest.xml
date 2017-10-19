@@ -39,7 +39,7 @@
         <!-- 设置环信应用的AppKey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="1104170926115179#pk-esee" />
+            android:value="1152171012178296#esee" />
 
         <activity android:name=".module.welcome.WelcomeActivity">
             <intent-filter>
@@ -58,7 +58,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
-
 
         <activity
             android:name=".module.welcome.GuideActivity"

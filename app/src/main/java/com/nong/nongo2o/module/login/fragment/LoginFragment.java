@@ -71,6 +71,7 @@ public class LoginFragment extends RxBaseFragment {
         lbm = LocalBroadcastManager.getInstance(getActivity());
         IntentFilter filter = new IntentFilter();
         filter.addAction("loginSuccess");
+        filter.addAction("bindMobile");
         filter.addAction("loginFail");
         lbm.registerReceiver(updateReceiver, filter);
     }
@@ -83,8 +84,10 @@ public class LoginFragment extends RxBaseFragment {
                 case "loginSuccess":
                     toMainActivity();
                     break;
-                case "loginFail":
+                case "bindMobile":
                     toBindMobile((WxAccessToken) intent.getSerializableExtra("wxAccessToken"), (WxInfo) intent.getSerializableExtra("wxInfo"));
+                    break;
+                case "loginFail":
                     break;
             }
         }

@@ -79,6 +79,7 @@
             android:background="@drawable/shape_round_light_green"
             android:gravity="center"
             android:padding="@dimen/text_padding"
+            android:visibility="gone"
             app:clickCommand="@{viewModel.experienceClick}">
 
             <TextView
@@ -103,6 +104,7 @@
             android:background="@drawable/shape_round_light_green"
             android:gravity="center"
             android:padding="@dimen/text_padding"
+            android:visibility="gone"
             app:clickCommand="@{viewModel.testClick}">
 
             <TextView

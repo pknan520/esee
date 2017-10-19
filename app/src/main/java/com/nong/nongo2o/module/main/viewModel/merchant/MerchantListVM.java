@@ -26,6 +26,7 @@ import com.nong.nongo2o.module.main.fragment.merchant.MerchantListFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -101,7 +102,9 @@ public class MerchantListVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    addSliderView();
+                    if (resp != null && !resp.getRows().isEmpty()) {
+                        addSliderView(resp.getRows());
+                    }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
@@ -110,10 +113,16 @@ public class MerchantListVM implements ViewModel {
     /**
      * 添加轮播图
      */
-    private void addSliderView() {
-        for (String anUriArray : uriArray) {
+    private void addSliderView(List<Activity> activities) {
+//        for (String anUriArray : uriArray) {
+//            DefaultSliderView view = new DefaultSliderView(fragment.getActivity());
+//            view.image(anUriArray)
+//                    .setScaleType(BaseSliderView.ScaleType.CenterCrop);
+//            sliderList.add(view);
+//        }
+        for (Activity activity : activities) {
             DefaultSliderView view = new DefaultSliderView(fragment.getActivity());
-            view.image(anUriArray)
+            view.image(activity.getCover())
                     .setScaleType(BaseSliderView.ScaleType.CenterCrop);
             sliderList.add(view);
         }

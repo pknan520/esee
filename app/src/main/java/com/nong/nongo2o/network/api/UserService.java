@@ -15,6 +15,7 @@ import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -106,8 +107,8 @@ public interface UserService {
      * @param param Map<String,String>参数 k-v
      * @return
      */
-    @GET("db/wrapper")
-    Observable<ApiResponse<List<Map<String, Object>>>> userDbWrapper(@Query("type") String type, @Query("param") String param);
+    @GET("user/db/wrapper")
+    Observable<ApiResponse<List<Map<String, Object>>>> userDbWrapper(@Query("type") String type, @Query(value = "param", encoded = true) String param);
 
     /**
      * 更新用户信息

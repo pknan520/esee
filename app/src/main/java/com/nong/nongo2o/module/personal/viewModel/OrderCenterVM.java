@@ -12,6 +12,8 @@ import com.nong.nongo2o.module.personal.fragment.OrderListTotalFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,41 +61,45 @@ public class OrderCenterVM implements ViewModel {
         type = isMerchantMode ? "saler_order_status" : "buyer_order_status";
         paramMap.put(isMerchantMode ? "salerCode" : "buyerCode", UserInfo.getInstance().getUserCode());
 
-        RetrofitHelper.getUserAPI()
-                .userDbWrapper(type, new Gson().toJson(paramMap))
-                .subscribeOn(Schedulers.io())
-                .map(new ApiResponseFunc<>())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(resp -> {
-                    for(Map<String,Object> countMap : resp){
-                        switch ((int)Double.parseDouble(countMap.get("order_status").toString()) ){
-                            case 0:
-                                itemTabVMs.get(1).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 1:
-                                itemTabVMs.get(2).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 2:
-                                itemTabVMs.get(3).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 3:
-                                itemTabVMs.get(4).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case 4:
-                                itemTabVMs.get(5).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                break;
-                            case -1:
-                                itemTabVMs.get(6).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                break;
+        try {
+            RetrofitHelper.getUserAPI()
+                    .userDbWrapper(type, URLEncoder.encode(new Gson().toJson(paramMap), "utf-8"))
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        for(Map<String,Object> countMap : resp){
+                            switch ((int)Double.parseDouble(countMap.get("order_status").toString()) ){
+                                case 0:
+                                    itemTabVMs.get(1).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 1:
+                                    itemTabVMs.get(2).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 2:
+                                    itemTabVMs.get(3).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 3:
+                                    itemTabVMs.get(4).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 4:
+                                    itemTabVMs.get(5).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case -1:
+                                    itemTabVMs.get(6).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                            }
                         }
-                    }
-                    int total = 0;
-                    for (ItemTabVM item: itemTabVMs) {
-                        total += item.tabBadgeText.get();
-                    }
-                    itemTabVMs.get(0).tabBadgeText.set(total);
+                        int total = 0;
+                        for (ItemTabVM item: itemTabVMs) {
+                            total += item.tabBadgeText.get();
+                        }
+                        itemTabVMs.get(0).tabBadgeText.set(total);
 
-                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

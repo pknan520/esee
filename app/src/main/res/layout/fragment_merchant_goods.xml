@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.merchant.viewModel.MerchantGoodsVM" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
@@ -63,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
+                android:visibility="@{viewModel.viewStyle.isSelf ? View.GONE : View.VISIBLE}"
                 app:clickCommand="@{viewModel.focusClick}"
                 android:padding="@dimen/text_padding">
 

@@ -16,9 +16,14 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.databinding.ActivityLoginBinding;
 import com.nong.nongo2o.module.login.fragment.LoginFragment;
+import com.nong.nongo2o.uils.SPUtils;
+import com.nong.nongo2o.uils.dbUtils.DbUtils;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Administrator on 2017-8-4.
@@ -51,24 +56,18 @@ public class LoginActivity extends RxBaseActivity {
 
     private void checkPermission() {
         //  判断哪些权限未授予
-        permissionList.clear();
-        for (String permissionStr : permissions) {
-            if (ContextCompat.checkSelfPermission(this, permissionStr) != PackageManager.PERMISSION_GRANTED) {
-                //  未授予的添加到permissionList中
-                permissionList.add(permissionStr);
-            }
-        }
-
-        //  判断permissionList是否为空
-        if (permissionList.isEmpty()) {
-            //  列表为空，表示所需权限都授予了
-            // TODO: 2017-8-23 权限授予完毕
-            Toast.makeText(this, "权限都授予完毕", Toast.LENGTH_SHORT).show();
-        } else {
-            //  请求权限
-            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(this, permissions, 100);
-        }
+        new RxPermissions(this)
+                .request(permissions)
+                .subscribe(granted -> {
+                    if (granted) {
+                        //  复制数据表
+                        if (!SPUtils.contains(getApplicationContext(), "city_database") || !(boolean) SPUtils.get(getApplicationContext(), "city_database", false)) {
+                            DbUtils.copyDBToDatabases(getApplicationContext());
+                        }
+                    } else {
+                        Toast.makeText(this, "拒绝权限将导致部分功能无法正常使用", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void initView() {

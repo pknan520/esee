@@ -22,6 +22,7 @@ import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
@@ -101,6 +102,7 @@ public class MerchantGoodsVM implements ViewModel {
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
+        public final ObservableBoolean isSelf = new ObservableBoolean(false);
         public final ObservableBoolean isFocus = new ObservableBoolean(false);
         public final ObservableBoolean selectedSpec = new ObservableBoolean(false);
     }
@@ -124,6 +126,7 @@ public class MerchantGoodsVM implements ViewModel {
         headUri.set(good.getSale().getAvatar());
         name.set(good.getSale().getUserNick());
         summary.set(good.getSale().getProfile());
+        viewStyle.isSelf.set(good.getSale().getUserCode().equals(UserInfo.getInstance().getUserCode()));
         viewStyle.isFocus.set(FocusUtils.checkIsFocus(good.getSale().getUserCode()));
         //  轮播图
         addSliderView();

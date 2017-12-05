@@ -57,17 +57,6 @@
                 <Button
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/border_green"
-                    android:gravity="center"
-                    android:padding="@dimen/text_padding"
-                    android:text="返回首页"
-                    android:textColor="@color/colorComplementaryGreen"
-                    android:textSize="@dimen/text_normal" />
-
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
                     android:background="@drawable/border_green"
@@ -75,7 +64,8 @@
                     android:padding="@dimen/text_padding"
                     android:text="返回首页"
                     android:textColor="@color/colorComplementaryGreen"
-                    android:textSize="@dimen/text_normal" />
+                    android:textSize="@dimen/text_normal"
+                    app:clickCommand="@{viewModel.backToHomeClick}"/>
 
             </LinearLayout>
 

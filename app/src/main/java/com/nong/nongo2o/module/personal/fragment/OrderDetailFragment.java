@@ -1,9 +1,14 @@
 package com.nong.nongo2o.module.personal.fragment;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +37,8 @@ public class OrderDetailFragment extends RxBaseFragment {
     private AlertDialog exDialog;
     private DialogInputExBinding exBinding;
 
+    private LocalBroadcastManager lbm;
+
     public interface ReceiveDialogListener {
         void confirmReceive();
     }
@@ -56,6 +63,7 @@ public class OrderDetailFragment extends RxBaseFragment {
         if (vm == null) {
             vm = new OrderDetailVM(this, (Order) getArguments().getSerializable("order"), getArguments().getBoolean("isMerchantMode"));
         }
+        registerReceiver();
     }
 
     @Nullable
@@ -110,5 +118,38 @@ public class OrderDetailFragment extends RxBaseFragment {
                     dialog.dismiss();
                 })
                 .show();
+    }
+
+
+
+    /**
+     * 支付广播接收器
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("paySuccess");
+        filter.addAction("payFail");
+        lbm.registerReceiver(payReceiver, filter);
+    }
+
+    private BroadcastReceiver payReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("paySuccess")) {
+                Order order = (Order) getArguments().getSerializable("order");
+                if (order != null) {
+                    order.setOrderStatus(1);
+//                    vm = new OrderDetailVM(OrderDetailFragment.this, order, getArguments().getBoolean("isMerchantMode"));
+                    vm.iniData();
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        lbm.unregisterReceiver(payReceiver);
     }
 }

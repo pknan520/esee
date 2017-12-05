@@ -100,7 +100,7 @@ public class PersonalVM implements ViewModel {
                 .subscribe(resp -> {
                     headUri.set(resp.getAvatar());
                     name.set(resp.getUserNick());
-                    balance.set(resp.getBalance());
+                    balance.set(resp.getBalance() == null ? new BigDecimal(0.0) : resp.getBalance());
                     viewStyle.isSaler.set(resp.getUserType() == 1);
                     userCode = resp.getUserCode();
                     getOrderCount(userCode);

@@ -58,10 +58,6 @@ public class AdventurerApp extends Application {
         }
         //  我关注的人
         follows = new HashSet<>();
-        //  复制数据表
-        if (!SPUtils.contains(getApplicationContext(), "city_database") || !(boolean) SPUtils.get(getApplicationContext(), "city_database", false)) {
-            DbUtils.copyDBToDatabases(getApplicationContext());
-        }
     }
 
     private void regToWx() {

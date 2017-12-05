@@ -91,6 +91,17 @@ public class AppManager {
     }
 
     /**
+     * 返回首页
+     */
+    public void backToHome() {
+        for (int i = activityStack.size() - 1; i > 0; i--) {
+            if (null != activityStack.get(i)) {
+                activityStack.get(i).finish();
+            }
+        }
+    }
+
+    /**
      * 退出应用程序
      */
     public void AppExit(Context context) {

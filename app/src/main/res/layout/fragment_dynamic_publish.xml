@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.dynamic.viewModel.DynamicPublishVM" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
@@ -78,11 +79,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_space"
-                    android:paddingTop="@dimen/item_padding"
-                    android:paddingStart="@dimen/item_padding"
-                    android:paddingEnd="@dimen/item_padding"
+                    android:background="@android:color/white"
                     android:orientation="vertical"
-                    android:background="@android:color/white">
+                    android:paddingEnd="@dimen/item_padding"
+                    android:paddingStart="@dimen/item_padding"
+                    android:paddingTop="@dimen/item_padding">
 
                     <TextView
                         style="@style/TextListTitle"
@@ -92,9 +93,9 @@
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/rv_desc"
-                        android:layout_marginTop="@dimen/line_space"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/line_space"
                         app:itemBinding="@{viewModel.itemDescBinding}"
                         app:items="@{viewModel.itemDescVMs}" />
 
@@ -113,17 +114,88 @@
 
                 </LinearLayout>
 
+                <!--商品信息-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:layout_marginTop="@dimen/vertical_space">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_gray"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_margin="10dp"
+                        android:padding="10dp"
+                        android:visibility="@{viewModel.viewStyle.hasSelectedGood ? View.VISIBLE : View.GONE}"
+                        app:clickCommand="@{viewModel.addGoodsLinkClick}">
+
+                        <ImageView
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:scaleType="centerCrop"
+                            app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}"
+                            app:glideUri="@{viewModel.goodsImgUri}" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/vertical_space"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/TextListTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.goodsName}" />
+
+                            <TextView
+                                style="@style/TextPrice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:text="@{String.valueOf(viewModel.goodsPrice)}" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    style="@style/TextListSummary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{@string/sale_num + ` ` + String.valueOf(viewModel.saleNum)}" />
+
+                                <TextView
+                                    style="@style/TextListSummary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:text="@{@string/stock_num + ` ` + String.valueOf(viewModel.stockNum)}" />
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_space"
                     android:background="@android:color/white"
-                    android:padding="@dimen/item_padding"
-                    android:drawableStart="@mipmap/fabu_link"
                     android:drawablePadding="@dimen/line_space"
+                    android:drawableStart="@mipmap/fabu_link"
+                    android:padding="@dimen/item_padding"
                     android:text="如果有，请添加商品链接"
                     android:textColor="@color/colorComplementaryOrange"
                     android:textSize="@dimen/text_normal"
+                    android:visibility="@{viewModel.viewStyle.hasSelectedGood ? View.GONE : View.VISIBLE}"
                     app:clickCommand="@{viewModel.addGoodsLinkClick}" />
 
                 <LinearLayout
@@ -139,8 +211,8 @@
                         style="@style/TextListTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@mipmap/icon_pin"
                         android:drawablePadding="@dimen/line_space"
+                        android:drawableStart="@mipmap/icon_pin"
                         android:text="@{viewModel.areaName}" />
 
                     <TextView

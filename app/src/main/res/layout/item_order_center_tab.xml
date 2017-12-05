@@ -15,7 +15,7 @@
         android:paddingEnd="5dp"
         android:paddingStart="0dp"
         android:paddingTop="5dp"
-        app:badgeText="@{String.valueOf(viewModel.tabBadgeText)}"
+        app:llBadgeText="@{String.valueOf(viewModel.tabBadgeText)}"
         app:badge_gravity="rightTop"
         app:badge_horizontalMargin="0dp"
         app:badge_padding="2.5dp"

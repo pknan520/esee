@@ -143,6 +143,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:padding="@dimen/text_padding"
+                            android:visibility="@{viewModel.viewStyle.isSelf ? View.GONE : View.VISIBLE}"
                             app:clickCommand="@{viewModel.focusClick}">
 
                             <com.facebook.drawee.view.SimpleDraweeView

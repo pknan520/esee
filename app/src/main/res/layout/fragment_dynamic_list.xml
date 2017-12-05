@@ -60,6 +60,9 @@
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="3dp"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
                 app:itemBinding="@{viewModel.itemDynamicBinding}"
                 app:items="@{viewModel.itemDynamicVMs}"
                 app:onLoadMoreCommand="@{viewModel.omLoadMoreCommand}" />

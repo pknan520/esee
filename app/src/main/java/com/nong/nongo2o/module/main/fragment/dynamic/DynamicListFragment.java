@@ -57,7 +57,8 @@ public class DynamicListFragment extends RxFragment {
 
     private void initView() {
         binding.rv.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        binding.rv.addItemDecoration(new StaggerItemDecoration(24));
+        binding.rv.addItemDecoration(new StaggerItemDecoration(12));
+//        binding.rv.addItemDecoration(new DividerItemDecoration(getActivity(), 24, 24, ContextCompat.getColor(getActivity(), android.R.color.transparent)));
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.nong.nongo2o.module.login.viewModel;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.databinding.ObservableBoolean;
 import android.support.v4.content.LocalBroadcastManager;
@@ -12,23 +11,13 @@ import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.bean.UserInfo;
-import com.nong.nongo2o.entity.response.WxAccessToken;
-import com.nong.nongo2o.entity.response.WxInfo;
-import com.nong.nongo2o.module.login.fragment.BindMobileFragment;
 import com.nong.nongo2o.module.login.fragment.LoginFragment;
 import com.nong.nongo2o.module.main.MainActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
-import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
-import com.nong.nongo2o.service.InitDataService;
-import com.nong.nongo2o.uils.Constant;
-import com.nong.nongo2o.uils.SPUtils;
 import com.nong.nongo2o.wxapi.WXEntryActivity;
-
-import java.util.Calendar;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**

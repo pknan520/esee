@@ -40,7 +40,9 @@ import com.nong.nongo2o.uils.FocusUtils;
 import com.nong.nongo2o.uils.MyTimeUtils;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
@@ -115,6 +117,7 @@ public class DynamicDetailVM implements ViewModel {
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
+        public final ObservableBoolean isSelf = new ObservableBoolean(false);
         public final ObservableBoolean isFocus = new ObservableBoolean(false);
         public final ObservableBoolean hasGoodsLink = new ObservableBoolean(false);
         public final ObservableBoolean isLike = new ObservableBoolean(false);
@@ -130,6 +133,7 @@ public class DynamicDetailVM implements ViewModel {
         headUri.set(dynamic.getUser().getAvatar());
         name.set(dynamic.getUser().getUserNick());
         summary.set(dynamic.getUser().getProfile());
+        viewStyle.isSelf.set(dynamic.getUserCode().equals(UserInfo.getInstance().getUserCode()));
         viewStyle.isFocus.set(FocusUtils.checkIsFocus(dynamic.getUser().getUserCode()));
 
         title.set(dynamic.getTitle());
@@ -231,12 +235,15 @@ public class DynamicDetailVM implements ViewModel {
                 .subscribe(resp -> {
                     if (resp.getRows() != null && resp.getRows().size() > 0) {
                         StringBuilder sb = new StringBuilder();
+                        Set<String> likeList = new HashSet<String>();
                         for (MomentFavorite favor : resp.getRows()) {
                             sb.append(favor.getUser().getUserNick());
                             sb.append(",");
+                            likeList.add(favor.getUserCode());
                         }
                         likeName.set(sb.substring(0, sb.length() - 1));
                         viewStyle.showLikeList.set(true);
+                        viewStyle.isLike.set(likeList.contains(UserInfo.getInstance().getUserCode()));
                     }
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -306,7 +313,7 @@ public class DynamicDetailVM implements ViewModel {
                         viewStyle.isLike.set(true);
                         viewStyle.showLikeList.set(true);
 
-                        StringBuilder sb = new StringBuilder(likeName.get());
+                        StringBuilder sb = new StringBuilder(TextUtils.isEmpty(likeName.get()) ? "" : likeName.get());
                         sb.append(sb.length() > 0 ? "," + UserInfo.getInstance().getUserNick() : UserInfo.getInstance().getUserNick());
                         likeName.set(sb.toString());
                     }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());

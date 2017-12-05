@@ -299,6 +299,7 @@
                 android:background="@android:color/white"
                 android:orientation="horizontal"
                 android:padding="@dimen/item_padding"
+                android:visibility="@{viewModel.viewStyle.isSaler ? View.GONE : View.VISIBLE }"
                 app:clickCommand="@{viewModel.toIdentifyClick}">
 
                 <TextView

@@ -4,8 +4,12 @@ import android.databinding.ObservableBoolean;
 import android.support.annotation.DrawableRes;
 
 import com.kelin.mvvmlight.base.ViewModel;
+import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.module.common.buy.fragment.PayResultFragment;
+import com.nong.nongo2o.uils.AppManager;
+
+import io.reactivex.functions.Action;
 
 /**
  * Created by Administrator on 2017-9-19.
@@ -40,4 +44,8 @@ public class PayResultVM implements ViewModel {
     private void initData() {
         viewStyle.isSuccess.set(payResult);
     }
+
+    public final ReplyCommand backToHomeClick = new ReplyCommand(() -> {
+        AppManager.getAppManager().backToHome();
+    });
 }

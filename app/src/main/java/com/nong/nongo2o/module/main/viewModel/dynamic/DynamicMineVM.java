@@ -60,6 +60,9 @@ public class DynamicMineVM implements ViewModel {
     public final ObservableField<String> name = new ObservableField<>();
     public final ObservableField<String> summary = new ObservableField<>();
     public final ObservableField<Integer> dynamicNum = new ObservableField<>();
+    //  我的动态列表
+    public final ObservableList<ItemDynamicMineVM> itemDynamicMineVMs = new ObservableArrayList<>();
+    public final ItemBinding<ItemDynamicMineVM> itemDynamicMineBinding = ItemBinding.of(BR.viewModel, R.layout.item_dynamic_list_mine);
 
     @DrawableRes
     public final int emptyImg = R.mipmap.default_none;
@@ -95,18 +98,12 @@ public class DynamicMineVM implements ViewModel {
         }
     }
 
-    /**
-     * 我的动态列表
-     */
-    public final ObservableList<ItemDynamicMineVM> itemDynamicMineVMs = new ObservableArrayList<>();
-    public final ItemBinding<ItemDynamicMineVM> itemDynamicMineBinding = ItemBinding.of(BR.viewModel, R.layout.item_dynamic_list_mine);
-
     public class ItemDynamicMineVM implements ViewModel {
 
         private Moment dynamic;
 
         @DrawableRes
-        public final int imgPlaceHolder = R.mipmap.ic_launcher;
+        public final int imgPlaceHolder = R.mipmap.picture_default;
         public final ObservableField<String> date = new ObservableField<>();
         public final ObservableField<String> title = new ObservableField<>();
         public final ObservableField<String> summary = new ObservableField<>();

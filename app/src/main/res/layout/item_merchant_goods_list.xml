@@ -16,12 +16,19 @@
         app:clickCommand="@{viewModel.goodsDetailClick}"
         android:orientation="vertical">
 
-        <com.nong.nongo2o.widget.ImageView.SquareDraweeView
+        <!--<com.nong.nongo2o.widget.ImageView.SquareDraweeView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="70dp"-->
+            <!--android:scaleType="centerCrop"-->
+            <!--app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}"-->
+            <!--app:uri="@{viewModel.goodsImg}"/>-->
+
+        <com.nong.nongo2o.widget.ImageView.SquareImageView
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:scaleType="centerCrop"
             app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}"
-            app:uri="@{viewModel.goodsImg}"/>
+            app:glideUri="@{viewModel.goodsImg}"/>
 
         <TextView
             android:layout_width="wrap_content"

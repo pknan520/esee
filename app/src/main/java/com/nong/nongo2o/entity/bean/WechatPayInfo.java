@@ -23,7 +23,11 @@ public class WechatPayInfo
     
     private String signType;
     
-    private String paySign;
+    private String sign;
+
+    private String partnerId;
+
+    private String prepayId;
     
 
     
@@ -112,15 +116,28 @@ public class WechatPayInfo
     {
         this.signType = signType;
     }
-    
-    public String getPaySign()
-    {
-        return paySign;
+
+    public String getSign() {
+        return sign;
     }
-    
-    public void setPaySign(String paySign)
-    {
-        this.paySign = paySign;
+
+    public void setSign(String sign) {
+        this.sign = sign;
     }
-    
+
+    public String getPartnerId() {
+        return partnerId;
+    }
+
+    public void setPartnerId(String partnerId) {
+        this.partnerId = partnerId;
+    }
+
+    public String getPrepayId() {
+        return prepayId;
+    }
+
+    public void setPrepayId(String prepayId) {
+        this.prepayId = prepayId;
+    }
 }

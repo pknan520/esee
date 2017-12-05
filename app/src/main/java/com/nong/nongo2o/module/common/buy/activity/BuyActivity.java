@@ -10,8 +10,10 @@ import android.support.annotation.Nullable;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityBuyBinding;
+import com.nong.nongo2o.entity.domain.Order;
 import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.module.common.buy.fragment.CreateOrderFragment;
+import com.nong.nongo2o.module.common.buy.fragment.PayFragment;
 
 import java.util.ArrayList;
 
@@ -23,14 +25,11 @@ public class BuyActivity extends RxBaseToolbarActivity {
 
     private ActivityBuyBinding binding;
 
-    // TODO: 2017-9-18 临时容错，以后删除
-    public static Intent newIntent(Context context) {
-        return new Intent(context, BuyActivity.class);
-    }
-
-    public static Intent newIntent(Context context, ArrayList<OrderDetail> orderDetails) {
+    public static Intent newIntent(Context context, @Nullable ArrayList<OrderDetail> orderDetails, @Nullable Order order, boolean pay) {
         Intent intent = new Intent(context, BuyActivity.class);
-        intent.putExtra("orderDetails", orderDetails);
+        if (orderDetails != null) intent.putExtra("orderDetails", orderDetails);
+        if (order != null) intent.putExtra("order", order);
+        intent.putExtra("pay", pay);
         return intent;
     }
 
@@ -52,7 +51,11 @@ public class BuyActivity extends RxBaseToolbarActivity {
     }
 
     private void initView() {
-        replaceFragment(R.id.fl, CreateOrderFragment.newInstance((ArrayList<OrderDetail>) getIntent().getSerializableExtra("orderDetails")), CreateOrderFragment.TAG);
+        if (getIntent().getBooleanExtra("pay", false)) {
+            replaceFragment(R.id.fl, PayFragment.newInstance((Order) getIntent().getSerializableExtra("order")), PayFragment.TAG);
+        } else {
+            replaceFragment(R.id.fl, CreateOrderFragment.newInstance((ArrayList<OrderDetail>) getIntent().getSerializableExtra("orderDetails")), CreateOrderFragment.TAG);
+        }
     }
 
     @Override

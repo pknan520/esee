@@ -18,6 +18,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:padding="4dp"
             android:layout_gravity="end"
             android:src="@mipmap/close_red"
             app:clickCommand="@{viewModel.deleteDescClick}"/>

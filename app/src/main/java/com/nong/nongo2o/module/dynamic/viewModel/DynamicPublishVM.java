@@ -1,13 +1,13 @@
 package com.nong.nongo2o.module.dynamic.viewModel;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.support.annotation.DrawableRes;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,29 +24,23 @@ import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.activity.SelectAreaActivity;
-import com.nong.nongo2o.module.common.fragment.SelectAreaFragment;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
-import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicPublishFragment;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicSelectGoodsFragment;
-import com.nong.nongo2o.module.personal.fragment.AddressEditFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.AddressUtils;
 
 import java.io.File;
-import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
@@ -60,7 +54,7 @@ public class DynamicPublishVM implements ViewModel {
 
     private DynamicPublishFragment fragment;
     private Moment dynamic = null;
-    private ItemPicVM.addRadioPicListener addBannerPicListener;
+    private ItemPicVM.ClickListener bannerClickListener;
 
     private List<String> headerImgList = new ArrayList<>();
     private List<DynamicContent> contentList = new ArrayList<>();
@@ -75,6 +69,14 @@ public class DynamicPublishVM implements ViewModel {
     //  动态图文
     public final ObservableList<ItemDescVM> itemDescVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemDescVM> itemDescBinding = ItemBinding.of(BR.viewModel, R.layout.item_dynamic_publish_desc);
+    //  商品信息
+    @DrawableRes
+    public final int goodsImgPlaceHolder = R.mipmap.picture_default;
+    public final ObservableField<String> goodsImgUri = new ObservableField<>();
+    public final ObservableField<String> goodsName = new ObservableField<>();
+    public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();
+    public final ObservableField<Integer> saleNum = new ObservableField<>();
+    public final ObservableField<Integer> stockNum = new ObservableField<>();
 
     private String selectedGoodsCode = "";
 
@@ -93,10 +95,16 @@ public class DynamicPublishVM implements ViewModel {
         } else {
             //  新增，没有原始数据
             //  初始有一个添加Banner的按钮
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
+            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
             //  初始有一项空白图文
             itemDescVMs.add(new ItemDescVM());
         }
+    }
+
+    public final ViewStyle viewStyle = new ViewStyle();
+
+    public class ViewStyle {
+        public final ObservableBoolean hasSelectedGood = new ObservableBoolean(false);
     }
 
     /**
@@ -104,7 +112,7 @@ public class DynamicPublishVM implements ViewModel {
      */
     private void initListener() {
         //  初始化添加Banner图的回调监听
-        addBannerPicListener = new ItemPicVM.addRadioPicListener() {
+        bannerClickListener = new ItemPicVM.ClickListener() {
 
             @Override
             public void addRadioPic(MediaBean mediaBean) {
@@ -113,6 +121,16 @@ public class DynamicPublishVM implements ViewModel {
                 if (itemBannerVMs.size() > 9) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
+            }
+
+            @Override
+            public void removePic(ItemPicVM itemPicVM) {
+                if (itemBannerVMs.size() == 9) {
+                    //  如果原来已加满，则增加一个添加图片的按钮
+                    itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+                }
+                bannerFileList.remove(itemBannerVMs.indexOf(itemPicVM));
+                itemBannerVMs.remove(itemPicVM);
             }
         };
     }
@@ -125,10 +143,10 @@ public class DynamicPublishVM implements ViewModel {
             headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
             }.getType());
             for (String bannerUri : headerImgList) {
-                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, addBannerPicListener));
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, bannerClickListener));
             }
             if (itemBannerVMs.size() < 9)
-                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
         }
 
         title.set(dynamic.getTitle());
@@ -178,7 +196,7 @@ public class DynamicPublishVM implements ViewModel {
     public class ItemDescVM implements ViewModel {
 
         private DynamicContent content;
-        private ItemPicVM.addRadioPicListener addDescPicListener;
+        private ItemPicVM.ClickListener addDescPicListener;
         public final ObservableField<String> desc = new ObservableField<>();
         public final ObservableList<ItemPicVM> itemDescPicVMs = new ObservableArrayList<>();
         public final ItemBinding<ItemPicVM> itemDescPicBinding = ItemBinding.of(BR.viewModel, R.layout.item_pic);
@@ -201,7 +219,7 @@ public class DynamicPublishVM implements ViewModel {
 
         private void initListener() {
             //  初始化图文描述添加图片监听器
-            addDescPicListener = new ItemPicVM.addRadioPicListener() {
+            addDescPicListener = new ItemPicVM.ClickListener() {
                 @Override
                 public void addRadioPic(MediaBean mediaBean) {
                     itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
@@ -209,6 +227,16 @@ public class DynamicPublishVM implements ViewModel {
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
+                }
+
+                @Override
+                public void removePic(ItemPicVM itemPicVM) {
+                    if (itemDescPicVMs.size() == 9) {
+                        //  如果原来已加满，则增加一个添加图片的按钮
+                        itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+                    }
+                    newPicList.remove(itemDescPicVMs.indexOf(itemPicVM));
+                    itemDescPicVMs.remove(itemPicVM);
                 }
             };
         }
@@ -234,12 +262,16 @@ public class DynamicPublishVM implements ViewModel {
          * 删除图文描述
          */
         public final ReplyCommand deleteDescClick = new ReplyCommand(() -> {
+            ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(this::deleteDesc);
+        });
+
+        private void deleteDesc() {
             View currentView = fragment.getActivity().getCurrentFocus();
             if (currentView != null) {
                 currentView.clearFocus();
             }
             itemDescVMs.remove(ItemDescVM.this);
-        });
+        }
 
         public List<File> getNewPicList() {
             return newPicList;
@@ -250,13 +282,26 @@ public class DynamicPublishVM implements ViewModel {
      * 添加商品链接
      */
     public final ReplyCommand addGoodsLinkClick = new ReplyCommand(() -> {
-        // TODO: 2017-9-18 界面如何展示
         ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
                 DynamicSelectGoodsFragment.newInstance(), DynamicSelectGoodsFragment.TAG);
     });
 
     public void setSelectedGoods(Goods goods) {
-        this.selectedGoodsCode = goods.getGoodsCode();
+        if (goods != null) {
+            viewStyle.hasSelectedGood.set(true);
+            this.selectedGoodsCode = goods.getGoodsCode();
+            if (!TextUtils.isEmpty(goods.getCovers())) {
+                List<String> goodCovers = new Gson().fromJson(goods.getCovers(), new TypeToken<List<String>>() {
+                }.getType());
+                goodsImgUri.set((goodCovers != null && goodCovers.size() > 0) ? goodCovers.get(0) : "");
+            }
+            goodsName.set(goods.getTitle());
+            goodsPrice.set(goods.getPrice());
+            saleNum.set(goods.getTotalSale());
+            if (goods.getGoodsSpecs() != null && goods.getGoodsSpecs().size() > 0) {
+                stockNum.set(goods.getGoodsSpecs().get(0).getQuantity());
+            }
+        }
     }
 
     /**
@@ -378,6 +423,7 @@ public class DynamicPublishVM implements ViewModel {
     private void postDynamic(Moment dynamic, boolean isNew) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
                 new Gson().toJson(dynamic));
+        Intent intent = new Intent();
 
         if (isNew) {
             RetrofitHelper.getDynamicAPI()
@@ -386,7 +432,8 @@ public class DynamicPublishVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        Intent intent = new Intent("refreshMyDynamic");
+                        intent.setAction("refreshMyDynamic");
+                        intent.setAction("refreshDynamicList");
                         LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
                         fragment.getActivity().finish();
                     }, throwable -> {
@@ -400,7 +447,8 @@ public class DynamicPublishVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        Intent intent = new Intent("refreshMyDynamic");
+                        intent.setAction("refreshMyDynamic");
+                        intent.setAction("refreshDynamicList");
                         LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
                         fragment.getActivity().finish();
                     }, throwable -> {

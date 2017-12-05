@@ -162,8 +162,44 @@ public class CartVM implements ViewModel {
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> Toast.makeText(fragment.getActivity(), "购物车修改成功", Toast.LENGTH_SHORT).show(),
+                .subscribe(s -> {
+                    totalPrice.set(calculatePrice());
+                    transFee.set(calculateTransFee());
+                    Toast.makeText(fragment.getActivity(), "购物车修改成功", Toast.LENGTH_SHORT).show();
+                },
                         throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * 计算总价
+     */
+    private String calculatePrice() {
+        BigDecimal total = new BigDecimal(0);
+        for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
+            for (ItemCartMerchantVM.ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
+                if (itemGoodsVM.mViewStyle.isSelect.get()) {
+                    total = total.add(itemGoodsVM.goodsPrice.get().multiply(new BigDecimal(itemGoodsVM.goodsNum.get())));
+                }
+            }
+        }
+
+        return "¥" + total.toString();
+    }
+
+    /**
+     * 计算运费
+     */
+    private String calculateTransFee() {
+        BigDecimal total = new BigDecimal(0);
+        for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
+            for (ItemCartMerchantVM.ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
+                if (itemGoodsVM.mViewStyle.isSelect.get()) {
+                    total = total.add(itemGoodsVM.getCart().getGoods().getFreight());
+                }
+            }
+        }
+
+        return "¥" + total.toString();
     }
 
     /**
@@ -172,7 +208,7 @@ public class CartVM implements ViewModel {
     public final ReplyCommand submitOrderClick = new ReplyCommand(() -> {
         ArrayList<OrderDetail> orderDetails = createOrderDetails();
         if (orderDetails != null && !orderDetails.isEmpty()) {
-            fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), createOrderDetails()));
+            fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), createOrderDetails(), null, false));
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         } else {
             Toast.makeText(fragment.getActivity(), "请选择商品", Toast.LENGTH_SHORT).show();
@@ -362,40 +398,8 @@ public class CartVM implements ViewModel {
                 }
             });
 
-            /**
-             * 计算总价
-             */
-            private String calculatePrice() {
-                BigDecimal total = new BigDecimal(0);
-                for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
-                    for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
-                        if (itemGoodsVM.mViewStyle.isSelect.get()) {
-                            total = total.add(itemGoodsVM.goodsPrice.get().multiply(new BigDecimal(itemGoodsVM.goodsNum.get())));
-                        }
-                    }
-                }
-
-                return "¥" + total.toString();
-            }
-
             public Cart getCart() {
                 return cart;
-            }
-
-            /**
-             * 计算运费
-             */
-            private String calculateTransFee() {
-                BigDecimal total = new BigDecimal(0);
-                for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
-                    for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
-                        if (itemGoodsVM.mViewStyle.isSelect.get()) {
-                            total = total.add(itemGoodsVM.getCart().getGoods().getFreight());
-                        }
-                    }
-                }
-
-                return "¥" + total.toString();
             }
 
             /**

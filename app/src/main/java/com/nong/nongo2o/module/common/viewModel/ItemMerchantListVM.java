@@ -17,6 +17,7 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.SalerInfo;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
@@ -66,6 +67,7 @@ public class ItemMerchantListVM implements ViewModel {
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
+        public final ObservableBoolean isSelf = new ObservableBoolean(false);
         public final ObservableBoolean isFocus = new ObservableBoolean(false);
     }
 
@@ -76,6 +78,7 @@ public class ItemMerchantListVM implements ViewModel {
         headUri.set(saler.getAvatar());
         name.set(saler.getUserNick());
         summary.set(saler.getProfile());
+        viewStyle.isSelf.set(saler.getUserCode().equals(UserInfo.getInstance().getUserCode()));
         viewStyle.isFocus.set(FocusUtils.checkIsFocus(saler.getUserCode()));
 
         if (saler.getGoods() != null && saler.getGoods().size() > 0) {

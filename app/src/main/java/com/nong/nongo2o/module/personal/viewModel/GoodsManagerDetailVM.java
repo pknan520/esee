@@ -17,15 +17,11 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
-import com.nong.nongo2o.entities.response.DynamicContent;
 import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.entity.domain.ImgTextContent;
-import com.nong.nongo2o.entity.domain.Moment;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
-import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
-import com.nong.nongo2o.module.dynamic.viewModel.DynamicPublishVM;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
@@ -55,7 +51,7 @@ public class GoodsManagerDetailVM implements ViewModel {
 
     private Goods goods = null;
     private GoodsManagerDetailFragment fragment;
-    private ItemPicVM.addRadioPicListener addBannerPicListener;
+    private ItemPicVM.ClickListener bannerClickListener;
 
     //  商品Banner图
     private List<String> covers = new ArrayList<>();
@@ -88,7 +84,7 @@ public class GoodsManagerDetailVM implements ViewModel {
         } else {
             //  新增，没有原始数据
             //  Banner初始有一个添加图片的按钮
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
+            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
             //  初始有一个空白商品规格
             itemStandardVMs.add(new ItemStandardVM());
             //  初始有一个空白的商品描述
@@ -101,15 +97,24 @@ public class GoodsManagerDetailVM implements ViewModel {
      */
     private void initListener() {
         //  初始化添加Banner图的回调监听
-        addBannerPicListener = new ItemPicVM.addRadioPicListener() {
+        bannerClickListener = new ItemPicVM.ClickListener() {
             @Override
             public void addRadioPic(MediaBean mediaBean) {
-                Log.d(TAG, "addRadioPic: file://" + mediaBean.getOriginalPath());
                 itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
                 bannerFileList.add(new File(mediaBean.getOriginalPath()));
                 if (itemBannerVMs.size() > 9) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
+            }
+
+            @Override
+            public void removePic(ItemPicVM itemPicVM) {
+                if (itemBannerVMs.size() == 9) {
+                    //  如果原来已加满，则增加一个添加图片的按钮
+                    itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+                }
+                bannerFileList.remove(itemBannerVMs.indexOf(itemPicVM));
+                itemBannerVMs.remove(itemPicVM);
             }
         };
     }
@@ -122,11 +127,11 @@ public class GoodsManagerDetailVM implements ViewModel {
             covers = new Gson().fromJson(goods.getCovers(), new TypeToken<List<String>>() {
             }.getType());
             for (String coverUri : covers) {
-                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), coverUri, addBannerPicListener));
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), coverUri, bannerClickListener));
             }
         }
         if (itemBannerVMs.size() < 9)
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, addBannerPicListener));
+            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
 
         goodsName.set(goods.getTitle());
 
@@ -373,7 +378,7 @@ public class GoodsManagerDetailVM implements ViewModel {
 
         private ImgTextContent content;
 
-        private ItemPicVM.addRadioPicListener addDescPicListener;
+        private ItemPicVM.ClickListener addDescPicListener;
         public final ObservableField<String> goodsDesc = new ObservableField<>();
         //  每一项商品描述的图片
         public final ObservableList<ItemPicVM> itemDescPicVMs = new ObservableArrayList<>();
@@ -399,7 +404,7 @@ public class GoodsManagerDetailVM implements ViewModel {
          * 初始化图文描述添加图片监听器
          */
         private void initListener() {
-            addDescPicListener = new ItemPicVM.addRadioPicListener() {
+            addDescPicListener = new ItemPicVM.ClickListener() {
                 @Override
                 public void addRadioPic(MediaBean mediaBean) {
                     itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
@@ -407,6 +412,16 @@ public class GoodsManagerDetailVM implements ViewModel {
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
+                }
+
+                @Override
+                public void removePic(ItemPicVM itemPicVM) {
+                    if (itemDescPicVMs.size() == 9) {
+                        //  如果原来已加满，则增加一个添加图片的按钮
+                        itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+                    }
+                    newPicList.remove(itemDescPicVMs.indexOf(itemPicVM));
+                    itemDescPicVMs.remove(itemPicVM);
                 }
             };
         }
@@ -430,12 +445,16 @@ public class GoodsManagerDetailVM implements ViewModel {
          * 删除商品描述
          */
         public final ReplyCommand deleteDescClick = new ReplyCommand(() -> {
+            ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(this::deleteDesc);
+        });
+
+        private void deleteDesc() {
             View currentView = fragment.getActivity().getCurrentFocus();
             if (currentView != null) {
                 currentView.clearFocus();
             }
             itemDescVMs.remove(ItemDescVM.this);
-        });
+        }
 
         public List<File> getNewPicList() {
             return newPicList;

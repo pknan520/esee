@@ -7,27 +7,33 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.common.viewModel.ItemPicVM" />
+
+        <import type="android.view.View" />
     </data>
 
-    <!--<com.nong.nongo2o.widget.ImageView.SquareDraweeView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:padding="3dp"-->
-        <!--android:layout_marginTop="3dp"-->
-        <!--app:request_width="@{100}"-->
-        <!--app:request_height="@{100}"-->
-        <!--app:clickCommand="@{viewModel.addPicClick}"-->
-        <!--app:placeholderImageRes="@{viewModel.placeHolder}"-->
-        <!--app:uri="@{viewModel.imgUri}" />-->
-
-    <cn.finalteam.rxgalleryfinal.ui.widget.SquareImageView
+    <cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="3dp"
-        android:layout_marginTop="3dp"
-        android:scaleType="centerCrop"
-        app:clickCommand="@{viewModel.addPicClick}"
-        app:placeholderImageRes="@{viewModel.placeHolder}"
-        app:glideUri="@{viewModel.imgUri}"/>
+        android:layout_height="match_parent">
+
+        <cn.finalteam.rxgalleryfinal.ui.widget.SquareImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="3dp"
+            android:padding="3dp"
+            android:scaleType="centerCrop"
+            app:clickCommand="@{viewModel.addPicClick}"
+            app:glideUri="@{viewModel.imgUri}"
+            app:placeholderImageRes="@{viewModel.placeHolder}" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:padding="5dp"
+            android:src="@mipmap/fabu_img_delete"
+            android:visibility="@{viewModel.viewStyle.canDelete ? View.VISIBLE : View.GONE}"
+            app:clickCommand="@{viewModel.deleteClick}" />
+
+    </cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout>
 
 </layout>

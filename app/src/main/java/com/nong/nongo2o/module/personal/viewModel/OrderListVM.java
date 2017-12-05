@@ -22,6 +22,8 @@ import com.nong.nongo2o.entity.domain.Follow;
 import com.nong.nongo2o.entity.domain.Order;
 import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.entity.request.UpdateOrderRequest;
+import com.nong.nongo2o.module.common.buy.activity.BuyActivity;
+import com.nong.nongo2o.module.common.buy.fragment.PayFragment;
 import com.nong.nongo2o.module.common.viewModel.ItemOrderGoodsListVM;
 import com.nong.nongo2o.module.login.LoginActivity;
 import com.nong.nongo2o.module.login.fragment.LoginFragment;
@@ -251,6 +253,8 @@ public class OrderListVM implements ViewModel {
             switch (order.getOrderStatus()) {
                 case 0:
                     //  支付（用户）
+                    fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), null, order, true));
+                    fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
                     break;
                 case 1:
                     //  发货（商家）

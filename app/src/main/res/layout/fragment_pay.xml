@@ -10,9 +10,10 @@
             type="com.nong.nongo2o.module.common.buy.viewModel.PayVM" />
     </data>
 
-    <RelativeLayout
+    <com.nong.nongo2o.widget.RelativeLayout.SlidingRelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/common_bg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -107,7 +108,7 @@
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </com.nong.nongo2o.widget.RelativeLayout.SlidingRelativeLayout>
 
 
 

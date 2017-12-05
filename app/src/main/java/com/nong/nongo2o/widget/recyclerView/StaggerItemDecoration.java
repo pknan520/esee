@@ -27,16 +27,23 @@ public class StaggerItemDecoration extends RecyclerView.ItemDecoration {
 
         //取模
 
-        //两列的左边一列
-        if (pos % 2 == 0) {
-            outRect.left = space;
-            outRect.right = space / 2;
-        }
-
-        //两列的右边一列
-        if (pos % 2 == 1) {
-            outRect.left = space / 2;
-            outRect.right = space;
+//        //两列的左边一列
+//        if (pos % 2 == 0) {
+//            outRect.left = space;
+//            outRect.right = space / 2;
+//        }
+//
+//        //两列的右边一列
+//        if (pos % 2 == 1) {
+//            outRect.left = space / 2;
+//            outRect.right = space;
+//        }
+        outRect.left = space;
+        outRect.right = space;
+        if (pos != 0 && pos != 1) {
+            outRect.top = 2 * space;
+        } else {
+            outRect.top = space;
         }
     }
 }

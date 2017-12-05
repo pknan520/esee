@@ -42,10 +42,6 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
 public class MerchantListVM implements ViewModel {
 
-    //  假数据图片uri
-    private String[] uriArray = {"https://ws1.sinaimg.cn/large/610dc034ly1fhhz28n9vyj20u00u00w9.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhgsi7mqa9j20ku0kuh1r.jpg",
-            "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg", "https://ws1.sinaimg.cn/large/610dc034ly1fhegpeu0h5j20u011iae5.jpg"};
-
     private MerchantListFragment fragment;
     private int type;
     public final ObservableList<DefaultSliderView> sliderList = new ObservableArrayList<>();

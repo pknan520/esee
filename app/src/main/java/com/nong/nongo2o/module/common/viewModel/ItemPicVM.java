@@ -2,6 +2,7 @@ package com.nong.nongo2o.module.common.viewModel;
 
 import android.Manifest;
 import android.app.Activity;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
@@ -13,11 +14,14 @@ import com.nong.nongo2o.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yalantis.ucrop.model.AspectRatio;
 
+import java.util.List;
+
 import cn.finalteam.rxgalleryfinal.RxGalleryFinal;
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageMultipleResultEvent;
+import io.reactivex.functions.Action;
 
 /**
  * Created by Administrator on 2017-7-1.
@@ -29,7 +33,7 @@ public class ItemPicVM implements ViewModel {
 
     private Activity context;
     private int maxSize = 9;
-    private addRadioPicListener addPicListener;
+    private ClickListener clickListener;
 
     @DrawableRes
     public final int placeHolder = R.mipmap.add_picture;
@@ -39,18 +43,23 @@ public class ItemPicVM implements ViewModel {
         void addMultiPic(ImageMultipleResultEvent event);
     }
 
-    public interface addRadioPicListener {
+    public interface ClickListener {
         void addRadioPic(MediaBean mediaBean);
+        void removePic(ItemPicVM itemPicVM);
     }
 
-    public ItemPicVM(Activity context, String uri) {
-        new ItemPicVM(context, uri, null);
-    }
-
-    public ItemPicVM(Activity context, String uri, addRadioPicListener addPicListener) {
+    public ItemPicVM(Activity context, String uri, ClickListener clickListener) {
         this.context = context;
         imgUri.set(uri);
-        this.addPicListener = addPicListener;
+        this.clickListener = clickListener;
+
+        viewStyle.canDelete.set(!TextUtils.isEmpty(uri));
+    }
+
+    public final ViewStyle viewStyle = new ViewStyle();
+
+    public class ViewStyle {
+        public final ObservableBoolean canDelete = new ObservableBoolean(false);
     }
 
     /**
@@ -89,7 +98,7 @@ public class ItemPicVM implements ViewModel {
 
                         for (int i = 0; i < event.getResult().size(); i++) {
                             MediaBean bean = event.getResult().get(i);
-                            addPicListener.addRadioPic(bean);
+                            clickListener.addRadioPic(bean);
                         }
                     }
                 })
@@ -119,5 +128,12 @@ public class ItemPicVM implements ViewModel {
 //                })
 //                .open();
     }
+
+    /**
+     * 删除图片
+     */
+    public final ReplyCommand deleteClick = new ReplyCommand(() -> {
+        if (clickListener != null) clickListener.removePic(this);
+    });
 
 }

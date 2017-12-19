@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
+import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -34,32 +35,37 @@ public class ItemPicVM implements ViewModel {
     private Activity context;
     private int maxSize = 9;
     private ClickListener clickListener;
+    private String uri;
+    private ObservableList<ItemPicVM> list;
 
     @DrawableRes
     public final int placeHolder = R.mipmap.add_picture;
     public final ObservableField<String> imgUri = new ObservableField<>();
 
-    public interface addMultiListener {
-        void addMultiPic(ImageMultipleResultEvent event);
-    }
-
     public interface ClickListener {
-        void addRadioPic(MediaBean mediaBean);
+//        void addRadioPic(MediaBean mediaBean);
+        void addMultiPic(List<MediaBean> mediaBeanList);
         void removePic(ItemPicVM itemPicVM);
     }
 
-    public ItemPicVM(Activity context, String uri, ClickListener clickListener) {
+    public ItemPicVM(Activity context, String uri, ClickListener clickListener, ObservableList<ItemPicVM> list) {
         this.context = context;
-        imgUri.set(uri);
+        this.uri = uri;
         this.clickListener = clickListener;
+        this.list = list;
 
-        viewStyle.canDelete.set(!TextUtils.isEmpty(uri));
+        initData();
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
         public final ObservableBoolean canDelete = new ObservableBoolean(false);
+    }
+
+    private void initData() {
+        imgUri.set(uri);
+        viewStyle.canDelete.set(!TextUtils.isEmpty(uri));
     }
 
     /**
@@ -83,6 +89,7 @@ public class ItemPicVM implements ViewModel {
      * 从相册获取
      */
     private void addPicFromGallery() {
+        maxSize = 9 - (TextUtils.isEmpty(list.get(list.size() - 1).uri) ? list.size() - 1 : list.size());
         RxGalleryFinal
                 .with(context)
                 .image()
@@ -94,12 +101,7 @@ public class ItemPicVM implements ViewModel {
                 .subscribe(new RxBusResultDisposable<ImageMultipleResultEvent>() {
                     @Override
                     protected void onEvent(ImageMultipleResultEvent event) throws Exception {
-                        maxSize -= event.getResult().size();
-
-                        for (int i = 0; i < event.getResult().size(); i++) {
-                            MediaBean bean = event.getResult().get(i);
-                            clickListener.addRadioPic(bean);
-                        }
+                        clickListener.addMultiPic(event.getResult());
                     }
                 })
                 .openGallery();
@@ -135,5 +137,4 @@ public class ItemPicVM implements ViewModel {
     public final ReplyCommand deleteClick = new ReplyCommand(() -> {
         if (clickListener != null) clickListener.removePic(this);
     });
-
 }

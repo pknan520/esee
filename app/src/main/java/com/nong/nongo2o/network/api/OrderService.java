@@ -29,7 +29,7 @@ public interface OrderService {
      * @return
      */
     @GET("user/order/search")
-    Observable<ApiResponse<ApiListResponse<Order>>> userOrderSearch(@Query("orderStatus") Integer orderStatus, @Query("userType") Integer userType, @Query("page") Integer page, @Query("pageSize") Integer pageSize);
+    Observable<ApiResponse<ApiListResponse<Order>>> userOrderSearch(@Query("orderStatusStr") String orderStatusStr, @Query("userType") Integer userType, @Query("page") Integer page, @Query("pageSize") Integer pageSize);
 
     /**
      * 用户下单
@@ -59,5 +59,21 @@ public interface OrderService {
     @PUT("user/order")
     Observable<ApiResponse<String>> updateOrder(@Body RequestBody body);
 
+    /**
+     * 退款
+     * @param body
+     * @return
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"})
+    @POST("user/refund")
+    Observable<ApiResponse<String>> refund(@Body RequestBody body);
 
+    /**
+     * 取消支付
+     * @param body
+     * @return
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"})
+    @POST("user/canclepay")
+    Observable<ApiResponse<String>> cancelPey(@Body RequestBody body);
 }

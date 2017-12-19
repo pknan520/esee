@@ -23,6 +23,8 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import java.math.BigDecimal;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -94,6 +96,22 @@ public class PayVM implements ViewModel {
         req.sign = info.getSign();
 
         AdventurerApp.wxApi.sendReq(req);
+    }
+
+    public void cancelPay() {
+        CreatePaymentRequest req = new CreatePaymentRequest();
+        req.setOrderCode(order.getOrderCode());
+        req.setUserCode(order.getUserCode());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(req));
+
+        RetrofitHelper.getOrderAPI()
+                .cancelPey(requestBody)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {}, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
 }

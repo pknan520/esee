@@ -2,10 +2,15 @@ package com.nong.nongo2o.module.personal.fragment;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +35,14 @@ public class OrderListTotalFragment extends RxFragment {
 
     public static final String TAG = "OrderListTotalFragment";
 
-    private static String[] tabArray = {"全部", "待付款", "待发货", "待收货", "待评价", "已完成", "已取消"};
-    public static int[] statuses = {-99, 0, 1, 2, 3, 4, -1};
+    private static String[] tabArray = {"全部", "待付款", "待发货", "待收货", "待评价", "已完成", "退款中", "已取消"};
+    public static String[] statuses = {"-99", "0", "1", "2", "3", "4", "5", "-1,6"};
 
     private FragmentOrderListTotalBinding binding;
     private OrderCenterVM vm;
     private boolean isMerchantMode;
+
+    private LocalBroadcastManager lbm;
 
     public static OrderListTotalFragment newInstance(boolean isMerchantMode, int pos) {
         Bundle args = new Bundle();
@@ -56,6 +63,8 @@ public class OrderListTotalFragment extends RxFragment {
         if (vm == null) {
             vm = new OrderCenterVM(this, isMerchantMode, tabArray.length);
         }
+
+        registerReceiver();
     }
 
     @Nullable
@@ -70,8 +79,8 @@ public class OrderListTotalFragment extends RxFragment {
         ((OrderCenterActivity) getActivity()).setToolbarTitle("我的订单");
 
         List<Fragment> fragmentList = new ArrayList<>();
-        for (int i : statuses) {
-            fragmentList.add(OrderListFragment.newInstance(i, isMerchantMode));
+        for (String status : statuses) {
+            fragmentList.add(OrderListFragment.newInstance(status, isMerchantMode));
         }
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
@@ -99,5 +108,28 @@ public class OrderListTotalFragment extends RxFragment {
         if (!hidden) {
             ((OrderCenterActivity) getActivity()).setToolbarTitle("我的订单");
         }
+    }
+
+    /**
+     * 广播接收器（更新）
+     */
+    private void registerReceiver() {
+        lbm = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("updateOrderList");
+        lbm.registerReceiver(updateReceiver, filter);
+    }
+
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (vm != null) vm.getOrderCount();
+        }
+    };
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        lbm.unregisterReceiver(updateReceiver);
     }
 }

@@ -29,7 +29,7 @@ public class OrderListFragment extends RxBaseFragment {
 
     private FragmentOrderListBinding binding;
     private OrderListVM vm;
-    private int status;
+    private String status;
     private boolean isMerchantMode;
 
     private LocalBroadcastManager lbm;
@@ -37,9 +37,9 @@ public class OrderListFragment extends RxBaseFragment {
     private AlertDialog exDialog;
     private DialogInputExBinding exBinding;
 
-    public static OrderListFragment newInstance(int status,boolean isMerchantMode) {
+    public static OrderListFragment newInstance(String status,boolean isMerchantMode) {
         Bundle args = new Bundle();
-        args.putInt("status", status);
+        args.putString("status", status);
         args.putBoolean("isMerchantMode",isMerchantMode);
         OrderListFragment fragment = new OrderListFragment();
         fragment.setArguments(args);
@@ -49,7 +49,7 @@ public class OrderListFragment extends RxBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        status = getArguments().getInt("status");
+        status = getArguments().getString("status");
         isMerchantMode = getArguments().getBoolean("isMerchantMode",false);
 
         if (vm == null) {

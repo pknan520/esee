@@ -27,7 +27,7 @@
                 android:layout_height="125dp"
                 android:background="@color/colorPrimary"
                 android:padding="@dimen/activity_margin"
-                app:clickCommand="@{viewModel.toSettingClick}">
+                app:clickCommand="@{viewModel.toPersonalHomeClick}">
 
                 <com.facebook.drawee.view.SimpleDraweeView
                     android:id="@+id/iv_head"
@@ -37,6 +37,7 @@
                     app:roundAsCircle="true"
                     app:roundingBorderWidth="2dp"
                     app:roundingBorderColor="#96e6eb"
+                    app:clickCommand="@{viewModel.toSettingClick}"
                     app:placeholderImageRes="@{viewModel.headPlaceHolder}"
                     app:uri="@{viewModel.headUri}" />
 
@@ -62,8 +63,7 @@
                         android:layout_alignParentBottom="true"
                         android:text="个人主页 >"
                         android:textColor="@android:color/white"
-                        android:textSize="@dimen/text_normal"
-                        app:clickCommand="@{viewModel.toPersonalHomeClick}" />
+                        android:textSize="@dimen/text_normal"/>
 
                 </RelativeLayout>
 
@@ -126,6 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/item_padding"
+                    android:visibility="gone"
                     android:text="提现" />
 
             </LinearLayout>
@@ -278,7 +279,7 @@
                     android:text="数据统计"
                     android:textColor="@color/colorText"
                     android:textSize="@dimen/text_normal"
-                    android:visibility="@{viewModel.viewStyle.isMerchantMode ? View.VISIBLE : View.GONE}"/>
+                    android:visibility="gone"/>
 
                 <TextView
                     android:layout_width="match_parent"

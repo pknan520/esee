@@ -21,6 +21,7 @@ import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.domain.Follow;
 import com.nong.nongo2o.entity.domain.Order;
 import com.nong.nongo2o.entity.domain.OrderDetail;
+import com.nong.nongo2o.entity.request.CreatePaymentRequest;
 import com.nong.nongo2o.entity.request.UpdateOrderRequest;
 import com.nong.nongo2o.module.common.buy.activity.BuyActivity;
 import com.nong.nongo2o.module.common.buy.fragment.PayFragment;
@@ -42,6 +43,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.operators.observable.ObservableFilter;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
@@ -54,7 +56,7 @@ import okhttp3.RequestBody;
 public class OrderListVM implements ViewModel {
 
     private OrderListFragment fragment;
-    public int status;
+    public String status;
     public boolean isMerchantMode;
     //  订单列表
     public final ObservableList<ItemOrderVM> itemOrderVMs = new ObservableArrayList<>();
@@ -68,7 +70,7 @@ public class OrderListVM implements ViewModel {
     private int pageSize = 10;
     private int total = 0;
 
-    public OrderListVM(OrderListFragment fragment, int status, boolean isMerchantMode) {
+    public OrderListVM(OrderListFragment fragment, String status, boolean isMerchantMode) {
         this.fragment = fragment;
         this.status = status;
         this.isMerchantMode = isMerchantMode;
@@ -96,7 +98,7 @@ public class OrderListVM implements ViewModel {
     private void searchDate(int page, boolean force) {
         viewStyle.isRefreshing.set(true);
         RetrofitHelper.getOrderAPI()
-                .userOrderSearch(-99 == status ? null : status, isMerchantMode ? 1 : 0, page, pageSize)
+                .userOrderSearch(status.equals("-99") ? null : status, isMerchantMode ? 1 : 0, page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -162,6 +164,7 @@ public class OrderListVM implements ViewModel {
         public final ObservableField<String> orderInfo = new ObservableField<>();
         //  操作按钮
         public final ObservableField<String> btnStr = new ObservableField<>();
+        public final ObservableField<String> refundStr = new ObservableField<>();
 
         public ItemOrderVM(Order order) {
             this.order = order;
@@ -173,6 +176,8 @@ public class OrderListVM implements ViewModel {
         public class ViewStyle {
             public final ObservableBoolean btnVisi = new ObservableBoolean(false);
             public final ObservableBoolean isEmpty = new ObservableBoolean(false);
+            public final ObservableBoolean refundVisi = new ObservableBoolean(false);
+            public final ObservableBoolean refundDisable = new ObservableBoolean(false);
         }
 
         /**
@@ -199,6 +204,8 @@ public class OrderListVM implements ViewModel {
                         status.set("待发货");  //  发货（商家）
                         viewStyle.btnVisi.set(isMerchantMode);
                         btnStr.set("发货");
+                        viewStyle.refundVisi.set(!isMerchantMode);  //  申请退款（用户）
+                        refundStr.set("申请退款");
                         break;
                     case 2:
                         status.set("待收货");  //  收货（用户）
@@ -214,6 +221,16 @@ public class OrderListVM implements ViewModel {
                         status.set("已完成");
                         viewStyle.btnVisi.set(false);
                         break;
+                    case 5:
+                        status.set("退款中");
+                        viewStyle.refundVisi.set(true);
+                        viewStyle.refundDisable.set(true);
+                        refundStr.set("退款中");
+                        break;
+                    case 6:
+                        status.set("已退款");
+                        break;
+
                 }
 
                 int goodNum = 0;
@@ -269,6 +286,33 @@ public class OrderListVM implements ViewModel {
                     ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment.getParentFragment(),
                             OrderEvaluateFragment.newInstance(order), OrderEvaluateFragment.TAG);
                     break;
+            }
+        });
+
+        /**
+         * 退款操作
+         */
+        public final ReplyCommand refundClick = new ReplyCommand(() -> {
+            if (order.getOrderStatus() == 1) {
+                CreatePaymentRequest req = new CreatePaymentRequest();
+                req.setOrderCode(order.getOrderCode());
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                        new Gson().toJson(req));
+
+                RetrofitHelper.getOrderAPI()
+                        .refund(requestBody)
+                        .subscribeOn(Schedulers.io())
+                        .map(new ApiResponseFunc<>())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(s -> {
+                            fragment.getFragmentManager().popBackStack();
+                            //  通知刷新订单列表
+                            Intent intent = new Intent("updateOrderList");
+                            LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+                        }, throwable -> {
+                            Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         });
 

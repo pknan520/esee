@@ -24,6 +24,7 @@ import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -84,23 +85,40 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     @Override
     public void onResp(BaseResp baseResp) {
-        switch (baseResp.errCode) {
-            case BaseResp.ErrCode.ERR_OK:
-                // 获取code
-                String code = ((SendAuth.Resp) baseResp).code;
-                // 通过code获取授权口令access_token
-//                LoginVM.loginToServer(this, code);
-                login(code);
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                Toast.makeText(this, "您已取消授权", Toast.LENGTH_LONG).show();
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                Toast.makeText(this, "您已拒绝授权", Toast.LENGTH_LONG).show();
-                break;
-            default:
-                Toast.makeText(this, "未知错误", Toast.LENGTH_LONG).show();
-                break;
+        if (baseResp instanceof SendMessageToWX.Resp) {
+            switch (baseResp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    Toast.makeText(this, "分享成功", Toast.LENGTH_LONG).show();
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    Toast.makeText(this, "您已取消分享", Toast.LENGTH_LONG).show();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    Toast.makeText(this, "您已拒绝分享", Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Toast.makeText(this, "未知错误", Toast.LENGTH_LONG).show();
+                    break;
+            }
+            finish();
+        } else if (baseResp instanceof SendAuth.Resp) {
+            switch (baseResp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    // 获取code
+                    String code = ((SendAuth.Resp) baseResp).code;
+                    // 通过code获取授权口令access_token
+                    login(code);
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    Toast.makeText(this, "您已取消授权", Toast.LENGTH_LONG).show();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    Toast.makeText(this, "您已拒绝授权", Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Toast.makeText(this, "未知错误", Toast.LENGTH_LONG).show();
+                    break;
+            }
         }
     }
 

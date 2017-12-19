@@ -22,9 +22,9 @@ public class BillListFragment extends RxBaseFragment {
     private FragmentBillListBinding binding;
     private BillListVM vm;
 
-    public static BillListFragment newInstance(int billType) {
+    public static BillListFragment newInstance(String billTypeStr) {
         Bundle args = new Bundle();
-        args.putInt("billType", billType);
+        args.putString("billTypeStr", billTypeStr);
         BillListFragment fragment = new BillListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -33,9 +33,9 @@ public class BillListFragment extends RxBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int billType = getArguments().getInt("billType");
+        String billTypeStr = getArguments().getString("billTypeStr");
         if (vm == null) {
-            vm = new BillListVM(this, billType);
+            vm = new BillListVM(this, billTypeStr);
         }
     }
 

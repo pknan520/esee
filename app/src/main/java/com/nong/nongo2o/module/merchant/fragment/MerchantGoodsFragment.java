@@ -1,21 +1,28 @@
 package com.nong.nongo2o.module.merchant.fragment;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.databinding.DialogInputExBinding;
+import com.nong.nongo2o.databinding.DialogWxShareBinding;
 import com.nong.nongo2o.databinding.FragmentMerchantGoodsBinding;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.module.merchant.viewModel.MerchantGoodsVM;
+import com.nong.nongo2o.module.personal.viewModel.DialogExVM;
 import com.nong.nongo2o.widget.ScrollView.ObservableScrollView;
 import com.nong.nongo2o.widget.ScrollView.ScrollViewListener;
 import com.trello.rxlifecycle2.components.RxFragment;
@@ -41,6 +48,9 @@ public class MerchantGoodsFragment extends RxFragment {
     private FragmentMerchantGoodsBinding binding;
     private MerchantGoodsVM vm;
 
+    private AlertDialog wxShareDialog;
+    private DialogWxShareBinding wxShareBinding;
+
     public static MerchantGoodsFragment newInstance(Goods good) {
         Bundle args = new Bundle();
         args.putSerializable("good", good);
@@ -55,6 +65,8 @@ public class MerchantGoodsFragment extends RxFragment {
         if (vm == null) {
             vm = new MerchantGoodsVM(this, (Goods) getArguments().getSerializable("good"));
         }
+        setHasOptionsMenu(true);
+        initWxShareDialog();
     }
 
     @Nullable
@@ -150,4 +162,43 @@ public class MerchantGoodsFragment extends RxFragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_merchant, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share:
+                if (vm != null)  {
+                    showWxShareDialog();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void initWxShareDialog() {
+        wxShareBinding = DialogWxShareBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+        wxShareDialog = new AlertDialog.Builder(getActivity())
+                .setView(wxShareBinding.getRoot())
+                .create();
+    }
+
+    private void showWxShareDialog() {
+        if (wxShareDialog != null && !wxShareDialog.isShowing()) {
+            wxShareBinding.setViewModel(vm.new WxShareDialogVM());
+            wxShareDialog.show();
+        }
+    }
+
+    public void dismissWxShareDialog() {
+        if (wxShareDialog != null && wxShareDialog.isShowing()) {
+            wxShareDialog.dismiss();
+        }
+    }
 }

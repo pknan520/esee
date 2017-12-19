@@ -90,7 +90,7 @@ public class MerchantGoodsEvaluateVM implements ViewModel {
                 .subscribe(resp -> {
                     total = resp.getTotal();
                     for (GoodsComment comment : resp.getRows()) {
-                        itemEvaluateVMs.add(new ItemEvaluateVM(comment));
+                        itemEvaluateVMs.add(new ItemEvaluateVM(comment, itemEvaluateVMs.isEmpty()));
                     }
                     viewStyle.isEmpty.set(itemEvaluateVMs.size() == 0);
                 }, throwable -> {

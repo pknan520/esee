@@ -90,7 +90,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:visibility="@{viewModel.viewStyle.btnVisi ? View.VISIBLE : View.GONE}"
             android:gravity="end"
             android:padding="10dp">
 
@@ -98,12 +97,27 @@
                 style="@style/SimpleTextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{viewModel.refundStr}"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:clickable="@{!viewModel.viewStyle.refundDisable}"
+                app:clickCommand="@{viewModel.refundClick}"
+                android:background="@{viewModel.viewStyle.refundDisable ? @drawable/border_disable : @drawable/border_accent}"
+                android:visibility="@{viewModel.viewStyle.refundVisi ? View.VISIBLE : View.GONE}"
+                android:textColor="@{viewModel.viewStyle.refundDisable ? @color/colorDisableButton : @color/colorAccent}"/>
+
+            <Button
+                style="@style/SimpleTextButton"
+                android:layout_marginStart="@dimen/item_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@{viewModel.btnStr}"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
                 app:clickCommand="@{viewModel.operateClick}"
                 android:background="@drawable/border_green"
-                android:textColor="@color/colorComplementaryGreen"/>
+                android:textColor="@color/colorComplementaryGreen"
+                android:visibility="@{viewModel.viewStyle.btnVisi ? View.VISIBLE : View.GONE}"/>
 
         </LinearLayout>
 

@@ -69,7 +69,7 @@ public class DynamicMineFragment extends RxFragment {
         lbm = LocalBroadcastManager.getInstance(getActivity());
         IntentFilter filter = new IntentFilter();
         filter.addAction("loginSuccess");
-        filter.addAction("refreshMyDynamic");
+        filter.addAction("refreshDynamicList");
         lbm.registerReceiver(loginReceiver, filter);
     }
 

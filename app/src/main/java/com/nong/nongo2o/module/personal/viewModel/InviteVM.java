@@ -104,6 +104,7 @@ public class InviteVM implements ViewModel {
                 .subscribe(s -> {
                     viewStyle.hasBind.set(true);
                     inviter.set(inviteInput.get());
+                    UserInfo.getInstance().setInviter(inviter.get());
                     Toast.makeText(fragment.getActivity(), "绑定邀请码成功", Toast.LENGTH_SHORT).show();
                 }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
     });

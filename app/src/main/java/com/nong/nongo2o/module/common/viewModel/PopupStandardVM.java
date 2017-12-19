@@ -151,6 +151,7 @@ public class PopupStandardVM implements ViewModel {
         if (spec != null) {
             price.set(spec.getPrice());
             stockNum.set(spec.getQuantity());
+            standard.set(spec.getTitle());
         }
     }
 
@@ -169,11 +170,13 @@ public class PopupStandardVM implements ViewModel {
             viewStyle.selectedSpec.set(false);
             price.set(cart.getGoods().getPrice());
             stockNum.set(totalStock);
+            standard.set("未选择");
         } else {
             currentSpecPos = position;
             viewStyle.selectedSpec.set(true);
             price.set(cart.getGoods().getGoodsSpecs().get(position).getPrice());
             stockNum.set(cart.getGoods().getGoodsSpecs().get(position).getQuantity());
+            standard.set(cart.getGoods().getGoodsSpecs().get(position).getTitle());
         }
     });
 

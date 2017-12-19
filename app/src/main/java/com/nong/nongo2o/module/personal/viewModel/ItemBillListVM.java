@@ -1,11 +1,18 @@
 package com.nong.nongo2o.module.personal.viewModel;
 
-import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 
 import com.kelin.mvvmlight.base.ViewModel;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.entity.domain.Bill;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017-7-17.
@@ -13,7 +20,7 @@ import com.nong.nongo2o.R;
 
 public class ItemBillListVM implements ViewModel {
 
-    public static final int TYPE_INCOME = 0, TYPE_DISBURSEMENT = 1;
+    private Bill bill;
 
     public final ObservableField<String> type = new ObservableField<>();
     public final ObservableField<String> status = new ObservableField<>();
@@ -21,14 +28,14 @@ public class ItemBillListVM implements ViewModel {
     public final int headPlaceHolder = R.mipmap.head_36;
     public final ObservableField<String> headUri = new ObservableField<>();
     public final ObservableField<String> name = new ObservableField<>();
-    public final ObservableField<Double> money = new ObservableField<>();
+    public final ObservableField<BigDecimal> money = new ObservableField<>();
     public final ObservableField<String> no = new ObservableField<>();
     public final ObservableField<String> date = new ObservableField<>();
 
-    public ItemBillListVM(int billType) {
-        viewStyle.billType.set(billType);
+    public ItemBillListVM(Bill bill) {
+        this.bill = bill;
 
-        initFakeData();
+        initData();
     }
 
     public final ViewStyle viewStyle = new ViewStyle();
@@ -37,16 +44,31 @@ public class ItemBillListVM implements ViewModel {
         public final ObservableField<Integer> billType = new ObservableField<>();
     }
 
-
     /**
-     * 假数据
+     * 初始化数据
      */
-    private void initFakeData() {
-        type.set(viewStyle.billType.get() == TYPE_INCOME ? "提现" : "支出记录");
-        status.set(viewStyle.billType.get() == TYPE_INCOME ? "已完成" : "提现成功");
-        name.set("NeilsonLo");
-        money.set(48.80);
-        no.set(viewStyle.billType.get() == TYPE_INCOME ? "单号：T100000248" : "微信账号：pknan");
-        date.set("2017/07/17");
+    private void initData() {
+        if (bill != null) {
+            viewStyle.billType.set(bill.getBillType());
+
+            switch (bill.getBillType()) {
+                case -1:type.set("提现");break;
+                case 0:type.set("收入");break;
+                case 1:type.set("支出");break;
+                case 2:type.set("退款");break;
+            }
+
+            switch (bill.getBillStatus()) {
+                case -1:status.set("已作废");break;
+                case 0:status.set("处理中");break;
+                case 1:status.set("处理成功");break;
+            }
+
+            name.set(bill.getUser().getUserNick());
+            headUri.set(bill.getUser().getAvatar());
+            money.set(bill.getBillMoney());
+            no.set(bill.getBillCode());
+            date.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(bill.getUpdateTime()));
+        }
     }
 }

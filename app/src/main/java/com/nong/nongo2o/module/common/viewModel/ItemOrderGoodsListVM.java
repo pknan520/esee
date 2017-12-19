@@ -65,7 +65,9 @@ public class ItemOrderGoodsListVM implements ViewModel {
                 imgUri.set(list.get(0));
             }
             name.set(orderDetail.getGoods().getTitle());
-            standard.set(orderDetail.getGoodsSpec().getTitle());
+            if (orderDetail.getGoodsSpec() != null) {
+                standard.set(orderDetail.getGoodsSpec().getTitle());
+            }
             price.set(orderDetail.getUnitPrice());
             num.set(orderDetail.getGoodsNum());
         }

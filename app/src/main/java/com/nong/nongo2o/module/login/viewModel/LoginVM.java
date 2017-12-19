@@ -11,6 +11,7 @@ import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.module.login.fragment.BindMobileFragment;
 import com.nong.nongo2o.module.login.fragment.LoginFragment;
 import com.nong.nongo2o.module.main.MainActivity;
 import com.nong.nongo2o.network.RetrofitHelper;

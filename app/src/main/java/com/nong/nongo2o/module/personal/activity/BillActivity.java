@@ -25,6 +25,7 @@ import java.util.List;
 
 public class BillActivity extends RxBaseToolbarActivity {
 
+    private static final String[] billTypeArray= {"0", "-1,1,2"};
     private static String[] tabArray = {"收入记录", "支出记录"};
 
     private ActivityBillBinding binding;
@@ -54,8 +55,9 @@ public class BillActivity extends RxBaseToolbarActivity {
         setTitle("");
 
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(BillListFragment.newInstance(ItemBillListVM.TYPE_INCOME));
-        fragmentList.add(BillListFragment.newInstance(ItemBillListVM.TYPE_DISBURSEMENT));
+        for (String str : billTypeArray) {
+            fragmentList.add(BillListFragment.newInstance(str));
+        }
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);

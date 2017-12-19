@@ -19,6 +19,7 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entities.response.DynamicContent;
+import com.nong.nongo2o.entity.bean.ApiResponse;
 import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
@@ -40,11 +41,15 @@ import java.util.List;
 import java.util.Map;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import top.zibin.luban.Luban;
 
 /**
  * Created by Administrator on 2017-7-1.
@@ -95,7 +100,7 @@ public class DynamicPublishVM implements ViewModel {
         } else {
             //  新增，没有原始数据
             //  初始有一个添加Banner的按钮
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
             //  初始有一项空白图文
             itemDescVMs.add(new ItemDescVM());
         }
@@ -115,9 +120,11 @@ public class DynamicPublishVM implements ViewModel {
         bannerClickListener = new ItemPicVM.ClickListener() {
 
             @Override
-            public void addRadioPic(MediaBean mediaBean) {
-                itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
-                bannerFileList.add(new File(mediaBean.getOriginalPath()));
+            public void addMultiPic(List<MediaBean> mediaBeanList) {
+                for (MediaBean bean : mediaBeanList) {
+                    itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemBannerVMs));
+                    bannerFileList.add(new File(bean.getOriginalPath()));
+                }
                 if (itemBannerVMs.size() > 9) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
@@ -125,11 +132,17 @@ public class DynamicPublishVM implements ViewModel {
 
             @Override
             public void removePic(ItemPicVM itemPicVM) {
-                if (itemBannerVMs.size() == 9) {
+                if (itemBannerVMs.size() == 9 && !TextUtils.isEmpty(itemBannerVMs.get(8).imgUri.get())) {
                     //  如果原来已加满，则增加一个添加图片的按钮
-                    itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+                    itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
                 }
-                bannerFileList.remove(itemBannerVMs.indexOf(itemPicVM));
+
+                int pos = itemBannerVMs.indexOf(itemPicVM);
+                if (!headerImgList.isEmpty() && pos < headerImgList.size()) {
+                    headerImgList.remove(pos);
+                } else {
+                    bannerFileList.remove(pos - headerImgList.size());
+                }
                 itemBannerVMs.remove(itemPicVM);
             }
         };
@@ -143,10 +156,10 @@ public class DynamicPublishVM implements ViewModel {
             headerImgList = new Gson().fromJson(dynamic.getHeaderImg(), new TypeToken<List<String>>() {
             }.getType());
             for (String bannerUri : headerImgList) {
-                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, bannerClickListener));
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, bannerClickListener, itemBannerVMs));
             }
             if (itemBannerVMs.size() < 9)
-                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
         }
 
         title.set(dynamic.getTitle());
@@ -207,7 +220,7 @@ public class DynamicPublishVM implements ViewModel {
             initListener();
 
             //  初始有一个添加图片的按钮
-            itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+            itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
         }
 
         public ItemDescVM(DynamicContent content) {
@@ -220,10 +233,14 @@ public class DynamicPublishVM implements ViewModel {
         private void initListener() {
             //  初始化图文描述添加图片监听器
             addDescPicListener = new ItemPicVM.ClickListener() {
+
                 @Override
-                public void addRadioPic(MediaBean mediaBean) {
-                    itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
-                    newPicList.add(new File(mediaBean.getOriginalPath()));
+                public void addMultiPic(List<MediaBean> mediaBeanList) {
+
+                    for (MediaBean bean : mediaBeanList) {
+                        itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemDescPicVMs));
+                        newPicList.add(new File(bean.getOriginalPath()));
+                    }
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
@@ -231,11 +248,17 @@ public class DynamicPublishVM implements ViewModel {
 
                 @Override
                 public void removePic(ItemPicVM itemPicVM) {
-                    if (itemDescPicVMs.size() == 9) {
+                    if (itemDescPicVMs.size() == 9 && !TextUtils.isEmpty(itemDescPicVMs.get(8).imgUri.get())) {
                         //  如果原来已加满，则增加一个添加图片的按钮
-                        itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+                        itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
                     }
-                    newPicList.remove(itemDescPicVMs.indexOf(itemPicVM));
+
+                    int pos = itemDescPicVMs.indexOf(itemPicVM);
+                    if (!content.getImg().isEmpty() && pos < content.getImg().size()) {
+                        content.getImg().remove(pos);
+                    } else {
+                        newPicList.remove(pos - content.getImg().size());
+                    }
                     itemDescPicVMs.remove(itemPicVM);
                 }
             };
@@ -249,12 +272,12 @@ public class DynamicPublishVM implements ViewModel {
 
             if (content.getImg() != null && !content.getImg().isEmpty()) {
                 for (String uri : content.getImg()) {
-                    itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), uri, addDescPicListener));
+                    itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), uri, addDescPicListener, itemDescPicVMs));
                 }
             }
             if (itemDescPicVMs.size() < 9) {
                 //  添加一个加号图片
-                itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+                itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
             }
         }
 
@@ -262,6 +285,10 @@ public class DynamicPublishVM implements ViewModel {
          * 删除图文描述
          */
         public final ReplyCommand deleteDescClick = new ReplyCommand(() -> {
+            if (itemDescVMs.size() == 1) {
+                Toast.makeText(fragment.getActivity(), "至少保留一条详情哦^.^", Toast.LENGTH_SHORT).show();
+                return;
+            }
             ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(this::deleteDesc);
         });
 
@@ -346,33 +373,41 @@ public class DynamicPublishVM implements ViewModel {
     private void uploadFile(Moment dynamic, boolean isNew) {
         ((RxBaseActivity) fragment.getActivity()).showLoading();
 
-        Map<String, RequestBody> picMap = new LinkedHashMap<>();
+        List<String> uploadFile = new ArrayList<>();
+
         for (File file : bannerFileList) {
-            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-            picMap.put(file.getName(), body);
+            uploadFile.add(file.getAbsolutePath());
         }
         for (ItemDescVM item : itemDescVMs) {
             for (File file : item.getNewPicList()) {
-                RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-                picMap.put(file.getName(), body);
+                uploadFile.add(file.getAbsolutePath());
             }
         }
 
-        if (picMap.size() > 0) {
-            RetrofitHelper.getFileAPI()
-                    .uploadFile(picMap)
+        if (uploadFile.size() > 0) {
+            Observable.just(uploadFile)
                     .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map(files -> Luban.with(fragment.getActivity()).load(files).get())
+                    .map(files -> {
+                        Map<String, RequestBody> picMap = new LinkedHashMap<>();
+                        for (File file : files) {
+                            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+                            picMap.put(file.getName(), body);
+                        }
+                        return picMap;
+                    })
+                    .flatMap(picMap -> RetrofitHelper.getFileAPI().uploadFile(picMap))
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                                List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
-                                }.getType());
-                                postDynamic(createDynamic(dynamic, picUriList), isNew);
-                            },
-                            throwable -> {
-                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                ((RxBaseActivity) fragment.getActivity()).dismissLoading();
-                            });
+                        List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
+                        }.getType());
+                        postDynamic(createDynamic(dynamic, picUriList), isNew);
+                    }, throwable -> {
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                    });
         } else {
             postDynamic(createDynamic(dynamic, null), isNew);
         }
@@ -386,7 +421,7 @@ public class DynamicPublishVM implements ViewModel {
             int i = 0;
             int hasAdd = 0;
             for (; i < bannerFileList.size(); i++) {
-                headerImgList.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                headerImgList.add(ApiConstants.BASE_URL + picUriList.get(i).getFilePath());
                 hasAdd++;
             }
             for (int j = 0; j < itemDescVMs.size(); j++) {
@@ -399,7 +434,7 @@ public class DynamicPublishVM implements ViewModel {
                 content.setContent(item.desc.get());
                 if (content.getImg() == null) content.setImg(new ArrayList<>());
                 for (; i < hasAdd + item.getNewPicList().size(); i++) {
-                    content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                    content.getImg().add(ApiConstants.BASE_URL + picUriList.get(i).getFilePath());
                 }
                 hasAdd += item.getNewPicList().size();
             }
@@ -432,7 +467,6 @@ public class DynamicPublishVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        intent.setAction("refreshMyDynamic");
                         intent.setAction("refreshDynamicList");
                         LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
                         fragment.getActivity().finish();
@@ -447,7 +481,6 @@ public class DynamicPublishVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        intent.setAction("refreshMyDynamic");
                         intent.setAction("refreshDynamicList");
                         LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
                         fragment.getActivity().finish();

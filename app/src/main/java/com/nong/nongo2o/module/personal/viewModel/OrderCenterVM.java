@@ -45,7 +45,7 @@ public class OrderCenterVM implements ViewModel {
      */
     private void initData() {
         for (int i = 0; i < tabLength; i++) {
-            itemTabVMs.add(new ItemTabVM(OrderListTotalFragment.statuses[i]));
+            itemTabVMs.add(new ItemTabVM());
         }
 
         getOrderCount();
@@ -54,7 +54,7 @@ public class OrderCenterVM implements ViewModel {
     /**
      * 获取订单统计
      */
-    private void getOrderCount() {
+    public void getOrderCount() {
         reset();
         String type = "";
         Map<String, String> paramMap = new HashMap<>();
@@ -85,8 +85,11 @@ public class OrderCenterVM implements ViewModel {
                                 case 4:
                                     itemTabVMs.get(5).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
                                     break;
-                                case -1:
+                                case 5:
                                     itemTabVMs.get(6).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case -1:
+                                    itemTabVMs.get(7).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
                                     break;
                             }
                         }
@@ -115,9 +118,6 @@ public class OrderCenterVM implements ViewModel {
 
         public final ObservableField<Integer> tabBadgeText = new ObservableField<>();
 
-        public ItemTabVM(int status) {
-
-        }
 
     }
 

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.nong.nongo2o.databinding.FragmentPersonalBinding;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.module.main.viewModel.personal.PersonalVM;
 import com.trello.rxlifecycle2.components.RxFragment;
 
@@ -78,6 +79,7 @@ public class PersonalFragment extends RxFragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction("loginSuccess");
         filter.addAction("Identifying");
+        filter.addAction("updateOrderList");
         lbm.registerReceiver(loginReceiver, filter);
     }
 
@@ -90,6 +92,9 @@ public class PersonalFragment extends RxFragment {
                     break;
                 case "Identifying":
 
+                    break;
+                case "updateOrderList":
+                    if (vm != null) vm.getOrderCount(UserInfo.getInstance().getUserCode());
                     break;
             }
         }

@@ -6,7 +6,6 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,11 +34,13 @@ import java.util.List;
 import java.util.Map;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import top.zibin.luban.Luban;
 
 /**
  * Created by Administrator on 2017-6-27.
@@ -84,7 +85,7 @@ public class GoodsManagerDetailVM implements ViewModel {
         } else {
             //  新增，没有原始数据
             //  Banner初始有一个添加图片的按钮
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
             //  初始有一个空白商品规格
             itemStandardVMs.add(new ItemStandardVM());
             //  初始有一个空白的商品描述
@@ -98,10 +99,13 @@ public class GoodsManagerDetailVM implements ViewModel {
     private void initListener() {
         //  初始化添加Banner图的回调监听
         bannerClickListener = new ItemPicVM.ClickListener() {
+
             @Override
-            public void addRadioPic(MediaBean mediaBean) {
-                itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
-                bannerFileList.add(new File(mediaBean.getOriginalPath()));
+            public void addMultiPic(List<MediaBean> mediaBeanList) {
+                for (MediaBean bean : mediaBeanList) {
+                    itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemBannerVMs));
+                    bannerFileList.add(new File(bean.getOriginalPath()));
+                }
                 if (itemBannerVMs.size() > 9) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
@@ -109,11 +113,17 @@ public class GoodsManagerDetailVM implements ViewModel {
 
             @Override
             public void removePic(ItemPicVM itemPicVM) {
-                if (itemBannerVMs.size() == 9) {
+                if (itemBannerVMs.size() == 9 && !TextUtils.isEmpty(itemBannerVMs.get(8).imgUri.get())) {
                     //  如果原来已加满，则增加一个添加图片的按钮
-                    itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+                    itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
                 }
-                bannerFileList.remove(itemBannerVMs.indexOf(itemPicVM));
+
+                int pos = itemBannerVMs.indexOf(itemPicVM);
+                if (!covers.isEmpty() && pos < covers.size()) {
+                    covers.remove(pos);
+                } else {
+                    bannerFileList.remove(pos - covers.size());
+                }
                 itemBannerVMs.remove(itemPicVM);
             }
         };
@@ -127,11 +137,11 @@ public class GoodsManagerDetailVM implements ViewModel {
             covers = new Gson().fromJson(goods.getCovers(), new TypeToken<List<String>>() {
             }.getType());
             for (String coverUri : covers) {
-                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), coverUri, bannerClickListener));
+                itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), coverUri, bannerClickListener, itemBannerVMs));
             }
         }
         if (itemBannerVMs.size() < 9)
-            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener));
+            itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
 
         goodsName.set(goods.getTitle());
 
@@ -199,33 +209,41 @@ public class GoodsManagerDetailVM implements ViewModel {
     private void uploadFile(Goods good, boolean isNew) {
         ((RxBaseActivity) fragment.getActivity()).showLoading();
 
-        Map<String, RequestBody> picMap = new LinkedHashMap<>();
+        List<String> uploadFile = new ArrayList<>();
+
         for (File file : bannerFileList) {
-            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-            picMap.put(file.getName(), body);
+            uploadFile.add(file.getAbsolutePath());
         }
         for (ItemDescVM item : itemDescVMs) {
             for (File file : item.getNewPicList()) {
-                RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-                picMap.put(file.getName(), body);
+                uploadFile.add(file.getAbsolutePath());
             }
         }
 
-        if (picMap.size() > 0) {
-            RetrofitHelper.getFileAPI()
-                    .uploadFile(picMap)
+        if (uploadFile.size() > 0) {
+            Observable.just(uploadFile)
                     .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map(files -> Luban.with(fragment.getActivity()).load(files).get())
+                    .map(files -> {
+                        Map<String, RequestBody> picMap = new LinkedHashMap<>();
+                        for (File file : files) {
+                            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+                            picMap.put(file.getName(), body);
+                        }
+                        return picMap;
+                    })
+                    .flatMap(picMap -> RetrofitHelper.getFileAPI().uploadFile(picMap))
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                                List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
-                                }.getType());
-                                postGood(createGood(good, picUriList), isNew);
-                            },
-                            throwable -> {
-                                Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                ((RxBaseActivity) fragment.getActivity()).dismissLoading();
-                            });
+                        List<FileResponse> picUriList = new Gson().fromJson(s, new TypeToken<List<FileResponse>>() {
+                        }.getType());
+                        postGood(createGood(good, picUriList), isNew);
+                    }, throwable -> {
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                    });
         } else {
             postGood(createGood(good, null), isNew);
         }
@@ -239,7 +257,7 @@ public class GoodsManagerDetailVM implements ViewModel {
             int i = 0;
             int hasAdd = 0;
             for (; i < bannerFileList.size(); i++) {
-                covers.add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                covers.add(ApiConstants.BASE_URL + picUriList.get(i).getFilePath());
                 hasAdd++;
             }
             for (int j = 0; j < itemDescVMs.size(); j++) {
@@ -252,7 +270,7 @@ public class GoodsManagerDetailVM implements ViewModel {
                 content.setContent(item.goodsDesc.get());
                 if (content.getImg() == null) content.setImg(new ArrayList<>());
                 for (; i < hasAdd + item.getNewPicList().size(); i++) {
-                    content.getImg().add(ApiConstants.BASE_URL + "file/image?filePath=" + picUriList.get(i).getFilePath());
+                    content.getImg().add(ApiConstants.BASE_URL + picUriList.get(i).getFilePath());
                 }
                 hasAdd += item.getNewPicList().size();
             }
@@ -390,7 +408,7 @@ public class GoodsManagerDetailVM implements ViewModel {
             initListener();
 
             //  初始有一个添加图片的按钮
-            itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+            itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
         }
 
         public ItemDescVM(ImgTextContent content) {
@@ -405,10 +423,13 @@ public class GoodsManagerDetailVM implements ViewModel {
          */
         private void initListener() {
             addDescPicListener = new ItemPicVM.ClickListener() {
+
                 @Override
-                public void addRadioPic(MediaBean mediaBean) {
-                    itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + mediaBean.getOriginalPath(), this));
-                    newPicList.add(new File(mediaBean.getOriginalPath()));
+                public void addMultiPic(List<MediaBean> mediaBeanList) {
+                    for (MediaBean bean : mediaBeanList) {
+                        itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemDescPicVMs));
+                        newPicList.add(new File(bean.getOriginalPath()));
+                    }
                     if (itemDescPicVMs.size() > 9) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
@@ -416,11 +437,17 @@ public class GoodsManagerDetailVM implements ViewModel {
 
                 @Override
                 public void removePic(ItemPicVM itemPicVM) {
-                    if (itemDescPicVMs.size() == 9) {
+                    if (itemDescPicVMs.size() == 9 && !TextUtils.isEmpty(itemDescPicVMs.get(8).imgUri.get())) {
                         //  如果原来已加满，则增加一个添加图片的按钮
-                        itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+                        itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
                     }
-                    newPicList.remove(itemDescPicVMs.indexOf(itemPicVM));
+
+                    int pos = itemDescPicVMs.indexOf(itemPicVM);
+                    if (!content.getImg().isEmpty() && pos < content.getImg().size()) {
+                        content.getImg().remove(pos);
+                    } else {
+                        newPicList.remove(pos - content.getImg().size());
+                    }
                     itemDescPicVMs.remove(itemPicVM);
                 }
             };
@@ -434,17 +461,21 @@ public class GoodsManagerDetailVM implements ViewModel {
 
             if (content.getImg() != null && content.getImg().size() > 0) {
                 for (String uri : content.getImg()) {
-                    itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), uri, addDescPicListener));
+                    itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), uri, addDescPicListener, itemDescPicVMs));
                 }
             }
             if (itemDescPicVMs.size() < 9)
-                itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener));
+                itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
         }
 
         /**
          * 删除商品描述
          */
         public final ReplyCommand deleteDescClick = new ReplyCommand(() -> {
+            if (itemDescVMs.size() == 1) {
+                Toast.makeText(fragment.getActivity(), "至少保留一条详情哦^.^", Toast.LENGTH_SHORT).show();
+                return;
+            }
             ((RxBaseActivity) fragment.getActivity()).showDeleteDialog(this::deleteDesc);
         });
 

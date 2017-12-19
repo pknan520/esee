@@ -71,6 +71,7 @@ public class PayFragment extends RxBaseFragment {
         lbm = LocalBroadcastManager.getInstance(getActivity());
         IntentFilter filter = new IntentFilter();
         filter.addAction("paySuccess");
+        filter.addAction("payCancel");
         filter.addAction("payFail");
         lbm.registerReceiver(payReceiver, filter);
     }
@@ -84,7 +85,11 @@ public class PayFragment extends RxBaseFragment {
                     result = true;
                     break;
                 case "payFail":
+                    cancelPay();
                     result = false;
+                    break;
+                case "payCancel":
+                    cancelPay();
                     break;
             }
             ((RxBaseActivity) getActivity()).replaceFragment(R.id.fl, PayResultFragment.newInstance(result), PayResultFragment.TAG);
@@ -95,5 +100,9 @@ public class PayFragment extends RxBaseFragment {
     public void onDestroy() {
         super.onDestroy();
         lbm.unregisterReceiver(payReceiver);
+    }
+
+    private void cancelPay() {
+        if (vm != null) vm.cancelPay();
     }
 }

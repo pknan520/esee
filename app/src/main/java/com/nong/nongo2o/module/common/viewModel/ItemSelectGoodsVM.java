@@ -60,8 +60,8 @@ public class ItemSelectGoodsVM implements ViewModel {
             }
             goodsName.set(good.getTitle());
             // TODO: 2017-9-18 界面显示有异议
-            goodsSummary.set("精装4只/盒");
-            goodsPrice.set("¥48.80");
+            goodsSummary.set(good.getGoodsSpecs().get(0).getTitle());
+            goodsPrice.set("¥" + good.getGoodsSpecs().get(0).getPrice());
         }
     }
 

@@ -5,6 +5,8 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -20,12 +22,13 @@ import com.google.gson.reflect.TypeToken;
 import com.hyphenate.chat.EMClient;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
+import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.UserInfo;
-import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
+import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.request.CreateCartRequest;
 import com.nong.nongo2o.module.common.viewModel.ItemImageTextVM;
 import com.nong.nongo2o.module.merchant.fragment.MerchantGoodsFragment;
@@ -33,9 +36,13 @@ import com.nong.nongo2o.module.message.activity.ChatActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
+import com.nong.nongo2o.uils.CustomThread;
 import com.nong.nongo2o.uils.FocusUtils;
-import com.nong.nongo2o.uils.imUtils.IMCallback;
+import com.nong.nongo2o.uils.ImageUtils;
 import com.nong.nongo2o.uils.imUtils.IMUtils;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 
@@ -289,4 +296,69 @@ public class MerchantGoodsVM implements ViewModel {
 //        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
 //    });
 
+    public class WxShareDialogVM implements ViewModel {
+
+        private SendMessageToWX.Req req;
+        private Bitmap bitmap;
+
+        public WxShareDialogVM() {
+            WXWebpageObject webpage = new WXWebpageObject();
+            webpage.webpageUrl = "http://www.exhua.net/wwwd/good-detail.html?goodsCode=" + good.getGoodsCode();
+
+            WXMediaMessage msg = new WXMediaMessage(webpage);
+            msg.title = "小背篓|" + good.getTitle();
+
+            String description = "";
+            if (!TextUtils.isEmpty(good.getDetail())) {
+                List<ImgTextContent> contentList = new Gson().fromJson(good.getDetail(), new TypeToken<List<ImgTextContent>>() {
+                }.getType());
+                description = contentList.get(0).getContent();
+            }
+            msg.description = "商品描述：" + description;
+
+            if (!TextUtils.isEmpty(good.getCovers())) {
+                List<String> covers = new Gson().fromJson(good.getCovers(), new TypeToken<List<String>>() {
+                }.getType());
+                loadShareIcon(covers.get(0));
+
+                Bitmap thumb = bitmap;
+                if (bitmap == null) {
+                    thumb = BitmapFactory.decodeResource(fragment.getResources(), R.mipmap.logo);
+                }
+                msg.thumbData = ImageUtils.getBitmapBytes(thumb, true);
+            }
+
+            req = new SendMessageToWX.Req();
+            req.transaction = buildTransaction("webpage");
+            req.message = msg;
+        }
+
+        public final ReplyCommand shareToFriends = new ReplyCommand(() -> {
+            req.scene = SendMessageToWX.Req.WXSceneSession;
+            AdventurerApp.wxApi.sendReq(req);
+        });
+
+        public final ReplyCommand shareToCircle = new ReplyCommand(() -> {
+            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+            AdventurerApp.wxApi.sendReq(req);
+        });
+
+        public final ReplyCommand dismissDialog = new ReplyCommand(() -> {
+            fragment.dismissWxShareDialog();
+        });
+
+        private String buildTransaction(final String type) {
+            return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+        }
+
+        private void loadShareIcon(String url) {
+
+            final CustomThread thread = new CustomThread();
+            thread.addListener(() -> {
+                bitmap = ImageUtils.getBitmap(fragment.getActivity(), url, 300, 300);
+                thread.cancel();//并不意味着立即停止目标线程正在进行的工作，而只是传递了请求中断的消息
+            });
+            thread.start();
+        }
+    }
 }

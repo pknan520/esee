@@ -17,6 +17,7 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.domain.Goods;
+import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -159,7 +160,13 @@ public class GoodsManagerVM implements ViewModel {
             name.set(goods.getTitle());
             price.set(goods.getPrice());
             saleNum.set(goods.getTotalSale());
-            stockNum.set(0);
+            if (goods.getGoodsSpecs() != null && !goods.getGoodsSpecs().isEmpty()) {
+                int stock = 0;
+                for (GoodsSpec spec : goods.getGoodsSpecs()) {
+                    stock += spec.getQuantity();
+                }
+                stockNum.set(stock);
+            }
             date.set(simpleDateFormat.format(goods.getCreateTime()));
         }
 
@@ -186,7 +193,7 @@ public class GoodsManagerVM implements ViewModel {
     public class PopupVM implements ViewModel {
 
         private Goods goods;
-        private final String[] putawayArray = {"编辑", "上架/下架", /*"移至顶部", */"删除"};
+        private final String[] putawayArray = {"编辑", status == 1 ? "下架" : "上架", /*"移至顶部", */"删除"};
 
         private PopupWindow popup;
 
@@ -225,7 +232,8 @@ public class GoodsManagerVM implements ViewModel {
                         ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment.getParentFragment(),
                                 GoodsManagerDetailFragment.newInstance(goods), GoodsManagerDetailFragment.TAG);
                         break;
-                    case "上架/下架":
+                    case "上架":
+                    case "下架":
                         Goods updateGoods = new Goods();
                         updateGoods.setGoodsCode(goods.getGoodsCode());
                         updateGoods.setId(goods.getId());
@@ -235,7 +243,6 @@ public class GoodsManagerVM implements ViewModel {
                         } else {
                             updateGoods.setGoodsStatus(1);
                         }
-
 
                         RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
                                 new Gson().toJson(updateGoods));

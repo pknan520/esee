@@ -14,19 +14,21 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:orientation="horizontal"
-        android:padding="@dimen/text_padding"
+        android:padding="@dimen/item_padding"
         app:clickCommand="@{viewModel.itemClick}">
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:button="@drawable/selector_check_box"
             android:checked="@{viewModel.isSelected}"
             app:clickCommand="@{viewModel.selectClick}" />
 
         <com.facebook.drawee.view.SimpleDraweeView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/item_padding"
             app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
             app:uri="@{viewModel.imgUrl}" />
 

@@ -109,7 +109,7 @@ public class PersonalVM implements ViewModel {
                 });
     }
 
-    private void getOrderCount(String userCode) {
+    public void getOrderCount(String userCode) {
         reset();
         String type = "";
         Map<String, String> paramMap = new HashMap<>();

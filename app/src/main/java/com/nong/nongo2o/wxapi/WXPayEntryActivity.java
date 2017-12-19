@@ -37,6 +37,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
     @Override
     public void onReq(BaseReq baseReq) {
+        Log.d(TAG, "onReq: " + baseReq);
     }
 
     @Override
@@ -56,6 +57,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
                 break;
             case -2:
                 Toast.makeText(this, "支付取消", Toast.LENGTH_SHORT).show();
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("payCancel"));
                 break;
             default:
                 Toast.makeText(this, "支付失败", Toast.LENGTH_SHORT).show();

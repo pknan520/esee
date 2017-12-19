@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import com.nong.nongo2o.network.api.AccountService;
 import com.nong.nongo2o.network.api.ActivityService;
 import com.nong.nongo2o.network.api.AppService;
+import com.nong.nongo2o.network.api.BillService;
 import com.nong.nongo2o.network.api.CartService;
 import com.nong.nongo2o.network.api.AddressService;
 import com.nong.nongo2o.network.api.DynamicService;
@@ -100,6 +101,10 @@ public class RetrofitHelper {
 
     public static WxService getWxServiceAPI() {
         return createApi(WxService.class, ApiConstants.WX_URL);
+    }
+
+    public static BillService getBillServiceAPI() {
+        return createApi(BillService.class, ApiConstants.BASE_URL);
     }
 
     /**

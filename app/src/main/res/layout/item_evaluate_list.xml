@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_space"
+        android:layout_marginTop="@{viewModel.viewStyle.isFirst ? (int)@dimen/zero : (int)@dimen/item_padding}"
         android:background="@android:color/white"
         android:divider="@drawable/shape_vertical_divider"
         android:orientation="vertical"

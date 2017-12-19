@@ -20,6 +20,7 @@ import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.Order;
 import com.nong.nongo2o.entity.domain.OrderDetail;
+import com.nong.nongo2o.entity.request.CreatePaymentRequest;
 import com.nong.nongo2o.entity.request.UpdateOrderRequest;
 import com.nong.nongo2o.module.common.buy.activity.BuyActivity;
 import com.nong.nongo2o.module.common.buy.fragment.PayFragment;
@@ -117,9 +118,9 @@ public class OrderDetailVM implements ViewModel {
                     btnStr.set("支付");
                     break;
                 case 1:
+                    viewStyle.btnVisi.set(true);
                     orderStatus.set("待发货");  //  发货（商家）
-                    viewStyle.btnVisi.set(isMerchantMode);
-                    btnStr.set("发货");
+                    btnStr.set(isMerchantMode ? "发货" : "申请退款");
                     break;
                 case 2:
                     orderStatus.set("待收货");  //  收货（用户）
@@ -166,7 +167,9 @@ public class OrderDetailVM implements ViewModel {
                 for (OrderDetail detail : order.getOrderDetails()) {
                     itemGoodsVMs.add(new ItemOrderGoodsListVM(detail, order, isMerchantMode, ItemOrderGoodsListVM.FROM_ORDER_DETAIL, fragment));
                     freight = freight.add(detail.getGoods().getFreight());
-                    total = total.add(detail.getGoodsSpec().getPrice().multiply(new BigDecimal(detail.getGoodsNum())));
+                    if (detail.getGoodsSpec() != null) {
+                        total = total.add(detail.getGoodsSpec().getPrice().multiply(new BigDecimal(detail.getGoodsNum())));
+                    }
                     goodsNum += detail.getGoodsNum();
                 }
             }
@@ -227,7 +230,11 @@ public class OrderDetailVM implements ViewModel {
                 break;
             case 1:
                 //  发货（商家）
-                send();
+                if (isMerchantMode) {
+                    send();
+                } else {
+                    refund();
+                }
                 break;
             case 2:
                 //  收货（用户）
@@ -289,5 +296,31 @@ public class OrderDetailVM implements ViewModel {
                         Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
+    }
+
+    /**
+     * 申请退款
+     */
+    private void refund() {
+        CreatePaymentRequest req = new CreatePaymentRequest();
+        req.setOrderCode(order.getOrderCode());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(req));
+
+        RetrofitHelper.getOrderAPI()
+                .refund(requestBody)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    Toast.makeText(fragment.getActivity(), "退款申请成功", Toast.LENGTH_SHORT).show();
+                    fragment.getFragmentManager().popBackStack();
+                    //  通知刷新订单列表
+                    Intent intent = new Intent("updateOrderList");
+                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

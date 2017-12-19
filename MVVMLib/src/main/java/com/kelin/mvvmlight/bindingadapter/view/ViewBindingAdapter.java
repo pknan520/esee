@@ -3,6 +3,7 @@ package com.kelin.mvvmlight.bindingadapter.view;
 import android.databinding.BindingAdapter;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.kelin.mvvmlight.command.ResponseCommand;
@@ -85,6 +86,14 @@ public final class ViewBindingAdapter {
                 return false;
             }
         });
+    }
+
+    @BindingAdapter("android:layout_marginTop")
+    public static void setTopMargin(View view, int topMargin) {
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        layoutParams.setMargins(layoutParams.leftMargin, topMargin,
+                layoutParams.rightMargin,layoutParams.bottomMargin);
+        view.setLayoutParams(layoutParams);
     }
 }
 

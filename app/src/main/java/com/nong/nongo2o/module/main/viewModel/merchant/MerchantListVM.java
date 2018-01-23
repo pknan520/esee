@@ -6,6 +6,7 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
@@ -136,10 +137,14 @@ public class MerchantListVM implements ViewModel {
                     .subscribe(resp -> {
                         if (force) {
                             itemMerchantListVMs.clear();
+                            total = resp.getTotal();
                         }
-                        total = resp.getTotal();
                         for (SalerInfo saller : resp.getRows()) {
-                            itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
+                            if (saller.getGoods() != null && !saller.getGoods().isEmpty()) {
+                                itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
+                            } else {
+                                total -= 1;
+                            }
                         }
                         viewStyle.isEmpty.set(itemMerchantListVMs.isEmpty());
                     }, throwable -> {
@@ -155,10 +160,14 @@ public class MerchantListVM implements ViewModel {
                     .subscribe(resp -> {
                         if (force) {
                             itemMerchantListVMs.clear();
+                            total = resp.getTotal();
                         }
-                        total = resp.getTotal();
                         for (SalerInfo saller : resp.getRows()) {
-                            itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
+                            if (saller.getGoods() != null && !saller.getGoods().isEmpty()) {
+                                itemMerchantListVMs.add(new ItemMerchantListVM(fragment, saller));
+                            } else {
+                                total -= 1;
+                            }
                         }
                         viewStyle.isEmpty.set(itemMerchantListVMs.isEmpty());
                     }, throwable -> {

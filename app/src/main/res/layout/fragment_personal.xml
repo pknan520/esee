@@ -90,9 +90,8 @@
                 android:visibility="@{viewModel.viewStyle.isMerchantMode ? View.VISIBLE : View.GONE}">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="vertical">
 
@@ -100,6 +99,31 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="当前余额"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal_small" />
+
+                    <TextView
+                        android:id="@+id/tv_now_asset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{@string/rmb + ` ` +  String.valueOf(viewModel.nowAsset)}"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/text_title" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="30dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="可提现额度"
                         android:textColor="@color/colorText"
                         android:textSize="@dimen/text_normal_small" />
 
@@ -316,7 +340,7 @@
                     android:layout_height="wrap_content"
                     android:drawableEnd="@mipmap/right_grey"
                     android:drawablePadding="@dimen/line_space"
-                    android:text="@{viewModel.viewStyle.isSaler ? @string/saler_authenticated : @string/saler_authentication}"
+                    android:text="@{viewModel.viewStyle.isChecking ? `正在审核中` : @string/saler_authentication}"
                     android:textColor="@color/colorComplementaryText"
                     android:textSize="@dimen/text_normal_small" />
 

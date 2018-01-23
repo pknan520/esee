@@ -16,10 +16,13 @@ import android.view.ViewGroup;
 
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.DialogInputExBinding;
+import com.nong.nongo2o.databinding.DialogRefundBinding;
 import com.nong.nongo2o.databinding.FragmentOrderDetailBinding;
 import com.nong.nongo2o.entity.domain.Order;
+import com.nong.nongo2o.module.common.ConfirmDialogListener;
 import com.nong.nongo2o.module.personal.activity.OrderCenterActivity;
 import com.nong.nongo2o.module.personal.viewModel.DialogExVM;
+import com.nong.nongo2o.module.personal.viewModel.DialogRefundVM;
 import com.nong.nongo2o.module.personal.viewModel.OrderDetailVM;
 import com.trello.rxlifecycle2.components.RxFragment;
 
@@ -34,10 +37,12 @@ public class OrderDetailFragment extends RxBaseFragment {
     private FragmentOrderDetailBinding binding;
     private OrderDetailVM vm;
 
+    private LocalBroadcastManager lbm;
+
     private AlertDialog exDialog;
     private DialogInputExBinding exBinding;
-
-    private LocalBroadcastManager lbm;
+    private AlertDialog refundDialog;
+    private DialogRefundBinding refundBinding;
 
     public interface ReceiveDialogListener {
         void confirmReceive();
@@ -83,6 +88,7 @@ public class OrderDetailFragment extends RxBaseFragment {
         binding.sv.smoothScrollTo(0, 0);
 
         initExDialog();
+        initRefundDialog();
     }
 
     /**
@@ -103,27 +109,54 @@ public class OrderDetailFragment extends RxBaseFragment {
         }
     }
 
+    public void hideExDialog() {
+        if (exDialog != null && exDialog.isShowing()) {
+            exDialog.dismiss();
+        }
+    }
+
     /**
-     * 收货确认框
+     * 退款申请输入框
      */
-    public void showReceiveDialog(ReceiveDialogListener listener) {
+    private void initRefundDialog() {
+        refundBinding = DialogRefundBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+        refundDialog = new AlertDialog.Builder(getActivity())
+                .setView(refundBinding.getRoot())
+                .create();
+    }
+
+    public void showRefundDialog(Order order, boolean isSaler, boolean isAgree, DialogRefundVM.DialogRefundListener listener) {
+        if (refundDialog != null && ! refundDialog.isShowing()) {
+            refundBinding.setViewModel(new DialogRefundVM(getActivity(), refundDialog, listener, order, isSaler, isAgree));
+            refundDialog.show();
+        }
+    }
+
+    public void hideRefundDialog() {
+        if (refundDialog != null && refundDialog.isShowing())
+            refundDialog.dismiss();
+    }
+
+    /**
+     * 操作确认框
+     */
+    public void showConfirmDialog(String content, ConfirmDialogListener listener) {
         new AlertDialog.Builder(getActivity())
                 .setTitle("提示")
-                .setMessage("确认收货后将不能取消，请确定是否确认收货？")
+                .setMessage(content)
                 .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
                 .setPositiveButton("确定", (dialog, which) -> {
                     if (listener != null) {
-                        listener.confirmReceive();
+                        listener.onConfirm();
                     }
                     dialog.dismiss();
                 })
                 .show();
     }
 
-
-
     /**
-     * 支付广播接收器
+     * 广播接收器
      */
     private void registerReceiver() {
         lbm = LocalBroadcastManager.getInstance(getActivity());

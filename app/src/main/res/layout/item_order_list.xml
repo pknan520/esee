@@ -9,7 +9,10 @@
             type="com.nong.nongo2o.module.personal.viewModel.OrderListVM.ItemOrderVM" />
 
         <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
     </data>
 
     <LinearLayout
@@ -34,8 +37,8 @@
             <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:roundedCornerRadius="5dp"
                 app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                app:roundedCornerRadius="5dp"
                 app:uri="@{viewModel.headUri}" />
 
             <LinearLayout
@@ -73,9 +76,9 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layoutManager="@{LayoutManagers.linear()}"
+            app:itemBinding="@{viewModel.itemOrderGoodsListBinding}"
             app:items="@{viewModel.itemOrderGoodsListVMs}"
-            app:itemBinding="@{viewModel.itemOrderGoodsListBinding}"/>
+            app:layoutManager="@{LayoutManagers.linear()}" />
         <!--订单信息-->
         <TextView
             android:layout_width="match_parent"
@@ -91,33 +94,33 @@
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:gravity="end"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:visibility="@{(!TextUtils.isEmpty(viewModel.btnL) || !TextUtils.isEmpty(viewModel.btnR)) ? View.VISIBLE : View.GONE}">
 
             <Button
                 style="@style/SimpleTextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.refundStr}"
-                android:paddingStart="15dp"
+                android:background="@{@drawable/border_disable}"
                 android:paddingEnd="15dp"
-                android:clickable="@{!viewModel.viewStyle.refundDisable}"
-                app:clickCommand="@{viewModel.refundClick}"
-                android:background="@{viewModel.viewStyle.refundDisable ? @drawable/border_disable : @drawable/border_accent}"
-                android:visibility="@{viewModel.viewStyle.refundVisi ? View.VISIBLE : View.GONE}"
-                android:textColor="@{viewModel.viewStyle.refundDisable ? @color/colorDisableButton : @color/colorAccent}"/>
+                android:paddingStart="15dp"
+                android:text="@{viewModel.btnL}"
+                android:textColor="@{@color/colorDisableButton}"
+                android:visibility="@{TextUtils.isEmpty(viewModel.btnL) ? View.GONE : View.VISIBLE}"
+                app:clickCommand="@{viewModel.lClick}" />
 
             <Button
                 style="@style/SimpleTextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/item_padding"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.btnStr}"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                app:clickCommand="@{viewModel.operateClick}"
                 android:background="@drawable/border_green"
+                android:paddingEnd="15dp"
+                android:paddingStart="15dp"
+                android:text="@{viewModel.btnR}"
                 android:textColor="@color/colorComplementaryGreen"
-                android:visibility="@{viewModel.viewStyle.btnVisi ? View.VISIBLE : View.GONE}"/>
+                android:visibility="@{TextUtils.isEmpty(viewModel.btnR) ? View.GONE : View.VISIBLE}"
+                app:clickCommand="@{viewModel.rClick}" />
 
         </LinearLayout>
 

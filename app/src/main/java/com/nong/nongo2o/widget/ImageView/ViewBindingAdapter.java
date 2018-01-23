@@ -20,6 +20,7 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.kelin.mvvmlight.command.ReplyCommand;
+import com.nong.nongo2o.AdventurerApp;
 import com.nong.nongo2o.uils.AppManager;
 import com.nong.nongo2o.uils.MyFrescoImageLoader;
 
@@ -31,7 +32,7 @@ public class ViewBindingAdapter {
 
     @BindingAdapter(value = {"glideUri", "placeholderImageRes"}, requireAll = false)
     public static void glideLoadImage(final ImageView iv, String uri, @DrawableRes int placeholderImageRes) {
-        Glide.with(AppManager.getAppManager().currentActivity())
+        Glide.with(AdventurerApp.getInstance().getApplicationContext())
                 .load(uri)
                 .placeholder(placeholderImageRes)
                 .into(iv);

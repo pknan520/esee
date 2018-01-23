@@ -28,7 +28,7 @@ public class FocusUtils {
         void callback(boolean result);
     }
 
-    public static boolean changeFocus(Context context, boolean isFocus, String targetCode, focusCallBack callback) {
+    public static void changeFocus(Context context, boolean isFocus, String targetCode, focusCallBack callback) {
         if (isFocus) {
             //  已经关注了的取消关注
             RetrofitHelper.getFollowAPI()
@@ -37,6 +37,7 @@ public class FocusUtils {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("refreshFocus"));
                         callbackResult(context, isFocus, callback);
                         if (AdventurerApp.getInstance().containFollow(targetCode)) AdventurerApp.getInstance().deleteFollow(targetCode);
                     }, throwable -> {
@@ -53,13 +54,11 @@ public class FocusUtils {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("refreshFocus"));
                         callbackResult(context, isFocus, callback);
                         if (!AdventurerApp.getInstance().containFollow(targetCode)) AdventurerApp.getInstance().addFollow(targetCode);
                     }, throwable -> Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show());
         }
-
-
-        return false;
     }
 
     private static void callbackResult(Context context, boolean isFocus, focusCallBack call) {

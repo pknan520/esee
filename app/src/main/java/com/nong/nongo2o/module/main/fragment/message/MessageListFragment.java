@@ -66,14 +66,20 @@ public class MessageListFragment extends RxBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (!hidden && vm != null) vm.refresh();
+        if (!hidden && vm != null) {
+            vm.refresh();
+            vm.checkUnreadMessage();
+        }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         this.hidden = hidden;
-        if (!hidden && vm != null) vm.refresh();
+        if (!hidden && vm != null) {
+            vm.refresh();
+            vm.checkUnreadMessage();
+        }
     }
 
     @Override

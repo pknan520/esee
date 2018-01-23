@@ -8,7 +8,10 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.personal.viewModel.OrderDetailVM" />
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
     </data>
 
     <com.nong.nongo2o.widget.LinearLayout.SlidingLinerLayout
@@ -113,8 +116,8 @@
                         <com.facebook.drawee.view.SimpleDraweeView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            app:roundedCornerRadius="5dp"
                             app:placeholderImageRes="@{viewModel.merchantHeadPlaceHolder}"
+                            app:roundedCornerRadius="5dp"
                             app:uri="@{viewModel.merchantHeadUri}" />
 
                         <LinearLayout
@@ -151,7 +154,7 @@
                             android:text="联系TA"
                             android:textColor="@color/colorComplementaryText"
                             android:textSize="@dimen/text_normal"
-                            app:clickCommand="@{viewModel.contactClick}"/>
+                            app:clickCommand="@{viewModel.contactClick}" />
 
                     </LinearLayout>
                     <!--商品信息-->
@@ -211,19 +214,36 @@
                         android:orientation="vertical"
                         android:showDividers="middle">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <RelativeLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="@dimen/item_padding"
-                            android:text="物流信息"
-                            android:textColor="@color/colorText"
-                            android:textSize="@dimen/text_normal" />
+                            android:orientation="horizontal"
+                            android:padding="@dimen/item_padding">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="物流信息"
+                                android:textColor="@color/colorText"
+                                android:textSize="@dimen/text_normal" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="买家自提"
+                                android:textColor="@color/colorComplementaryOrange"
+                                android:textSize="@dimen/text_normal"
+                                android:visibility="@{viewModel.viewStyle.isSelf ? View.VISIBLE : View.GONE}" />
+
+                        </RelativeLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="@dimen/item_padding">
+                            android:padding="@dimen/item_padding"
+                            android:visibility="@{viewModel.viewStyle.isSelf ? View.GONE : View.VISIBLE}">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -274,14 +294,76 @@
                     </LinearLayout>
                     <!--物流轨迹-->
                     <!--<android.support.v7.widget.RecyclerView-->
-                        <!--android:id="@+id/rv_trans"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_marginTop="@dimen/vertical_space"-->
-                        <!--android:background="@android:color/white"-->
-                        <!--android:padding="@dimen/item_padding"-->
-                        <!--app:itemBinding="@{viewModel.itemTransBinding}"-->
-                        <!--app:items="@{viewModel.itemTransListVMs}" />-->
+                    <!--android:id="@+id/rv_trans"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="@dimen/vertical_space"-->
+                    <!--android:background="@android:color/white"-->
+                    <!--android:padding="@dimen/item_padding"-->
+                    <!--app:itemBinding="@{viewModel.itemTransBinding}"-->
+                    <!--app:items="@{viewModel.itemTransListVMs}" />-->
+
+                </LinearLayout>
+                <!--售后信息-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:divider="@drawable/shape_vertical_divider"
+                    android:orientation="vertical"
+                    android:showDividers="middle"
+                    android:visibility="@{TextUtils.isEmpty(viewModel.afterSaleReason) ? View.GONE : View.VISIBLE}">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="售后信息"
+                        android:padding="@dimen/item_padding"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="这既是审核原因"
+                            android:text="@{viewModel.afterSaleReason}"
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/text_normal" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:visibility="@{TextUtils.isEmpty(String.valueOf(viewModel.afterSaleMoney)) ? View.GONE : View.VISIBLE}">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="退款金额："
+                                android:textColor="@color/colorText"
+                                android:textSize="@dimen/text_normal" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="start"
+                                android:layout_marginStart="@dimen/text_padding"
+                                tools:text="¥123.33"
+                                android:text="@{`¥` + String.valueOf(viewModel.afterSaleMoney)}"
+                                android:textColor="@color/colorComplementaryOrange"
+                                android:textSize="@dimen/text_title" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
                 <!--操作按钮-->
@@ -290,16 +372,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_space"
                     android:background="@android:color/white"
-                    android:visibility="@{viewModel.viewStyle.btnVisi ? View.VISIBLE : View.GONE}"
-                    android:padding="@dimen/item_padding">
+                    android:padding="@dimen/item_padding"
+                    android:visibility="@{(!TextUtils.isEmpty(viewModel.btnL) || !TextUtils.isEmpty(viewModel.btnR)) ? View.VISIBLE : View.GONE}">
+
+                    <Button
+                        style="@style/SimpleDisableButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                        android:layout_weight="1"
+                        android:padding="@dimen/text_padding"
+                        android:text="@{viewModel.btnL}"
+                        android:visibility="@{TextUtils.isEmpty(viewModel.btnL) ? View.GONE : View.VISIBLE}"
+                        app:clickCommand="@{viewModel.lClick}" />
 
                     <Button
                         style="@style/SimpleOrangeButton"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:padding="@dimen/text_padding"
-                        android:text="@{viewModel.btnStr}"
-                        app:clickCommand="@{viewModel.operateClick}"/>
+                        android:text="@{viewModel.btnR}"
+                        android:visibility="@{TextUtils.isEmpty(viewModel.btnR) ? View.GONE : View.VISIBLE}"
+                        app:clickCommand="@{viewModel.rClick}" />
 
                 </LinearLayout>
 

@@ -1,9 +1,13 @@
 package com.nong.nongo2o.module.welcome;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.Toast;
@@ -18,11 +22,16 @@ import com.nong.nongo2o.module.welcome.viewModel.WelcomeVM;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.service.InitDataService;
+import com.nong.nongo2o.service.VersionUpdateHelper;
 import com.nong.nongo2o.uils.Constant;
 import com.nong.nongo2o.uils.SPUtils;
 import com.nong.nongo2o.uils.WxUtils;
+import com.nong.nongo2o.uils.dbUtils.DbUtils;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -34,8 +43,16 @@ import io.reactivex.schedulers.Schedulers;
 public class WelcomeActivity extends RxBaseActivity {
 
     private static final int sleepTime = 2000;
+    //  权限数组
+    private String[] permissions = new String[] {
+            Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    private List<String> permissionList = new ArrayList<>();
+    private boolean mShowRequestPermission = true;//用户是否禁止权限
 
     private ActivityWelcomeBinding binding;
+    private VersionUpdateHelper helper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +71,35 @@ public class WelcomeActivity extends RxBaseActivity {
     protected void onStart() {
         super.onStart();
 
+        checkPermission();
+    }
+
+    private void checkPermission() {
+        //  判断哪些权限未授予
+        new RxPermissions(this)
+                .request(permissions)
+                .subscribe(granted -> {
+                    if (granted) {
+                        //  复制数据表
+                        if (!SPUtils.contains(getApplicationContext(), "city_database") || !(boolean) SPUtils.get(getApplicationContext(), "city_database", false)) {
+                            DbUtils.copyDBToDatabases(getApplicationContext());
+                        }
+
+                        helper = new VersionUpdateHelper(this);
+                        VersionUpdateHelper.resetCancelFlag();
+                        helper.setCheckCallBack(code -> {
+                            if (code != VersionUpdateHelper.MUST_UPDATE) {
+                                initData();
+                            }
+                        });
+                        helper.startUpdateVersion();
+                    } else {
+                        Toast.makeText(this, "拒绝权限将导致部分功能无法正常使用", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void initData() {
         new Thread(() -> {
             try {
                 Thread.sleep(sleepTime);
@@ -145,5 +191,32 @@ public class WelcomeActivity extends RxBaseActivity {
         startActivity(LoginActivity.newIntent(this, false));
         finish();
         overridePendingTransition(R.anim.anim_right_in, 0);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                        //判断是否勾选禁止后不再询问
+                        boolean showRequestPermission = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i]);
+                        if (showRequestPermission) {
+                            //  重新申请权限
+                            checkPermission();
+                            return;
+                        } else {
+                            //  已经禁止
+                            mShowRequestPermission = false;
+                        }
+                    }
+                }
+                // TODO: 2017-8-23 权限授予完毕
+                Toast.makeText(this, "权限都授予完毕", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
     }
 }

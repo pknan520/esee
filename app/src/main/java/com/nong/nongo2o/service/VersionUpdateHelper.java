@@ -33,6 +33,7 @@ public class VersionUpdateHelper implements ServiceConnection {
     private boolean showDialogOnStart;
     private boolean toastInfo;
 
+    public static final int MUST_UPDATE = 3;
     public static final int NEED_UPDATE = 2;
     public static final int DONOT_NEED_UPDATE = 1;
     public static final int CHECK_FAILD = -1;
@@ -165,12 +166,15 @@ public class VersionUpdateHelper implements ServiceConnection {
                     cancel();
                     return;
                 }
-                if (!appInfo.isMustUpgrade() && !showDialogOnStart) {
-                    cancel();
-                    return;
-                }
+//                if (!appInfo.isMustUpgrade() && !showDialogOnStart) {
+//                    cancel();
+//                    return;
+//                }
                 if(checkCallBack != null){
-                    checkCallBack.callBack(NEED_UPDATE);
+                    if (appInfo.isMustUpgrade())
+                        checkCallBack.callBack(MUST_UPDATE);
+                    else
+                        checkCallBack.callBack(NEED_UPDATE);
                 }
                 final AlertDialog.Builder builer = new AlertDialog.Builder(context);
                 builer.setTitle("版本升级");
@@ -226,7 +230,7 @@ public class VersionUpdateHelper implements ServiceConnection {
             @Override
             public void begain() {
                 App appInfo = service.getAppInfo();
-                if (appInfo.isMustUpgrade()) {
+                if (appInfo.isMustUpgrade() || appInfo.isNeedUpgrade()) {
                     progressDialog = new ProgressDialog(context);
                     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                     progressDialog.setCancelable(false);

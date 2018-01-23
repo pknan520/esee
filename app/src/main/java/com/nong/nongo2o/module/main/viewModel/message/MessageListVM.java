@@ -27,6 +27,7 @@ import com.nong.nongo2o.entity.domain.User;
 import com.nong.nongo2o.greenDaoGen.EaseUserInfoDao;
 import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.login.LoginActivity;
+import com.nong.nongo2o.module.main.MainActivity;
 import com.nong.nongo2o.module.main.fragment.message.MessageListFragment;
 import com.nong.nongo2o.module.message.activity.ChatActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -113,6 +114,7 @@ public class MessageListVM implements ViewModel {
         public void onMessageReceived(List<EMMessage> messages) {
             //  收到消息
             refresh();
+            ((MainActivity) fragment.getActivity()).showMessagePoint();
             for (EMMessage msg : messages) {
                 EaseUserInfo info = new EaseUserInfo();
                 info.setUserId(msg.getStringAttribute("userCode", ""));
@@ -237,6 +239,21 @@ public class MessageListVM implements ViewModel {
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         }
     });
+
+    /**
+     * 检查未读消息
+     */
+    public void checkUnreadMessage() {
+        IMUtils.checkIMLogin(isSuccess -> {
+            if (isSuccess) {
+                int unreadMessageCount = EMClient.getInstance().chatManager().getUnreadMessageCount();
+                if (unreadMessageCount > 0) ((MainActivity)fragment.getActivity()).showMessagePoint();
+                else ((MainActivity)fragment.getActivity()).hideMessagePoint();
+            } else {
+                ((MainActivity)fragment.getActivity()).hideMessagePoint();
+            }
+        });
+    }
 
     /**
      * 消息Item

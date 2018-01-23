@@ -56,6 +56,7 @@ public class PersonalVM implements ViewModel {
     public final ObservableField<String> headUri = new ObservableField<>();
     public final ObservableField<String> name = new ObservableField<>();
     public final ObservableField<BigDecimal> balance = new ObservableField<>();
+    public final ObservableField<BigDecimal> nowAsset = new ObservableField<>();
     public final ObservableField<Integer> unpaidBadge = new ObservableField<>();
     public final ObservableField<Integer> deliveryBadge = new ObservableField<>();
     public final ObservableField<Integer> takeoverBadge = new ObservableField<>();
@@ -71,10 +72,9 @@ public class PersonalVM implements ViewModel {
     public final ViewStyle viewStyle = new ViewStyle();
 
     public class ViewStyle {
-        public final ObservableBoolean canAuthentication = new ObservableBoolean(true);
-        public final ObservableBoolean hasAuthentication = new ObservableBoolean(false);
         public final ObservableBoolean isMerchantMode = new ObservableBoolean(false);
         public final ObservableBoolean isSaler = new ObservableBoolean(false);
+        public final ObservableBoolean isChecking = new ObservableBoolean(false);
 
         public final ObservableBoolean notLogin = new ObservableBoolean(false);
     }
@@ -92,7 +92,7 @@ public class PersonalVM implements ViewModel {
 //        authenticationStatus.set(R.string.saler_authentication);
     }
 
-    private void getPersonalInfo() {
+    public void getPersonalInfo() {
         RetrofitHelper.getUserAPI().userProfile()
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
@@ -100,9 +100,14 @@ public class PersonalVM implements ViewModel {
                 .subscribe(resp -> {
                     headUri.set(resp.getAvatar());
                     name.set(resp.getUserNick());
-                    balance.set(resp.getBalance() == null ? new BigDecimal(0.0) : resp.getBalance());
+                    nowAsset.set(resp.getNowAsset() == null ? new BigDecimal(0.00) : resp.getNowAsset());
+                    balance.set(resp.getBalance() == null ? new BigDecimal(0.00) : resp.getBalance());
                     viewStyle.isSaler.set(resp.getUserType() == 1);
+                    viewStyle.isChecking.set(resp.getUserType() == 10);
                     userCode = resp.getUserCode();
+
+                    UserInfo.getInstance().setUserNick(resp.getUserNick());
+                    UserInfo.getInstance().setUserType(resp.getUserType());
                     getOrderCount(userCode);
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
@@ -137,10 +142,14 @@ public class PersonalVM implements ViewModel {
                                     deliveryBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
                                     break;
                                 case 2:
-                                    takeoverBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    if (!viewStyle.isMerchantMode.get()) {
+                                        takeoverBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    }
                                     break;
                                 case 3:
-                                    evaBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    if (!viewStyle.isMerchantMode.get()) {
+                                        evaBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    }
                                     break;
                             }
                         }

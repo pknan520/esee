@@ -297,6 +297,9 @@ public class DynamicPublishVM implements ViewModel {
             if (currentView != null) {
                 currentView.clearFocus();
             }
+            if (contentList.size() >= itemDescVMs.indexOf(this) + 1) {
+                contentList.remove(itemDescVMs.indexOf(this));
+            }
             itemDescVMs.remove(ItemDescVM.this);
         }
 
@@ -335,7 +338,7 @@ public class DynamicPublishVM implements ViewModel {
      * 发布按钮
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
-        if (itemBannerVMs.size() < 1) {
+        if (itemBannerVMs.size() < 2) {
             Toast.makeText(fragment.getActivity(), "请选择最少一张主图", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -437,6 +440,16 @@ public class DynamicPublishVM implements ViewModel {
                     content.getImg().add(ApiConstants.BASE_URL + picUriList.get(i).getFilePath());
                 }
                 hasAdd += item.getNewPicList().size();
+            }
+        } else {
+            for (int i = 0; i < itemDescVMs.size(); i++) {
+                if (contentList.size() >= i + 1 && contentList.get(i) != null) {
+                    contentList.get(i).setContent(itemDescVMs.get(i).desc.get());
+                } else {
+                    DynamicContent content = new DynamicContent();
+                    content.setContent(itemDescVMs.get(i).desc.get());
+                    contentList.add(content);
+                }
             }
         }
 

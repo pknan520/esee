@@ -13,6 +13,7 @@ import com.nong.nongo2o.module.welcome.WelcomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.service.InitDataService;
+import com.nong.nongo2o.service.VersionUpdateHelper;
 import com.nong.nongo2o.uils.Constant;
 import com.nong.nongo2o.uils.SPUtils;
 import com.nong.nongo2o.uils.WxUtils;

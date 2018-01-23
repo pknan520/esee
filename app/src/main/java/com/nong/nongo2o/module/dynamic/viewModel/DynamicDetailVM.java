@@ -209,12 +209,14 @@ public class DynamicDetailVM implements ViewModel {
                     total = resp.getTotal();
                     if (resp.getRows() != null && !resp.getRows().isEmpty()) {
                         for (MomentComment comment : resp.getRows()) {
-                            ItemCommentListVM item = new ItemCommentListVM(targetComment -> {
-                                this.targetComment = targetComment;
-                                fragment.editCommentRequestFocus();
-                                hintComment.set("回复" + targetComment.getUser().getUserNick() + "：");
-                            }, comment);
-                            itemCommentListVMs.add(item);
+                            if (comment.getUser() != null) {
+                                ItemCommentListVM item = new ItemCommentListVM(targetComment -> {
+                                    this.targetComment = targetComment;
+                                    fragment.editCommentRequestFocus();
+                                    hintComment.set("回复" + targetComment.getUser().getUserNick() + "：");
+                                }, comment);
+                                itemCommentListVMs.add(item);
+                            }
                         }
                     }
                 }, throwable -> {
@@ -237,9 +239,11 @@ public class DynamicDetailVM implements ViewModel {
                         StringBuilder sb = new StringBuilder();
                         Set<String> likeList = new HashSet<String>();
                         for (MomentFavorite favor : resp.getRows()) {
-                            sb.append(favor.getUser().getUserNick());
-                            sb.append(",");
-                            likeList.add(favor.getUserCode());
+                            if (favor.getUser() != null) {
+                                sb.append(favor.getUser().getUserNick());
+                                sb.append(",");
+                                likeList.add(favor.getUserCode());
+                            }
                         }
                         likeName.set(sb.substring(0, sb.length() - 1));
                         viewStyle.showLikeList.set(true);

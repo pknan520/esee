@@ -7,6 +7,7 @@
         <variable
             name="viewModel"
             type="com.nong.nongo2o.module.personal.viewModel.DialogExVM" />
+        <import type="android.view.View"/>
     </data>
 
     <LinearLayout
@@ -17,38 +18,74 @@
         android:orientation="vertical"
         android:showDividers="middle">
 
-        <EditText
+        <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_top_round_grey"
-            android:gravity="center_vertical"
-            android:hint="请输入快递公司名"
-            android:padding="@dimen/item_padding"
-            android:text="@={viewModel.exName}"
-            android:textColorHint="@color/colorHintText"
-            android:textSize="@dimen/text_normal" />
+            android:divider="@drawable/shape_horizontal_divider"
+            android:paddingEnd="@dimen/item_padding"
+            android:paddingStart="@dimen/item_padding"
+            android:showDividers="middle">
 
-        <EditText
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:button="@drawable/selector_check_box"
+                android:checked="@={viewModel.isSelf}"
+                android:padding="@dimen/item_padding"
+                android:text="客户自提"
+                android:textColor="@color/colorText" />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:button="@drawable/selector_check_box"
+                android:padding="@dimen/item_padding"
+                android:text="快递发货"
+                android:checked="@={viewModel.isEx}"
+                android:textColor="@color/colorText" />
+
+        </RadioGroup>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_top_round_grey"
-            android:gravity="center_vertical"
-            android:hint="请输入快递单号"
-            android:padding="@dimen/item_padding"
-            android:text="@={viewModel.exNumber}"
-            android:textColorHint="@color/colorHintText"
-            android:textSize="@dimen/text_normal" />
+            android:orientation="vertical"
+            android:visibility="@{viewModel.isEx ? View.VISIBLE : View.GONE}">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@drawable/border_top_round_grey"
-            android:gravity="start"
-            android:hint="请输入发货备注"
-            android:padding="@dimen/item_padding"
-            android:text="@={viewModel.remark}"
-            android:textColorHint="@color/colorHintText"
-            android:textSize="@dimen/text_normal" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_top_round_grey"
+                android:gravity="center_vertical"
+                android:hint="请输入快递公司名"
+                android:padding="@dimen/item_padding"
+                android:text="@={viewModel.exName}"
+                android:textColorHint="@color/colorHintText"
+                android:textSize="@dimen/text_normal" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_top_round_grey"
+                android:gravity="center_vertical"
+                android:hint="请输入快递单号"
+                android:padding="@dimen/item_padding"
+                android:text="@={viewModel.exNumber}"
+                android:textColorHint="@color/colorHintText"
+                android:textSize="@dimen/text_normal" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/border_top_round_grey"
+                android:gravity="start"
+                android:hint="请输入发货备注"
+                android:padding="@dimen/item_padding"
+                android:text="@={viewModel.remark}"
+                android:textColorHint="@color/colorHintText"
+                android:textSize="@dimen/text_normal" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

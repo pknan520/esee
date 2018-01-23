@@ -48,6 +48,7 @@ public class ChartFragment extends EaseChatFragment implements EaseChatFragment.
     protected void setUpView() {
         super.setUpView();
         setChatFragmentHelper(this);
+        titleBar.setLeftImageResource(R.mipmap.back_white);
         titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
 
         String userId = getArguments().getString("userId");

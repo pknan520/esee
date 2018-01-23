@@ -86,6 +86,7 @@
                     android:id="@+id/rv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="@{viewModel.viewStyle.isEmpty ? View.GONE : View.VISIBLE}"
                     app:itemBinding="@{viewModel.itemMerchantBinding}"
                     app:items="@{viewModel.itemMerchantListVMs}" />
 

@@ -56,7 +56,7 @@ public class RetrofitHelper {
     }
 
     public static FileService getFileAPI() {
-        return createApi(FileService.class, ApiConstants.BASE_URL);
+        return createApi(FileService.class, ApiConstants.PIC_URL);
     }
 
     public static AccountService getAccountAPI() {

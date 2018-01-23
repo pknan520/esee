@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.personal.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,6 +12,8 @@ import android.view.ViewGroup;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentGoodsManagerDetailBinding;
 import com.nong.nongo2o.entity.domain.Goods;
+import com.nong.nongo2o.module.common.CancelDialogListener;
+import com.nong.nongo2o.module.common.ConfirmDialogListener;
 import com.nong.nongo2o.module.personal.activity.GoodsManagerActivity;
 import com.nong.nongo2o.module.personal.viewModel.GoodsManagerDetailVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
@@ -68,5 +71,24 @@ public class GoodsManagerDetailFragment extends RxFragment {
         binding.rvDesc.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rvDesc.addItemDecoration(new LinearItemDecoration(getActivity(), LinearLayoutManager.VERTICAL, R.drawable.shape_vertical_divider));
         binding.rvDesc.setNestedScrollingEnabled(false);
+    }
+
+    /**
+     * 操作确认框
+     */
+    public void showConfirmDialog(String content, ConfirmDialogListener confirm, CancelDialogListener cancel) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle("提示")
+                .setMessage(content)
+                .setCancelable(false)
+                .setNegativeButton("取消", (dialog, which) -> {
+                    dialog.dismiss();
+                    if (cancel != null) cancel.onCancel();
+                })
+                .setPositiveButton("确定", (dialog, which) -> {
+                    dialog.dismiss();
+                    if (confirm != null) confirm.onConfirm();
+                })
+                .show();
     }
 }

@@ -25,6 +25,7 @@ public class DynamicListFragment extends RxFragment {
 
     private FragmentDynamicListBinding binding;
     private DynamicListVM vm;
+    private int status;
 
     private LocalBroadcastManager lbm;
 
@@ -39,7 +40,7 @@ public class DynamicListFragment extends RxFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int status = getArguments().getInt("status");
+        status = getArguments().getInt("status");
         if (vm == null) {
             vm = new DynamicListVM(this, status);
         }
@@ -69,6 +70,7 @@ public class DynamicListFragment extends RxFragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction("loginSuccess");
         filter.addAction("refreshDynamicList");
+        if (status == DynamicFragment.DYNAMIC_FOCUS) filter.addAction("refreshFocus");
         lbm.registerReceiver(loginReceiver, filter);
     }
 

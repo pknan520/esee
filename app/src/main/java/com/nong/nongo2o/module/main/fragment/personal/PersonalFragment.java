@@ -56,6 +56,7 @@ public class PersonalFragment extends RxFragment {
     private void initView() {
         binding.tvName.getPaint().setFakeBoldText(true);
         binding.tvBalance.getPaint().setFakeBoldText(true);
+        binding.tvNowAsset.getPaint().setFakeBoldText(true);
     }
 
     public void startWaveAnim() {
@@ -104,5 +105,13 @@ public class PersonalFragment extends RxFragment {
     public void onDestroy() {
         super.onDestroy();
         lbm.unregisterReceiver(loginReceiver);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && vm != null) {
+            vm.getPersonalInfo();
+        }
     }
 }

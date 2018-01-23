@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.bingoogolapple.badgeview.BGABadgeLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll_tab"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:badge_gravity="rightTop"
+    app:badge_horizontalMargin="2dp"
+    app:badge_padding="4dp"
+    app:badge_verticalMargin="2dp">
 
     <ImageView
         android:id="@+id/iv"
@@ -18,4 +24,4 @@
         android:textColor="@drawable/selector_main_tab_text"
         android:textSize="@dimen/text_normal_small" />
 
-</LinearLayout>
+</cn.bingoogolapple.badgeview.BGABadgeLinearLayout>

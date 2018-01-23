@@ -12,8 +12,11 @@ import android.widget.Toast;
 
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
+import com.nong.nongo2o.R;
+import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.module.personal.fragment.InviteFragment;
+import com.nong.nongo2o.module.personal.fragment.MyInvitersFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -107,5 +110,13 @@ public class InviteVM implements ViewModel {
                     UserInfo.getInstance().setInviter(inviter.get());
                     Toast.makeText(fragment.getActivity(), "绑定邀请码成功", Toast.LENGTH_SHORT).show();
                 }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
+    });
+
+    /**
+     * 查看我邀请的人
+     */
+    public final ReplyCommand checkMyInviters = new ReplyCommand(() -> {
+        ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
+                MyInvitersFragment.newInstance(), MyInvitersFragment.TAG);
     });
 }

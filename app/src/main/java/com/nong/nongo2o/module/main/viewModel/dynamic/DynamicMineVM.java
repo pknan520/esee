@@ -191,11 +191,17 @@ public class DynamicMineVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    if (force) itemDynamicMineVMs.clear();
-                    total = resp.getTotal();
+                    if (force) {
+                        itemDynamicMineVMs.clear();
+                        total = resp.getTotal();
+                    }
                     dynamicNum.set(total);
-                    for (Moment dynamic : resp.getRows()) {
-                        itemDynamicMineVMs.add(new ItemDynamicMineVM(dynamic));
+                    for (Moment moment : resp.getRows()) {
+                        if (moment.getUser() != null && moment.getHeaderImg().length() > 2 && moment.getContent().length() > 2) {
+                            itemDynamicMineVMs.add(new ItemDynamicMineVM(moment));
+                        } else {
+                            total -= 1;
+                        }
                     }
                     viewStyle.isEmpty.set(itemDynamicMineVMs.isEmpty());
                 }, throwable -> {

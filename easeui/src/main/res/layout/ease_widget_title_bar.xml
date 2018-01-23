@@ -27,13 +27,14 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textColor="#ffffff"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
     <RelativeLayout
         android:id="@+id/right_layout"
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
+        android:visibility="gone"
         android:background="@drawable/ease_common_tab_bg" >
 
         <ImageView

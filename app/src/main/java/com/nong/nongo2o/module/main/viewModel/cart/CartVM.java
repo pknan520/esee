@@ -208,6 +208,13 @@ public class CartVM implements ViewModel {
     public final ReplyCommand submitOrderClick = new ReplyCommand(() -> {
         ArrayList<OrderDetail> orderDetails = createOrderDetails();
         if (orderDetails != null && !orderDetails.isEmpty()) {
+            for (OrderDetail detail : orderDetails) {
+                if (detail.getGoodsSpec().getQuantity() <= 0) {
+                    Toast.makeText(fragment.getActivity(), "所选商品中有库存为0，请重新选择", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
             fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), createOrderDetails(), null, false));
             fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
         } else {
@@ -324,7 +331,7 @@ public class CartVM implements ViewModel {
             private GoodsSpec currentSpec;
 
             @DrawableRes
-            public final int goodsImgPlaceHolder = R.mipmap.ic_launcher;
+            public final int goodsImgPlaceHolder = R.mipmap.picture_default;
             public final ObservableField<String> goodsImgUri = new ObservableField<>();
             public final ObservableField<String> goodsName = new ObservableField<>();
             public final ObservableField<String> goodsSummary = new ObservableField<>();
@@ -348,6 +355,7 @@ public class CartVM implements ViewModel {
             public class ViewStyle {
                 public final ObservableBoolean isSelect = new ObservableBoolean(false);
                 public final ObservableBoolean isEdit = new ObservableBoolean(false);
+                public final ObservableBoolean isPast = new ObservableBoolean(false);
             }
 
             /**
@@ -360,6 +368,7 @@ public class CartVM implements ViewModel {
             private void refreshData() {
                 if (cart != null && cart.getGoods() != null) {
                     Goods good = cart.getGoods();
+                    if (good.getStatus() == 1) mViewStyle.isPast.set(true);
                     currentSpec = cart.getGoodsSpec();
                     if (!TextUtils.isEmpty(good.getCovers())) {
                         List<String> covers = new Gson().fromJson(good.getCovers(), new TypeToken<List<String>>() {
@@ -382,19 +391,21 @@ public class CartVM implements ViewModel {
             public final ReplyCommand checkClick = new ReplyCommand(new Action() {
                 @Override
                 public void run() throws Exception {
-                    mViewStyle.isSelect.set(!mViewStyle.isSelect.get());
-                    if (mViewStyle.isSelect.get()) {
-                        for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
-                            if (itemMerchantVM != merchantVM) {
-                                for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
-                                    itemGoodsVM.mViewStyle.isSelect.set(false);
+                    if (!mViewStyle.isPast.get()) {
+                        mViewStyle.isSelect.set(!mViewStyle.isSelect.get());
+                        if (mViewStyle.isSelect.get()) {
+                            for (ItemCartMerchantVM itemMerchantVM : itemCartMerchantVMs) {
+                                if (itemMerchantVM != merchantVM) {
+                                    for (ItemCartMerchantGoodsVM itemGoodsVM : itemMerchantVM.itemCartMerchantGoodsVMs) {
+                                        itemGoodsVM.mViewStyle.isSelect.set(false);
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    totalPrice.set(calculatePrice());
-                    transFee.set(calculateTransFee());
+                        totalPrice.set(calculatePrice());
+                        transFee.set(calculateTransFee());
+                    }
                 }
             });
 
@@ -406,23 +417,27 @@ public class CartVM implements ViewModel {
              * 查看商品详情
              */
             public final ReplyCommand detailClick = new ReplyCommand(() -> {
-                fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity(), cart.getGoods()));
-                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                if (!mViewStyle.isPast.get()) {
+                    fragment.getActivity().startActivity(MerchantGoodsActivity.newIntent(fragment.getActivity(), cart.getGoods()));
+                    fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                }
             });
 
             /**
              * 增1
              */
             public final ReplyCommand addOneClick = new ReplyCommand(() -> {
-                goodsNum.set(goodsNum.get() + 1);
-                cart.setGoodsNum(goodsNum.get());
+                if (!mViewStyle.isPast.get()) {
+                    goodsNum.set(goodsNum.get() + 1);
+                    cart.setGoodsNum(goodsNum.get());
+                }
             });
 
             /**
              * 减1
              */
             public final ReplyCommand subtractOneClick = new ReplyCommand(() -> {
-                if (goodsNum.get() > 1) {
+                if (goodsNum.get() > 1 && !mViewStyle.isPast.get()) {
                     goodsNum.set(goodsNum.get() - 1);
                     cart.setGoodsNum(goodsNum.get());
                 }
@@ -432,11 +447,13 @@ public class CartVM implements ViewModel {
              * 选择规格
              */
             public ReplyCommand standardClick = new ReplyCommand(() -> {
-                fragment.showPopupStandard(cart, spec -> {
-                    cart.setSpecCode(spec.getSpecCode());
-                    cart.setGoodsSpec(spec);
-                    refreshData();
-                });
+                if (!mViewStyle.isPast.get()) {
+                    fragment.showPopupStandard(cart, spec -> {
+                        cart.setSpecCode(spec.getSpecCode());
+                        cart.setGoodsSpec(spec);
+                        refreshData();
+                    });
+                }
             });
 
             /**

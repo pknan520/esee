@@ -58,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/vertical_space"
                 android:hint="请输入真实姓名"
+                app:isEditable="@{!viewModel.viewStyle.isAuthing}"
                 android:text="@={viewModel.name}" />
 
         </LinearLayout>
@@ -87,6 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/vertical_space"
                 android:hint="请输入身份证号码"
+                app:isEditable="@{!viewModel.viewStyle.isAuthing}"
                 android:text="@={viewModel.idNo}" />
 
         </LinearLayout>
@@ -115,7 +117,7 @@
                 android:paddingEnd="50dp"
                 android:paddingStart="50dp">
 
-                <com.facebook.drawee.view.SimpleDraweeView
+                <ImageView
                     android:layout_width="0dp"
                     android:layout_height="75dp"
                     android:layout_weight="1"
@@ -123,9 +125,9 @@
                     android:scaleType="fitXY"
                     app:clickCommand="@{viewModel.idFaceClick}"
                     app:placeholderImageRes="@{viewModel.idPicPlaceHolder1}"
-                    app:uri="@{viewModel.idPic1}" />
+                    app:glideUri="@{viewModel.idPic1}" />
 
-                <com.facebook.drawee.view.SimpleDraweeView
+                <ImageView
                     android:layout_width="0dp"
                     android:layout_height="75dp"
                     android:layout_marginStart="20dp"
@@ -134,7 +136,7 @@
                     android:scaleType="fitXY"
                     app:clickCommand="@{viewModel.idReverssideClick}"
                     app:placeholderImageRes="@{viewModel.idPicPlaceHolder2}"
-                    app:uri="@{viewModel.idPic2}" />
+                    app:glideUri="@{viewModel.idPic2}" />
 
             </LinearLayout>
 

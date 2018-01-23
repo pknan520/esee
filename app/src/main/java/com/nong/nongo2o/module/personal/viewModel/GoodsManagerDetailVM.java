@@ -20,6 +20,9 @@ import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.entity.domain.ImgTextContent;
+import com.nong.nongo2o.entity.domain.Moment;
+import com.nong.nongo2o.module.common.CancelDialogListener;
+import com.nong.nongo2o.module.common.ConfirmDialogListener;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -278,10 +281,12 @@ public class GoodsManagerDetailVM implements ViewModel {
 
         List<GoodsSpec> specList = new ArrayList<>();
         for (ItemStandardVM itemStandardVM : itemStandardVMs) {
-            GoodsSpec spec = new GoodsSpec();
+            GoodsSpec spec = itemStandardVM.getSpec();
             spec.setTitle(itemStandardVM.standard.get());
             spec.setPrice(new BigDecimal(itemStandardVM.price.get()));
             spec.setQuantity(Integer.parseInt(itemStandardVM.num.get()));
+            spec.setCreateTime(null);
+            spec.setUpdateTime(null);
             specList.add(spec);
         }
 
@@ -312,12 +317,15 @@ public class GoodsManagerDetailVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
-                        Toast.makeText(fragment.getActivity(), "添加商品成功", Toast.LENGTH_SHORT).show();
-                        sendUpdateBroadcast();
-                    }, throwable -> {
-                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         ((RxBaseActivity) fragment.getActivity()).dismissLoading();
-                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
+                        Toast.makeText(fragment.getActivity(), "添加商品成功", Toast.LENGTH_SHORT).show();
+                        good.setGoodsCode(s);
+                        fragment.showConfirmDialog("是否同步发表动态？"
+                                , () -> createMoment(good), this::sendUpdateBroadcast);
+                    }, throwable -> {
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         } else {
             RetrofitHelper.getGoodsAPI()
                     .updateUserGoods(requestBody)
@@ -325,12 +333,13 @@ public class GoodsManagerDetailVM implements ViewModel {
                     .map(new ApiResponseFunc<>())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
                         Toast.makeText(fragment.getActivity(), "更新商品成功", Toast.LENGTH_SHORT).show();
                         sendUpdateBroadcast();
                     }, throwable -> {
-                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         ((RxBaseActivity) fragment.getActivity()).dismissLoading();
-                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         }
     }
 
@@ -341,6 +350,37 @@ public class GoodsManagerDetailVM implements ViewModel {
         Intent intent = new Intent("goodsManagerUpdate");
         LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
         fragment.getActivity().getFragmentManager().popBackStack();
+    }
+
+    /**
+     * 发表动态
+     */
+    private void createMoment(Goods goods) {
+        ((RxBaseActivity) fragment.getActivity()).showLoading();
+        Moment moment = new Moment();
+
+        moment.setHeaderImg(goods.getCovers());
+        moment.setTitle("我新上架了一个好东西，快来看看哦");
+        moment.setContent(goods.getDetail());
+        moment.setGoodsCode(goods.getGoodsCode());
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(moment));
+        Intent intent = new Intent();
+
+        RetrofitHelper.getDynamicAPI()
+                .postMoment(requestBody)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    intent.setAction("refreshDynamicList");
+                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+                    sendUpdateBroadcast();
+                }, throwable -> {
+                    ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
     }
 
     /**
@@ -385,6 +425,11 @@ public class GoodsManagerDetailVM implements ViewModel {
             }
             itemStandardVMs.remove(ItemStandardVM.this);
         });
+
+        public GoodsSpec getSpec() {
+            if (spec == null) spec = new GoodsSpec();
+            return spec;
+        }
     }
 
     /**

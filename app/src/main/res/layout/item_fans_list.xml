@@ -18,11 +18,11 @@
         app:clickCommand="@{viewModel.personalHomeClick}"
         android:padding="@dimen/item_padding">
 
-        <com.facebook.drawee.view.SimpleDraweeView
+        <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:placeholderImageRes="@{viewModel.headPlaceHolder}"
-            app:uri="@{viewModel.headUri}" />
+            app:glideUri="@{viewModel.headUri}" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -42,6 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.summary}"
+                android:maxLines="2"
                 android:textColor="@color/colorComplementaryText"
                 android:textSize="@dimen/text_normal" />
 

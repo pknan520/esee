@@ -115,6 +115,7 @@ public class OrderEvaluateVM implements ViewModel {
             request.setOrderCode(order.getOrderCode());
             request.setUserCode(order.getUserCode());
             request.setOrderStatus(newStatus);
+            request.setPickSelf(order.getPickSelf());
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
                     new Gson().toJson(request));

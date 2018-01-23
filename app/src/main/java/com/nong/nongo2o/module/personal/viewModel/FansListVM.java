@@ -89,6 +89,8 @@ public class FansListVM implements ViewModel {
             } else {
                 searchFans(itemFansListVMs.size() / pageSize + 1, false);
             }
+        } else {
+            Toast.makeText(fragment.getActivity(), "已经到底了^.^", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -104,10 +106,16 @@ public class FansListVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    if (force) itemFansListVMs.clear();
-                    total = resp.getTotal();
+                    if (force) {
+                        itemFansListVMs.clear();
+                        total = resp.getTotal();
+                    }
                     for (Follow follow : resp.getRows()) {
-                        itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FOCUS));
+                        if (follow.getTarget() != null) {
+                            itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FOCUS));
+                        } else {
+                            total -= 1;
+                        }
                     }
                     viewStyle.isEmpty.set(itemFansListVMs.isEmpty());
                 }, throwable -> {
@@ -128,10 +136,16 @@ public class FansListVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resp -> {
-                    if (force) itemFansListVMs.clear();
-                    total = resp.getTotal();
+                    if (force) {
+                        itemFansListVMs.clear();
+                        total = resp.getTotal();
+                    }
                     for (Follow follow : resp.getRows()) {
-                        itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FANS));
+                        if (follow.getUser() != null) {
+                            itemFansListVMs.add(new ItemFansListVM(fragment, follow, FansMgrActivity.MY_FANS));
+                        } else {
+                            total -= 1;
+                        }
                     }
                     viewStyle.isEmpty.set(itemFansListVMs.isEmpty());
                 }, throwable -> {

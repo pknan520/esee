@@ -11,11 +11,13 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.domain.App;
 import com.nong.nongo2o.network.RetrofitHelper;
+import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.AppUtils;
 
@@ -165,13 +167,13 @@ public class VersionUpdateService extends Service {
     }
 
     public void doDownLoadTask() {
-        if (mNotificationManager == null)
-            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        starDownLoadForground();
-
-        notificationUpdaterThread = new NotificationUpdaterThread();
-        notificationUpdaterThread.start();
+//        if (mNotificationManager == null)
+//            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//
+//        starDownLoadForground();
+//
+//        notificationUpdaterThread = new NotificationUpdaterThread();
+//        notificationUpdaterThread.start();
 
         String path = Environment.getExternalStorageDirectory().getPath() + "/download";
         String fileName = "ease.apk";
@@ -182,7 +184,10 @@ public class VersionUpdateService extends Service {
             downLoadListener.begain();
         }
 
-        ProgressManager.getInstance().addResponseListener(appInfo.getUrl(), new ProgressListener() {
+        String downloadUrl = appInfo.getUrl();
+        Log.d("Update", "downloadUrl: " + downloadUrl);
+
+        ProgressManager.getInstance().addResponseListener(downloadUrl, new ProgressListener() {
             @Override
             public void onProgress(ProgressInfo progressInfo) {
                 if (downLoadListener != null) {
@@ -198,10 +203,11 @@ public class VersionUpdateService extends Service {
         });
 
         RetrofitHelper.getFileAPI()
-                .downloadAPK(appInfo.getUrl())
+                .downloadAPK(downloadUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .doOnNext(responseBody -> {
+                    Log.e("Update", "ResponseBody Size: " + responseBody.contentLength());
                     InputStream is = responseBody.byteStream();
 
                     File file = new File(path);

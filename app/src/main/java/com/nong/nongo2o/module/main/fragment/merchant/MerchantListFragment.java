@@ -26,6 +26,7 @@ public class MerchantListFragment extends RxFragment {
 
     private FragmentMerchantListBinding binding;
     private MerchantListVM vm;
+    private int type;
 
     private LocalBroadcastManager lbm;
 
@@ -40,8 +41,9 @@ public class MerchantListFragment extends RxFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        type = getArguments().getInt("type");
         if (vm == null) {
-            vm = new MerchantListVM(this, getArguments().getInt("type"));
+            vm = new MerchantListVM(this, type);
         }
         registerReceiver();
     }
@@ -71,6 +73,7 @@ public class MerchantListFragment extends RxFragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction("loginSuccess");
         filter.addAction("refreshMerchantList");
+        if (type == MerchantFragment.MERCHANT_FOCUS) filter.addAction("refreshFocus");
         lbm.registerReceiver(loginReceiver, filter);
     }
 

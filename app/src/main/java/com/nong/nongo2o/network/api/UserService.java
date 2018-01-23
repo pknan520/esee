@@ -232,4 +232,12 @@ public interface UserService {
     @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
     @PUT("user/invitecode")
     Observable<ApiResponse<String>> bindInviteCode(@Query("inviteCode") String inviteCode);
+
+    /**
+     * 获取我邀请的人
+     * @param myInviterCode 我的邀请码
+     * @return
+     */
+    @GET("user/invites")
+    Observable<ApiResponse<ApiListResponse<SimpleUser>>> getMyInviters(@Query("inviter") String myInviterCode, @Query("page") int page, @Query("pageSize") int pageSize);
 }

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hyphenate.chat.EMClient;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.databinding.ActivityMainBinding;
@@ -21,9 +22,12 @@ import com.nong.nongo2o.module.main.fragment.merchant.MerchantFragment;
 import com.nong.nongo2o.module.main.fragment.message.MessageListFragment;
 import com.nong.nongo2o.module.main.fragment.personal.PersonalFragment;
 import com.nong.nongo2o.module.main.viewModel.MainVM;
+import com.nong.nongo2o.uils.imUtils.IMUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.bingoogolapple.badgeview.BGABadgeLinearLayout;
 
 public class MainActivity extends RxBaseActivity {
 
@@ -32,6 +36,7 @@ public class MainActivity extends RxBaseActivity {
             R.drawable.selector_main_tap_message, R.drawable.selector_main_tab_cart, R.drawable.selector_main_tab_personal};
 
     private ActivityMainBinding binding;
+    private MainVM vm;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -41,9 +46,9 @@ public class MainActivity extends RxBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        MainVM mainVM = new MainVM(this);
+        vm = new MainVM(this);
         initView(binding);
-        binding.setViewModel(mainVM);
+        binding.setViewModel(vm);
     }
 
     private void initView(ActivityMainBinding binding) {
@@ -72,6 +77,8 @@ public class MainActivity extends RxBaseActivity {
                 }
             }
         }
+
+        if (vm != null) vm.checkMessage();
 
 //        binding.tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 //            @Override
@@ -104,7 +111,20 @@ public class MainActivity extends RxBaseActivity {
 //        });
     }
 
+    public void showMessagePoint() {
+        if (binding.tab.getTabAt(2) != null) {
+            ((BGABadgeLinearLayout) binding.tab.getTabAt(2).getCustomView().findViewById(R.id.ll_tab)).showCirclePointBadge();
+        }
+    }
+
+    public void hideMessagePoint() {
+        if (binding.tab.getTabAt(2) != null) {
+            ((BGABadgeLinearLayout) binding.tab.getTabAt(2).getCustomView().findViewById(R.id.ll_tab)).hiddenBadge();
+        }
+    }
+
     private long exitTime = 0;
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK

@@ -32,13 +32,6 @@ import io.reactivex.functions.Consumer;
 public class LoginActivity extends RxBaseActivity {
 
     private ActivityLoginBinding binding;
-    //  权限数组
-    private String[] permissions = new String[] {
-            Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-    private List<String> permissionList = new ArrayList<>();
-    private boolean mShowRequestPermission = true;//用户是否禁止权限
 
     public static Intent newIntent(Context context, boolean canClose) {
         Intent intent = new Intent(context, LoginActivity.class);
@@ -50,24 +43,8 @@ public class LoginActivity extends RxBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
-        checkPermission();
-        initView();
-    }
 
-    private void checkPermission() {
-        //  判断哪些权限未授予
-        new RxPermissions(this)
-                .request(permissions)
-                .subscribe(granted -> {
-                    if (granted) {
-                        //  复制数据表
-                        if (!SPUtils.contains(getApplicationContext(), "city_database") || !(boolean) SPUtils.get(getApplicationContext(), "city_database", false)) {
-                            DbUtils.copyDBToDatabases(getApplicationContext());
-                        }
-                    } else {
-                        Toast.makeText(this, "拒绝权限将导致部分功能无法正常使用", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        initView();
     }
 
     private void initView() {
@@ -78,32 +55,5 @@ public class LoginActivity extends RxBaseActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.anim_right_out);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1:
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                        //判断是否勾选禁止后不再询问
-                        boolean showRequestPermission = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i]);
-                        if (showRequestPermission) {
-                            //  重新申请权限
-                            checkPermission();
-                            return;
-                        } else {
-                            //  已经禁止
-                            mShowRequestPermission = false;
-                        }
-                    }
-                }
-                // TODO: 2017-8-23 权限授予完毕
-                Toast.makeText(this, "权限都授予完毕", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                break;
-        }
     }
 }

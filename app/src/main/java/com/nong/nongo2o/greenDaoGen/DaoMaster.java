@@ -45,8 +45,8 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(CityDao.class);
         registerDaoClass(EaseUserInfoDao.class);
+        registerDaoClass(CityDao.class);
     }
 
     public DaoSession newSession() {

@@ -165,7 +165,7 @@
 
                 <Button
                     android:id="@+id/btn_invite"
-                    android:layout_width="38dp"
+                    android:layout_width="58dp"
                     android:layout_height="38dp"
                     android:background="@{viewModel.viewStyle.confirmClickable ? @drawable/shape_circle_green : @drawable/shape_circle_grey}"
                     android:clickable="@{viewModel.viewStyle.confirmClickable}"
@@ -189,7 +189,8 @@
                 style="@style/SimpleOrangeButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="查看我邀请的人" />
+                android:text="查看我邀请的人"
+                app:clickCommand="@{viewModel.checkMyInviters}"/>
 
         </LinearLayout>
 

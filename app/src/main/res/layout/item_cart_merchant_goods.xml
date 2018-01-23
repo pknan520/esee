@@ -11,164 +11,188 @@
         <import type="android.view.View" />
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            app:clickCommand="@{viewModel.detailClick}"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <com.facebook.drawee.view.SimpleDraweeView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/item_padding"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                app:placeholderImageRes="@{viewModel.mViewStyle.isSelect ? viewModel.isSelect : viewModel.notSelect}"
-                app:clickCommand="@{viewModel.checkClick}"/>
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:clickCommand="@{viewModel.detailClick}">
 
-            <com.facebook.drawee.view.SimpleDraweeView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_margin="10dp"
-                app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}"
-                app:uri="@{viewModel.goodsImgUri}" />
-            <!--正常模式-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:visibility="@{viewModel.mViewStyle.isEdit ? View.GONE : View.VISIBLE}">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.goodsName}"
-                        android:textColor="@color/colorText"
-                        android:textSize="@dimen/text_normal" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.goodsSummary}"
-                        android:textColor="@color/colorComplementaryText"
-                        android:textSize="@dimen/text_normal" />
-
-                </LinearLayout>
-
-                <RelativeLayout
+                <com.facebook.drawee.view.SimpleDraweeView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp">
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingEnd="@dimen/item_padding"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    app:clickCommand="@{viewModel.checkClick}"
+                    app:placeholderImageRes="@{viewModel.mViewStyle.isSelect ? viewModel.isSelect : viewModel.notSelect}" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{@string/rmb + String.valueOf(viewModel.goodsPrice)}"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="@dimen/text_normal" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:text="@{`x ` + String.valueOf(viewModel.goodsNum)}"
-                        android:textColor="@color/colorComplementaryText"
-                        android:textSize="@dimen/text_normal_small" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
-            <!--编辑模式-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{viewModel.mViewStyle.isEdit ? View.VISIBLE : View.GONE}">
-
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_margin="10dp"
+                    android:scaleType="centerCrop"
+                    app:glideUri="@{viewModel.goodsImgUri}"
+                    app:placeholderImageRes="@{viewModel.goodsImgPlaceHolder}" />
+                <!--正常模式-->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/border_gray"
-                    android:divider="@drawable/shape_vertical_divider"
-                    android:orientation="vertical"
-                    android:showDividers="middle">
+                    android:padding="10dp"
+                    android:visibility="@{viewModel.mViewStyle.isEdit ? View.GONE : View.VISIBLE}">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:divider="@drawable/shape_horizontal_divider"
-                        android:orientation="horizontal"
-                        android:showDividers="middle">
-
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:scaleType="centerInside"
-                            android:src="@mipmap/number_minus"
-                            app:clickCommand="@{viewModel.subtractOneClick}"/>
+                        android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="@{String.valueOf(viewModel.goodsNum)}"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.goodsName}"
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/text_normal" />
 
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.goodsSummary}"
+                            android:textColor="@color/colorComplementaryText"
+                            android:textSize="@dimen/text_normal" />
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{@string/rmb + String.valueOf(viewModel.goodsPrice)}"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="@dimen/text_normal" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:text="@{`x ` + String.valueOf(viewModel.goodsNum)}"
+                            android:textColor="@color/colorComplementaryText"
+                            android:textSize="@dimen/text_normal_small" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+                <!--编辑模式-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="@{viewModel.mViewStyle.isEdit ? View.VISIBLE : View.GONE}">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/border_gray"
+                        android:divider="@drawable/shape_vertical_divider"
+                        android:orientation="vertical"
+                        android:showDividers="middle">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
                             android:layout_weight="1"
-                            android:scaleType="centerInside"
-                            android:src="@mipmap/number_add"
-                            app:clickCommand="@{viewModel.addOneClick}"/>
+                            android:divider="@drawable/shape_horizontal_divider"
+                            android:orientation="horizontal"
+                            android:showDividers="middle">
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:scaleType="centerInside"
+                                android:src="@mipmap/number_minus"
+                                app:clickCommand="@{viewModel.subtractOneClick}" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@{String.valueOf(viewModel.goodsNum)}" />
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:scaleType="centerInside"
+                                android:src="@mipmap/number_add"
+                                app:clickCommand="@{viewModel.addOneClick}" />
+
+                        </LinearLayout>
+
+                        <Button
+                            style="@style/SimpleTextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.standardStr}"
+                            app:clickCommand="@{viewModel.standardClick}" />
 
                     </LinearLayout>
 
                     <Button
-                        style="@style/SimpleTextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.standardStr}"
-                        app:clickCommand="@{viewModel.standardClick}"/>
+                        style="@style/SimpleAccentButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:padding="20dp"
+                        android:text="删除"
+                        app:clickCommand="@{viewModel.deleteClick}" />
 
                 </LinearLayout>
 
-                <Button
-                    style="@style/SimpleAccentButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:padding="20dp"
-                    android:text="删除"
-                    app:clickCommand="@{viewModel.deleteClick}"/>
-
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/colorDivider" />
 
         </LinearLayout>
 
-        <View
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/colorDivider" />
+            android:layout_height="90dp"
+            android:background="#33000000"
+            android:visibility="@{viewModel.mViewStyle.isPast ? View.VISIBLE : View.GONE}">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="@bool/gallery_default_ucrop_show_crop_frame"
+                android:text="—这个商品已过期—"
+                android:textColor="@android:color/white"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
 
 </layout>

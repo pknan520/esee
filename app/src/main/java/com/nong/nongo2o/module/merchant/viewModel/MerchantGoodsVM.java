@@ -256,6 +256,12 @@ public class MerchantGoodsVM implements ViewModel {
             Toast.makeText(fragment.getActivity(), "请选择规格", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if (good.getGoodsSpecs().get(currentSpecPos).getQuantity() <= 0) {
+            Toast.makeText(fragment.getActivity(), "所选规格库存为0，请耐心等待商家补货", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         postCart(createCartBody());
     });
 
@@ -303,7 +309,7 @@ public class MerchantGoodsVM implements ViewModel {
 
         public WxShareDialogVM() {
             WXWebpageObject webpage = new WXWebpageObject();
-            webpage.webpageUrl = "http://www.exhua.net/wwwd/good-detail.html?goodsCode=" + good.getGoodsCode();
+            webpage.webpageUrl = "http://www.exhua.net/www/m/good-detail.html?goodsCode=" + good.getGoodsCode();
 
             WXMediaMessage msg = new WXMediaMessage(webpage);
             msg.title = "小背篓|" + good.getTitle();

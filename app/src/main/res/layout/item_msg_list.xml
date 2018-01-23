@@ -62,6 +62,7 @@
                 android:text="@{viewModel.lastMsg}"
                 android:textColor="@color/colorComplementaryText"
                 android:textSize="@dimen/text_normal"
+                android:maxLines="1"
                 tools:text="宝宝心里难受，但宝宝不说~" />
 
         </RelativeLayout>

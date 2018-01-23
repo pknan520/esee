@@ -235,9 +235,8 @@ public class GoodsManagerVM implements ViewModel {
                     case "上架":
                     case "下架":
                         Goods updateGoods = new Goods();
-                        updateGoods.setGoodsCode(goods.getGoodsCode());
                         updateGoods.setId(goods.getId());
-                        updateGoods.setGoodsSpecs(goods.getGoodsSpecs());
+                        updateGoods.setGoodsCode(goods.getGoodsCode());
                         if (status == 1) {
                             updateGoods.setGoodsStatus(2);
                         } else {

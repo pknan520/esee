@@ -108,7 +108,7 @@ public class ItemMerchantListVM implements ViewModel {
         private Goods good;
 
         @DrawableRes
-        public final int goodsImgPlaceHolder = R.mipmap.ic_launcher;
+        public final int goodsImgPlaceHolder = R.mipmap.picture_default;
         public final ObservableField<String> goodsImg = new ObservableField<>();
         public final ObservableField<String> goodsName = new ObservableField<>();
         public final ObservableField<BigDecimal> goodsPrice = new ObservableField<>();

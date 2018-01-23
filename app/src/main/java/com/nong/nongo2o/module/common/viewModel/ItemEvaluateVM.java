@@ -3,6 +3,7 @@ package com.nong.nongo2o.module.common.viewModel;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.widget.RatingBar;
 
 import com.kelin.mvvmlight.base.ViewModel;
@@ -54,7 +55,7 @@ public class ItemEvaluateVM implements ViewModel {
         rating.set(Float.parseFloat(String.valueOf(comment.getStar())));
         headUri.set(comment.getUser().getAvatar());
         name.set(comment.getUser().getUserNick());
-        content.set(comment.getContent());
+        content.set(TextUtils.isEmpty(comment.getContent()) ? "该买家没有留下评论~" : comment.getContent());
         time.set(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(comment.getCreateTime()));
     }
 }

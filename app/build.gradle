@@ -27,8 +27,8 @@ android {
         applicationId "com.nong.nongo2o"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 1106
-        versionName "1.1.06"
+        versionCode 1204
+        versionName "1.2.04"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -139,6 +139,8 @@ dependencies {
     compile 'cn.yipianfengye.android:zxing-library:2.2'
     //  环信
     compile project(':easeui')
+    //  多状态
+    compile 'com.github.Bakumon:StatusLayoutManager:1.0.1'
 }
 
 greendao {

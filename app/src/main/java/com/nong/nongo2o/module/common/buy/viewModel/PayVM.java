@@ -12,6 +12,7 @@ import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.entity.bean.WechatPayInfo;
 import com.nong.nongo2o.entity.domain.Order;
+import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.entity.request.CreatePaymentRequest;
 import com.nong.nongo2o.module.common.buy.fragment.PayFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
@@ -57,7 +59,15 @@ public class PayVM implements ViewModel {
     /**
      * 支付按钮
      */
-    public final ReplyCommand payClick = new ReplyCommand(this::pay);
+    public final ReplyCommand payClick = new ReplyCommand(() -> {
+        for (OrderDetail detail : order.getOrderDetails()) {
+            if (detail.getGoodsSpec().getQuantity() <= 0) {
+                Toast.makeText(fragment.getActivity(), "所选商品中有库存为0，请重新下单", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        pay();
+    });
 
     private void pay() {
         ((RxBaseActivity) fragment.getActivity()).showLoading();

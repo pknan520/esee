@@ -33,6 +33,7 @@ import com.nong.nongo2o.module.personal.fragment.OrderEvaluateFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.AddressUtils;
+import com.nong.nongo2o.uils.BeanUtils;
 import com.nong.nongo2o.uils.imUtils.IMUtils;
 
 import java.math.BigDecimal;
@@ -53,6 +54,7 @@ public class OrderDetailVM implements ViewModel {
 
     private OrderDetailFragment fragment;
     private Order order;
+    private UpdateOrderRequest request;
     private boolean isMerchantMode;
 
     //  订单状态
@@ -79,11 +81,15 @@ public class OrderDetailVM implements ViewModel {
     //  物流信息
     public final ObservableField<String> exName = new ObservableField<>();
     public final ObservableField<String> exNumber = new ObservableField<>();
+    //  售后信息
+    public final ObservableField<String> afterSaleReason = new ObservableField<>();
+    public final ObservableField<BigDecimal> afterSaleMoney = new ObservableField<>();
     //  物流轨迹
 //    public final ObservableList<ItemTransListVM> itemTransListVMs = new ObservableArrayList<>();
 //    public final ItemBinding<ItemTransListVM> itemTransBinding = ItemBinding.of(BR.viewModel, R.layout.item_trans_list);
     //  按钮
-    public final ObservableField<String> btnStr = new ObservableField<>();
+    public final ObservableField<String> btnL = new ObservableField<>();
+    public final ObservableField<String> btnR = new ObservableField<>();
 
     public OrderDetailVM(OrderDetailFragment fragment, Order order, boolean isMerchantMode) {
         this.fragment = fragment;
@@ -98,6 +104,7 @@ public class OrderDetailVM implements ViewModel {
     public class ViewStyle {
         public final ObservableBoolean btnVisi = new ObservableBoolean(false);
         public final ObservableBoolean showLogisticsInfo = new ObservableBoolean(false);
+        public final ObservableBoolean isSelf = new ObservableBoolean(false);
     }
 
     /**
@@ -105,41 +112,63 @@ public class OrderDetailVM implements ViewModel {
      */
     public void iniData() {
         if (order != null) {
+            request = new UpdateOrderRequest();
+            BeanUtils.Copy(request, order, false);
+
             itemGoodsVMs.clear();
             orderNo.set(order.getOrderCode());
             switch (order.getOrderStatus()) {
                 case -1:
                     orderStatus.set("已取消");
-                    viewStyle.btnVisi.set(false);
                     break;
                 case 0:
-                    orderStatus.set("待支付");  //  支付（用户）
-                    viewStyle.btnVisi.set(!isMerchantMode);
-                    btnStr.set("支付");
+                    orderStatus.set("待支付");
+                    btnL.set("取消订单");
+                    if (!isMerchantMode)
+                        btnR.set("付款");
                     break;
                 case 1:
-                    viewStyle.btnVisi.set(true);
-                    orderStatus.set("待发货");  //  发货（商家）
-                    btnStr.set(isMerchantMode ? "发货" : "申请退款");
+                    orderStatus.set("待发货");
+                    if (isMerchantMode) {
+                        btnL.set("退款");
+                        btnR.set("确认发货");
+                    } else {
+                        btnL.set("申请退款");
+                    }
                     break;
                 case 2:
-                    orderStatus.set("待收货");  //  收货（用户）
-                    viewStyle.btnVisi.set(!isMerchantMode);
-                    btnStr.set("收货");
+                    orderStatus.set("待收货");
+                    if (!isMerchantMode)
+                        btnR.set("确认收货");
                     break;
                 case 3:
-                    orderStatus.set("待评价");  //  评价（用户）
-                    viewStyle.btnVisi.set(!isMerchantMode);
-                    btnStr.set("评价");
+                    orderStatus.set("待评价");
+                    if (!isMerchantMode)
+                        btnR.set("评价订单");
                     break;
                 case 4:
                     orderStatus.set("已完成");
-                    viewStyle.btnVisi.set(false);
+                    if (!isMerchantMode)
+                        btnL.set("售后退款");
+                    break;
+                case 5:
+                    orderStatus.set("退款申请");
+                    if (isMerchantMode) {
+                        btnL.set("驳回申请");
+                        btnR.set("同意申请");
+                    }
+                    break;
+                case 6:
+                    orderStatus.set("退款中");
+                    break;
+                case 7:
+                    orderStatus.set("已退款");
                     break;
             }
 
             if (order.getOrderStatus() > 1) {
                 viewStyle.showLogisticsInfo.set(true);
+                viewStyle.isSelf.set(order.getPickSelf() == 1);
                 exName.set(order.getExName());
                 exNumber.set(order.getExNumber());
             }
@@ -154,10 +183,20 @@ public class OrderDetailVM implements ViewModel {
                 receiveAddr.set(order.getConsigneeAddress());
             }
 
-            if (order.getSaleUser() != null) {
-                merchantHeadUri.set(order.getSaleUser().getAvatar());
-                name.set(order.getSaleUser().getUserNick());
-                summary.set(order.getSaleUser().getProfile());
+            if (isMerchantMode) {
+                //  商家看买家信息
+                if (order.getUser() != null) {
+                    merchantHeadUri.set(order.getUser().getAvatar());
+                    name.set(order.getUser().getUserNick());
+                    summary.set(order.getUser().getProfile());
+                }
+            } else {
+                //  买家看商家信息
+                if (order.getSaleUser() != null) {
+                    merchantHeadUri.set(order.getSaleUser().getAvatar());
+                    name.set(order.getSaleUser().getUserNick());
+                    summary.set(order.getSaleUser().getProfile());
+                }
             }
 
             BigDecimal total = new BigDecimal(0);
@@ -177,6 +216,12 @@ public class OrderDetailVM implements ViewModel {
             orderInfo.set("共" + goodsNum + "件，合计¥" + total.add(freight) + "（含运费¥" + freight + "）");
             moneyInfo.set("应收：¥" + total.add(freight));
 
+            if (isMerchantMode && !TextUtils.isEmpty(order.getApplyReason())) {
+                afterSaleReason.set("退款原因：" + order.getApplyReason());
+            } else if (!isMerchantMode && !TextUtils.isEmpty(order.getAuditInfo())) {
+                afterSaleReason.set("商家审核：" + order.getAuditInfo());
+            }
+            afterSaleMoney.set(order.getRefundAmount());
         }
     }
 
@@ -189,10 +234,10 @@ public class OrderDetailVM implements ViewModel {
     });
 
     /**
-     * 跳转商家主页
+     * 跳转个人主页
      */
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
-        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), order.getSaleUser()));
+        fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), isMerchantMode ? order.getUser() : order.getSaleUser()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
@@ -202,7 +247,7 @@ public class OrderDetailVM implements ViewModel {
     public final ReplyCommand contactClick = new ReplyCommand(() -> {
         IMUtils.checkIMLogin(isSuccess -> {
             if (isSuccess) {
-                String userName = order.getSaleUser().getId();
+                String userName = isMerchantMode ? order.getUser().getId() : order.getSaleUser().getId();
                 if (userName.equals(EMClient.getInstance().getCurrentUser())) {
                     Toast.makeText(fragment.getActivity(), "您不能自言自语了啦^.^", Toast.LENGTH_SHORT).show();
                     return;
@@ -219,89 +264,94 @@ public class OrderDetailVM implements ViewModel {
     });
 
     /**
-     * 操作按钮点击事件
+     * 左边按钮
      */
-    public final ReplyCommand operateClick = new ReplyCommand(() -> {
+    public final ReplyCommand lClick = new ReplyCommand(() -> {
         switch (order.getOrderStatus()) {
             case 0:
-                //  支付（用户）
-                fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), null, order, true));
-                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                //  both：取消订单
+                fragment.showConfirmDialog("确认取消订单？", () -> {
+                    changeOrderStatus(-1);
+                });
                 break;
             case 1:
-                //  发货（商家）
-                if (isMerchantMode) {
-                    send();
-                } else {
-                    refund();
-                }
+                //  买家：申请退款；商家：直接退款
+                if (isMerchantMode)
+                    fragment.showConfirmDialog("确认退款至买家？", () -> {
+                        refund("商家退款", order.getTotalPrice());
+                    });
+                else
+                    fragment.showRefundDialog(order, false, false, (reason, money) -> {
+                        applyRefund(reason);
+                    });
                 break;
-            case 2:
-                //  收货（用户）
-                receive();
+            case 4:
+                //  买家：售后退款
+                fragment.showRefundDialog(order, isMerchantMode, false, (reason, money) -> {
+                    applyRefund(reason);
+                });
                 break;
-            case 3:
-                //  评价（用户）
-                ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment, OrderEvaluateFragment.newInstance(order), OrderEvaluateFragment.TAG);
+            case 5:
+                //  商家：驳回退款
+                fragment.showRefundDialog(order, isMerchantMode, false, (reason, money) -> {
+                    disagreeRefund(reason);
+                });
                 break;
         }
     });
 
     /**
-     * 商家发货
+     * 右边按钮
      */
-    private void send() {
-        fragment.showExDialog((exName, exNumber, remark) -> {
-            UpdateOrderRequest request = new UpdateOrderRequest();
-            request.setExName(exName);
-            request.setExNumber(exNumber);
-            request.setRemark(remark);
-
-            changeOrderStatus(request, 2);
-        });
-    }
-
-    /**
-     * 用户确认收货
-     */
-    private void receive() {
-        fragment.showReceiveDialog(() -> {
-            changeOrderStatus(new UpdateOrderRequest(), 3);
-        });
-    }
-
-    /**
-     * 改变订单状态
-     */
-    private void changeOrderStatus(UpdateOrderRequest request, int newStatus) {
-        if (request != null) {
-            request.setOrderCode(order.getOrderCode());
-            request.setUserCode(order.getUserCode());
-            request.setOrderStatus(newStatus);
-
-            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
-                    new Gson().toJson(request));
-
-            RetrofitHelper.getOrderAPI()
-                    .updateOrder(requestBody)
-                    .subscribeOn(Schedulers.io())
-                    .map(new ApiResponseFunc<>())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(s -> {
-                        fragment.getFragmentManager().popBackStack();
-                        //  通知刷新订单列表
-                        Intent intent = new Intent("updateOrderList");
-                        LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
-                    }, throwable -> {
-                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+    public final ReplyCommand rClick = new ReplyCommand(() -> {
+        switch (order.getOrderStatus()) {
+            case 0:
+                //  买家：付款
+                fragment.getActivity().startActivity(BuyActivity.newIntent(fragment.getActivity(), null, order, true));
+                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                break;
+            case 1:
+                //  商家：确认发货
+                send();
+                break;
+            case 2:
+                //  买家：确认收货
+                fragment.showConfirmDialog("确认收货后将不能取消，请确定是否确认收货？", () -> {
+                    changeOrderStatus(3);
+                });
+                break;
+            case 3:
+                //  买家：评价订单
+                ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
+                        OrderEvaluateFragment.newInstance(order), OrderEvaluateFragment.TAG);
+                break;
+            case 5:
+                //  商家：同意退款
+                fragment.showRefundDialog(order, isMerchantMode, true, this::refund);
+                break;
         }
-    }
+    });
 
     /**
      * 申请退款
      */
-    private void refund() {
+    private void applyRefund(String reason) {
+        request.setApplyReason(reason);
+        changeOrderStatus(5);
+    }
+
+    /**
+     * 驳回退款
+     */
+    private void disagreeRefund(String reason) {
+        request.setAuditInfo(reason);
+        changeOrderStatus(order.getPreStatus());
+    }
+
+    /**
+     * 退款
+     */
+    private void refund(String reason, BigDecimal money) {
         CreatePaymentRequest req = new CreatePaymentRequest();
         req.setOrderCode(order.getOrderCode());
 
@@ -314,7 +364,44 @@ public class OrderDetailVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    Toast.makeText(fragment.getActivity(), "退款申请成功", Toast.LENGTH_SHORT).show();
+                    fragment.getFragmentManager().popBackStack();
+                    //  通知刷新订单列表
+                    Intent intent = new Intent("updateOrderList");
+                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+                }, throwable -> {
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * 商家发货
+     */
+    private void send() {
+        fragment.showExDialog((type, exName, exNumber, remark) -> {
+            request.setPickSelf(type);
+            request.setExName(exName);
+            request.setExNumber(exNumber);
+            request.setRemark(remark);
+
+            changeOrderStatus(2);
+        });
+    }
+
+    /**
+     * 改变订单状态
+     */
+    private void changeOrderStatus(int newStatus) {
+        request.setOrderStatus(newStatus);
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                new Gson().toJson(request));
+
+        RetrofitHelper.getOrderAPI()
+                .updateOrder(requestBody)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
                     fragment.getFragmentManager().popBackStack();
                     //  通知刷新订单列表
                     Intent intent = new Intent("updateOrderList");

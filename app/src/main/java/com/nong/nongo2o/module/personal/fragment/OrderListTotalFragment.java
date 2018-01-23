@@ -35,8 +35,8 @@ public class OrderListTotalFragment extends RxFragment {
 
     public static final String TAG = "OrderListTotalFragment";
 
-    private static String[] tabArray = {"全部", "待付款", "待发货", "待收货", "待评价", "已完成", "退款中", "已取消"};
-    public static String[] statuses = {"-99", "0", "1", "2", "3", "4", "5", "-1,6"};
+    private static String[] tabArray = {"全部", "待付款", "待发货", "待收货", "待评价", "已完成", "退款申请", "退款中", "已退款", "已取消"};
+    public static String[] statuses = {"-99", "0", "1", "2", "3", "4", "5", "6", "7", "-1"};
 
     private FragmentOrderListTotalBinding binding;
     private OrderCenterVM vm;

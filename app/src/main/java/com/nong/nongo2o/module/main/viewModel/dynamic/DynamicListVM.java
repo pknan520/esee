@@ -85,10 +85,14 @@ public class DynamicListVM implements ViewModel {
                 .subscribe(resp -> {
                     if (force) {
                         itemDynamicVMs.clear();
+                        total = resp.getTotal();
                     }
-                    total = resp.getTotal();
                     for (Moment moment : resp.getRows()) {
-                        itemDynamicVMs.add(new ItemDynamicListVM(fragment, moment));
+                        if (moment.getUser() != null && moment.getHeaderImg().length() > 2 && moment.getContent().length() > 2) {
+                            itemDynamicVMs.add(new ItemDynamicListVM(fragment, moment));
+                        } else {
+                            total -= 1;
+                        }
                     }
                     viewStyle.isEmpty.set(itemDynamicVMs.isEmpty());
                 }, throwable -> {

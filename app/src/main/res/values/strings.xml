@@ -10,6 +10,7 @@
 
     <string name="saler_authentication">商家认证</string>
     <string name="saler_authenticated">已认证</string>
+    <string name="is_authenticating">正在审核中</string>
 
     <string name="order_no">单号：</string>
     <string name="receiver">收货人：</string>
@@ -27,4 +28,7 @@
     <string name="title_activity_guide">GuideActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="pls_enter_audit_info">请输入审核原因</string>
+    <string name="pls_enter_apply_reason">请输入申请退款原因</string>
 </resources>

@@ -77,27 +77,41 @@ public class OrderCenterVM implements ViewModel {
                                     itemTabVMs.get(2).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
                                     break;
                                 case 2:
-                                    itemTabVMs.get(3).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    if (!isMerchantMode) {
+                                        itemTabVMs.get(3).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    }
                                     break;
                                 case 3:
-                                    itemTabVMs.get(4).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    if (!isMerchantMode) {
+                                        itemTabVMs.get(4).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    }
                                     break;
                                 case 4:
-                                    itemTabVMs.get(5).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    if (!isMerchantMode) {
+                                        itemTabVMs.get(5).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    }
                                     break;
                                 case 5:
-                                    itemTabVMs.get(6).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+                                    if (isMerchantMode) {
+                                        itemTabVMs.get(6).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                    }
                                     break;
-                                case -1:
-                                    itemTabVMs.get(7).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                    break;
+//                                case 6:
+//                                    itemTabVMs.get(7).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+//                                    break;
+//                                case 7:
+//                                    itemTabVMs.get(8).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+//                                    break;
+//                                case -1:
+//                                    itemTabVMs.get(9).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
+//                                    break;
                             }
                         }
-                        int total = 0;
-                        for (ItemTabVM item: itemTabVMs) {
-                            total += item.tabBadgeText.get();
-                        }
-                        itemTabVMs.get(0).tabBadgeText.set(total);
+//                        int total = 0;
+//                        for (ItemTabVM item : itemTabVMs) {
+//                            total += item.tabBadgeText.get();
+//                        }
+//                        itemTabVMs.get(0).tabBadgeText.set(total);
 
                     }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
         } catch (UnsupportedEncodingException e) {

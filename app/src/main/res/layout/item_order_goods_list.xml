@@ -21,12 +21,12 @@
             android:orientation="horizontal"
             android:padding="10dp">
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <ImageView
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:scaleType="centerCrop"
                 app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
-                app:uri="@{viewModel.imgUri}" />
+                app:glideUri="@{viewModel.imgUri}" />
 
             <LinearLayout
                 android:layout_width="0dp"

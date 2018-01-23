@@ -92,7 +92,8 @@ public class PayFragment extends RxBaseFragment {
                     cancelPay();
                     break;
             }
-            ((RxBaseActivity) getActivity()).replaceFragment(R.id.fl, PayResultFragment.newInstance(result), PayResultFragment.TAG);
+            ((RxBaseActivity) getActivity()).replaceFragment(R.id.fl,
+                    PayResultFragment.newInstance((Order) getArguments().getSerializable("order"), result), PayResultFragment.TAG);
         }
     };
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -114,7 +115,17 @@ public class MerchantGoodsFragment extends RxFragment {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                switch (tab.getPosition()) {
+                    case 0:
+                        binding.sv.smoothScrollTo(0, (int) binding.slider.getY());
+                        break;
+                    case 1:
+                        binding.sv.smoothScrollTo(0, (int) binding.rvDetail.getY());
+                        break;
+                    case 2:
+                        binding.sv.smoothScrollTo(0, (int) binding.tabEvaluate.getY());
+                        break;
+                }
             }
         });
 
@@ -137,6 +148,7 @@ public class MerchantGoodsFragment extends RxFragment {
         });
 
         binding.rvDetail.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.rvDetail.setNestedScrollingEnabled(false);
 
         //  评价
         List<Fragment> fragmentList = new ArrayList<>();

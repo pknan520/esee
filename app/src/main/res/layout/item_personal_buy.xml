@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.PersonalBuyVM.ItemPersonalBuyVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_padding"
+        app:clickCommand="@{viewModel.itemClick}">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/item_padding"
+            app:placeholderImageRes="@{viewModel.imgPlaceHolder}"
+            app:uri="@{viewModel.imgUrl}" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/item_padding"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextListTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.goodsName}" />
+
+            <TextView
+                style="@style/TextListSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/line_space"
+                android:text="@{viewModel.goodsSummary}" />
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{`¥` + String.valueOf(viewModel.goodsPrice)}" />
+
+    </LinearLayout>
+
+</layout>

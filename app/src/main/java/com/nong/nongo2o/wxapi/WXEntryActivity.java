@@ -134,7 +134,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                 })
                 .flatMap(wxInfo -> {
                     intent.putExtra("wxInfo", wxInfo);
-                    return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid());
+                    return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid(), wxInfo.getHeadimgurl(), wxInfo.getNickname());
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userResp -> {

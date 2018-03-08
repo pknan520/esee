@@ -75,7 +75,7 @@ public class WelcomeVM implements ViewModel {
                                 })
                                 .flatMap(wxInfo -> {
                                     SPUtils.put(activity, "WX_OPENID", wxInfo.getOpenid());
-                                    return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid());
+                                    return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid(), wxInfo.getHeadimgurl(), wxInfo.getNickname());
                                 })
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .map(new ApiResponseFunc<>())
@@ -89,7 +89,7 @@ public class WelcomeVM implements ViewModel {
                             .subscribeOn(Schedulers.io())
                             .flatMap(wxInfo -> {
                                 SPUtils.put(activity, "WX_OPENID", wxInfo.getOpenid());
-                                return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid());
+                                return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid(), wxInfo.getHeadimgurl(), wxInfo.getNickname());
                             })
                             .observeOn(AndroidSchedulers.mainThread())
                             .map(new ApiResponseFunc<>())

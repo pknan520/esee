@@ -109,14 +109,14 @@ public class GoodsManagerDetailVM implements ViewModel {
                     itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemBannerVMs));
                     bannerFileList.add(new File(bean.getOriginalPath()));
                 }
-                if (itemBannerVMs.size() > 9) {
+                if (itemBannerVMs.size() > 1) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
             }
 
             @Override
             public void removePic(ItemPicVM itemPicVM) {
-                if (itemBannerVMs.size() == 9 && !TextUtils.isEmpty(itemBannerVMs.get(8).imgUri.get())) {
+                if (itemBannerVMs.size() == 1 && !TextUtils.isEmpty(itemBannerVMs.get(0).imgUri.get())) {
                     //  如果原来已加满，则增加一个添加图片的按钮
                     itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
                 }
@@ -143,7 +143,7 @@ public class GoodsManagerDetailVM implements ViewModel {
                 itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), coverUri, bannerClickListener, itemBannerVMs));
             }
         }
-        if (itemBannerVMs.size() < 9)
+        if (itemBannerVMs.size() < 1)
             itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
 
         goodsName.set(goods.getTitle());
@@ -176,7 +176,7 @@ public class GoodsManagerDetailVM implements ViewModel {
      * 发布商品
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
-        if (itemBannerVMs.size() < 2) {
+        if (TextUtils.isEmpty(itemBannerVMs.get(0).imgUri.get())) {
             Toast.makeText(fragment.getActivity(), "请选择商品轮播图", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -198,7 +198,7 @@ public class GoodsManagerDetailVM implements ViewModel {
             }
         }
 
-        if (itemDescVMs.size() < 1 || (TextUtils.isEmpty(itemDescVMs.get(0).goodsDesc.get()) && itemDescVMs.get(0).itemDescPicVMs.size() < 2)) {
+        if (itemDescVMs.size() < 1 || (TextUtils.isEmpty(itemDescVMs.get(0).goodsDesc.get()) && TextUtils.isEmpty(itemDescVMs.get(0).itemDescPicVMs.get(0).imgUri.get()))) {
             Toast.makeText(fragment.getActivity(), "请输入商品描述", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -475,23 +475,23 @@ public class GoodsManagerDetailVM implements ViewModel {
                         itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemDescPicVMs));
                         newPicList.add(new File(bean.getOriginalPath()));
                     }
-                    if (itemDescPicVMs.size() > 9) {
+                    if (itemDescPicVMs.size() > 1) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
                 }
 
                 @Override
                 public void removePic(ItemPicVM itemPicVM) {
-                    if (itemDescPicVMs.size() == 9 && !TextUtils.isEmpty(itemDescPicVMs.get(8).imgUri.get())) {
+                    if (itemDescPicVMs.size() == 1 && !TextUtils.isEmpty(itemDescPicVMs.get(0).imgUri.get())) {
                         //  如果原来已加满，则增加一个添加图片的按钮
                         itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
                     }
 
                     int pos = itemDescPicVMs.indexOf(itemPicVM);
-                    if (!content.getImg().isEmpty() && pos < content.getImg().size()) {
+                    if (content != null && content.getImg() != null && !content.getImg().isEmpty() && pos < content.getImg().size()) {
                         content.getImg().remove(pos);
                     } else {
-                        newPicList.remove(pos - content.getImg().size());
+                        newPicList.remove(pos - (content == null ? 0 : content.getImg().size()));
                     }
                     itemDescPicVMs.remove(itemPicVM);
                 }
@@ -509,7 +509,7 @@ public class GoodsManagerDetailVM implements ViewModel {
                     itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), uri, addDescPicListener, itemDescPicVMs));
                 }
             }
-            if (itemDescPicVMs.size() < 9)
+            if (itemDescPicVMs.size() < 1)
                 itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
         }
 

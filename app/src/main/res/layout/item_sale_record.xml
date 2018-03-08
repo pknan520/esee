@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.merchant.viewModel.MerchantSaleRecordVM.ItemSaleRecordVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_padding"
+        app:clickCommand="@{viewModel.personalHomeClick}">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:glideUri="@{viewModel.headUri}"
+            app:placeholderImageRes="@{viewModel.headPlaceHolder}" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/vertical_space"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.name}"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@{viewModel.summary}"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="@dimen/text_normal" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/text_padding"
+                app:clickCommand="@{viewModel.focusOrNotClick}">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    app:placeholderImageRes="@{viewModel.viewStyle.hasFocus ? viewModel.isFocus : viewModel.unFocus}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/line_space"
+                    android:text="@{viewModel.viewStyle.hasFocus ? `取消关注` : `关注`}"
+                    android:textColor="@{viewModel.viewStyle.hasFocus ? @color/colorHintText : @color/colorComplementaryGreen}"
+                    android:textSize="@dimen/text_normal_small"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/line_space"
+                android:drawableStart="@mipmap/icon_kefu"
+                android:padding="@dimen/text_padding"
+                android:text="联系TA"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="13sp"
+                app:clickCommand="@{viewModel.contactClick}"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

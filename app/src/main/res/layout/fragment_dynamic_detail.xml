@@ -140,24 +140,42 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="@dimen/text_padding"
-                            android:visibility="@{viewModel.viewStyle.isSelf ? View.GONE : View.VISIBLE}"
-                            app:clickCommand="@{viewModel.focusClick}">
+                            android:orientation="vertical">
 
-                            <com.facebook.drawee.view.SimpleDraweeView
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:placeholderImageRes="@{viewModel.viewStyle.isFocus ? viewModel.isFocus : viewModel.unFocus}" />
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/text_padding"
+                                android:visibility="@{viewModel.viewStyle.isSelf ? View.GONE : View.VISIBLE}"
+                                app:clickCommand="@{viewModel.focusClick}">
+
+                                <com.facebook.drawee.view.SimpleDraweeView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:placeholderImageRes="@{viewModel.viewStyle.isFocus ? viewModel.isFocus : viewModel.unFocus}" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/line_space"
+                                    android:text="@{viewModel.viewStyle.isFocus ? `取消关注` : `关注`}"
+                                    android:textColor="@{viewModel.viewStyle.isFocus ? @color/colorHintText : @color/colorComplementaryGreen}"
+                                    android:textSize="13sp" />
+
+                            </LinearLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/line_space"
-                                android:text="@{viewModel.viewStyle.isFocus ? `取消关注` : `关注`}"
-                                android:textColor="@{viewModel.viewStyle.isFocus ? @color/colorHintText : @color/colorComplementaryGreen}"
-                                android:textSize="13sp" />
+                                android:drawablePadding="@dimen/line_space"
+                                android:drawableStart="@mipmap/icon_kefu"
+                                android:padding="@dimen/text_padding"
+                                android:text="联系TA"
+                                android:textColor="@color/colorComplementaryText"
+                                android:textSize="13sp"
+                                app:clickCommand="@{viewModel.contactClick}"/>
 
                         </LinearLayout>
 

@@ -30,7 +30,7 @@ public class ItemSelectGoodsVM implements ViewModel {
 
     public final ObservableBoolean isSelected = new ObservableBoolean(false);
     @DrawableRes
-    public final int imgPlaceHolder = R.mipmap.ic_launcher;
+    public final int imgPlaceHolder = R.mipmap.picture_default;
     public final ObservableField<String> imgUrl = new ObservableField<>();
     public final ObservableField<String> goodsName = new ObservableField<>();
     public final ObservableField<String> goodsSummary = new ObservableField<>();

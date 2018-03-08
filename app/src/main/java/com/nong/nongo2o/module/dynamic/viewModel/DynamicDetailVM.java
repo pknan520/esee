@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.dynamic.viewModel;
 
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -12,6 +13,7 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hyphenate.chat.EMClient;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
@@ -31,6 +33,7 @@ import com.nong.nongo2o.module.common.viewModel.ItemCommentListVM;
 import com.nong.nongo2o.module.common.viewModel.ItemImageTextVM;
 import com.nong.nongo2o.module.dynamic.fragment.DynamicDetailFragment;
 import com.nong.nongo2o.module.merchant.activity.MerchantGoodsActivity;
+import com.nong.nongo2o.module.message.activity.ChatActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
@@ -38,6 +41,7 @@ import com.nong.nongo2o.uils.AddressUtils;
 import com.nong.nongo2o.uils.BeanUtils;
 import com.nong.nongo2o.uils.FocusUtils;
 import com.nong.nongo2o.uils.MyTimeUtils;
+import com.nong.nongo2o.uils.imUtils.IMUtils;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -281,6 +285,28 @@ public class DynamicDetailVM implements ViewModel {
     public final ReplyCommand personalHomeClick = new ReplyCommand(() -> {
         fragment.getActivity().startActivity(PersonalHomeActivity.newIntent(fragment.getActivity(), dynamic.getUser()));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
+
+    /**
+     * 联系商家
+     */
+    public final ReplyCommand contactClick = new ReplyCommand(() -> {
+        IMUtils.checkIMLogin(isSuccess -> {
+            if (isSuccess) {
+                String userName = dynamic.getUser().getId();
+                if (userName.equals(EMClient.getInstance().getCurrentUser())) {
+                    Toast.makeText(fragment.getActivity(), "您不能自言自语了啦^.^", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(fragment.getActivity(), ChatActivity.class);
+                intent.putExtra("userId", userName);
+                fragment.getActivity().startActivity(intent);
+                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+            } else {
+                Toast.makeText(fragment.getActivity(), "聊天可能有点问题，请稍候再试", Toast.LENGTH_SHORT).show();
+            }
+        });
     });
 
     /**

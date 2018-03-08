@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentPersonalHomeBinding;
 import com.nong.nongo2o.entity.bean.SimpleUser;
+import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.module.personal.viewModel.PersonalHomeVM;
 import com.trello.rxlifecycle2.components.RxFragment;
@@ -36,18 +37,11 @@ public class PersonalHomeFragment extends RxFragment {
 
     public static final String TAG = "PersonalHomeFragment";
 
-    private static String[] tabArray = {"TA的动态", "TA的宝贝"};
-
     private FragmentPersonalHomeBinding binding;
     private PersonalHomeVM vm;
     private SimpleUser user;
 
     private LocalBroadcastManager lbm;
-
-    // TODO: 2017-9-15 临时容错，以后删除
-    public static PersonalHomeFragment newInstance() {
-        return new PersonalHomeFragment();
-    }
 
     public static PersonalHomeFragment newInstance(SimpleUser user) {
         Bundle args = new Bundle();
@@ -89,13 +83,18 @@ public class PersonalHomeFragment extends RxFragment {
 
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
-        fragmentList.add(PersonalGoodsFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+        if (((SimpleUser) getArguments().getSerializable("user")).getUserType() == 1) {
+            fragmentList.add(PersonalGoodsFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+        } else {
+            fragmentList.add(PersonalBuyFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+        }
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);
         binding.vp.setOffscreenPageLimit(1);
         binding.tab.setupWithViewPager(binding.vp);
 
+        String[] tabArray = {"TA的动态", ((SimpleUser) getArguments().getSerializable("user")).getUserType() == 1 ? "TA的宝贝" : "购买宝贝"};
         for (int i = 0; i < tabArray.length; i++) {
             TabLayout.Tab tab = binding.tab.getTabAt(i);
             if (tab != null) {

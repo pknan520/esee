@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.TradeBillVM.ItemTradeBillVM.ItemTradeDetailVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_padding"
+        app:clickCommand="@{viewModel.itemClick}">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            tools:text="收入"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.type}"
+            android:textColor="@color/colorComplementaryText"
+            android:textSize="@dimen/text_normal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            tools:text="¥ 2.00"
+            android:layout_height="wrap_content"
+            android:text="@{@string/rmb + ` ` + String.valueOf(viewModel.money)}"
+            android:textColor="@{viewModel.viewStyle.billType == 0 ? @color/colorAccent : @color/colorComplementaryGreen}"
+            android:textSize="@dimen/text_normal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:gravity="end"
+            tools:text="2018-03-07 20:44:44"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.time}"
+            android:textColor="@color/colorComplementaryText"
+            android:textSize="@dimen/text_normal" />
+
+    </LinearLayout>
+
+</layout>

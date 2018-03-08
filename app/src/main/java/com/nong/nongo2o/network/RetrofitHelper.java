@@ -11,6 +11,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.nong.nongo2o.network.api.AccountService;
 import com.nong.nongo2o.network.api.ActivityService;
 import com.nong.nongo2o.network.api.AppService;
@@ -29,6 +32,7 @@ import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.interceptor.HeaderInterceptor;
 import com.nong.nongo2o.network.interceptor.LoggerInterceptor;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;

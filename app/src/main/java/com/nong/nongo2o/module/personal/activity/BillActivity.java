@@ -13,8 +13,8 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityBillBinding;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
-import com.nong.nongo2o.module.personal.fragment.BillListFragment;
-import com.nong.nongo2o.module.personal.viewModel.ItemBillListVM;
+import com.nong.nongo2o.module.personal.fragment.TradeBillFragment;
+import com.nong.nongo2o.module.personal.fragment.WithdrawBillFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,7 @@ import java.util.List;
 
 public class BillActivity extends RxBaseToolbarActivity {
 
-    private static final String[] billTypeArray= {"0", "-1,1,2"};
-    private static String[] tabArray = {"收入记录", "支出记录"};
+    private static String[] tabArray = {"交易账单", "提现账单"};
 
     private ActivityBillBinding binding;
 
@@ -55,9 +54,8 @@ public class BillActivity extends RxBaseToolbarActivity {
         setTitle("");
 
         List<Fragment> fragmentList = new ArrayList<>();
-        for (String str : billTypeArray) {
-            fragmentList.add(BillListFragment.newInstance(str));
-        }
+        fragmentList.add(TradeBillFragment.newInstance());
+        fragmentList.add(WithdrawBillFragment.newInstance());
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);

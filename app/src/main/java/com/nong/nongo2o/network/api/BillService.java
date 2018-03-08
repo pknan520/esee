@@ -18,5 +18,5 @@ public interface BillService {
      * 获取账单列表
      */
     @GET("user/bill/search")
-    Observable<ApiResponse<ApiListResponse<Bill>>> getBillList(@Query("billTypeStr") String billTypeStr, @Query("page") int page);
+    Observable<ApiResponse<ApiListResponse<Bill>>> getBillList(@Query("billTypeStr") String billTypeStr, @Query("page") int page, @Query("pageSize") int pageSize);
 }

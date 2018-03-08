@@ -20,6 +20,7 @@ import com.nong.nongo2o.databinding.DialogRefundBinding;
 import com.nong.nongo2o.databinding.FragmentOrderDetailBinding;
 import com.nong.nongo2o.entity.domain.Order;
 import com.nong.nongo2o.module.common.ConfirmDialogListener;
+import com.nong.nongo2o.module.personal.activity.BillActivity;
 import com.nong.nongo2o.module.personal.activity.OrderCenterActivity;
 import com.nong.nongo2o.module.personal.viewModel.DialogExVM;
 import com.nong.nongo2o.module.personal.viewModel.DialogRefundVM;
@@ -43,15 +44,6 @@ public class OrderDetailFragment extends RxBaseFragment {
     private DialogInputExBinding exBinding;
     private AlertDialog refundDialog;
     private DialogRefundBinding refundBinding;
-
-    public interface ReceiveDialogListener {
-        void confirmReceive();
-    }
-
-    // TODO: 2017-9-22 临时容错，以后删除
-    public static OrderDetailFragment newInstance() {
-        return new OrderDetailFragment();
-    }
 
     public static OrderDetailFragment newInstance(Order order, boolean isMerchantMode) {
         Bundle args = new Bundle();
@@ -81,7 +73,9 @@ public class OrderDetailFragment extends RxBaseFragment {
     }
 
     private void initView() {
-        ((OrderCenterActivity) getActivity()).setToolbarTitle("订单详情");
+        if (getActivity() instanceof OrderCenterActivity) {
+            ((OrderCenterActivity) getActivity()).setToolbarTitle("订单详情");
+        }
         binding.rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        binding.rvTrans.setLayoutManager(new LinearLayoutManager(getActivity()));
 

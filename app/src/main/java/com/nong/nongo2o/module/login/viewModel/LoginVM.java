@@ -87,23 +87,23 @@ public class LoginVM implements ViewModel {
     public final ReplyCommand testClick = new ReplyCommand(this::test);
 
     private void test() {
-        final Intent intent = new Intent();
-
-        RetrofitHelper.getAccountAPI()
-                .login("246810abc566")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userResp -> {
-                    if (userResp.getCode().equals("0")) {
-                        intent.setAction("loginSuccess");
-                        UserInfo.setOurInstance(new UserInfo(userResp.getData()));
-                    } else {
-                        intent.setAction("bindMobile");
-                    }
-                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
-                }, throwable -> {
-                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+//        final Intent intent = new Intent();
+//
+//        RetrofitHelper.getAccountAPI()
+//                .login("246810abc566")
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(userResp -> {
+//                    if (userResp.getCode().equals("0")) {
+//                        intent.setAction("loginSuccess");
+//                        UserInfo.setOurInstance(new UserInfo(userResp.getData()));
+//                    } else {
+//                        intent.setAction("bindMobile");
+//                    }
+//                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(intent);
+//                }, throwable -> {
+//                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+//                });
     }
 
 }

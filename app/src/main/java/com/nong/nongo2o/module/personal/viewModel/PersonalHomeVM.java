@@ -48,6 +48,7 @@ public class PersonalHomeVM implements ViewModel {
     public class ViewStyle {
         public final ObservableBoolean isFocus = new ObservableBoolean(false);
         public final ObservableBoolean isMySelf = new ObservableBoolean(false);
+        public final ObservableBoolean isSaler = new ObservableBoolean(false);
     }
 
     /**
@@ -63,6 +64,7 @@ public class PersonalHomeVM implements ViewModel {
             if (!viewStyle.isMySelf.get()) {
                 viewStyle.isFocus.set(FocusUtils.checkIsFocus(user.getUserCode()));
             }
+            viewStyle.isSaler.set(user.getUserType() == 1);
         }
     }
 

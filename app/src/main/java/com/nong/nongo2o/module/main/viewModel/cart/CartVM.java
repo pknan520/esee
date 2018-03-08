@@ -232,6 +232,7 @@ public class CartVM implements ViewModel {
             for (ItemCartMerchantVM.ItemCartMerchantGoodsVM itemGoods : itemMerchant.itemCartMerchantGoodsVMs) {
                 if (itemGoods.mViewStyle.isSelect.get()) {
                     OrderDetail detail = new OrderDetail();
+                    detail.setCartCode(itemGoods.getCart().getCartCode());
                     detail.setUserCode(UserInfo.getInstance().getUserCode());
                     detail.setSaleUserCode(itemGoods.getCart().getSaleUserCode());
                     detail.setSale(itemGoods.getCart().getSaleUser());
@@ -465,7 +466,7 @@ public class CartVM implements ViewModel {
 
             private void deleteGoods() {
                 RetrofitHelper.getCartAPI()
-                        .deleteCart(cart.getCartCode())
+                        .deleteMultiCart(cart.getCartCode())
                         .subscribeOn(Schedulers.io())
                         .map(new ApiResponseFunc<>())
                         .observeOn(AndroidSchedulers.mainThread())

@@ -141,7 +141,7 @@ public class WelcomeActivity extends RxBaseActivity {
                                     })
                                     .flatMap(wxInfo -> {
                                         SPUtils.put(this, "WX_OPENID", wxInfo.getOpenid());
-                                        return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid());
+                                        return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid(), wxInfo.getHeadimgurl(), wxInfo.getNickname());
                                     })
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .map(new ApiResponseFunc<>())
@@ -158,7 +158,7 @@ public class WelcomeActivity extends RxBaseActivity {
                                 .subscribeOn(Schedulers.io())
                                 .flatMap(wxInfo -> {
                                     SPUtils.put(this, "WX_OPENID", wxInfo.getOpenid());
-                                    return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid());
+                                    return RetrofitHelper.getAccountAPI().login(wxInfo.getOpenid(), wxInfo.getHeadimgurl(), wxInfo.getNickname());
                                 })
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .map(new ApiResponseFunc<>())

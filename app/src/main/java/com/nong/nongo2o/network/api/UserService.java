@@ -240,4 +240,22 @@ public interface UserService {
      */
     @GET("user/invites")
     Observable<ApiResponse<ApiListResponse<SimpleUser>>> getMyInviters(@Query("inviter") String myInviterCode, @Query("page") int page, @Query("pageSize") int pageSize);
+
+    /**
+     * 提现
+     *
+     * @param body CreateUserRequest
+     * @return 返回操作成功/失败
+     */
+    @Headers({"Content-Type: application/json;charset=UTF-8"/*,"Accept: application/json"*/})
+    @POST("user/withdraw")
+    Observable<ApiResponse<String>> withdraw(@Body RequestBody body);
+
+    /**
+     * 查询所有用户
+     * @param userStatus 用户状态
+     * @return
+     */
+    @GET("saler/search")
+    Observable<ApiResponse<ApiListResponse<SimpleUser>>> getUserList(@Query("userStatus") int userStatus, @Query("page") int page, @Query("pageSize") int pageSize);
 }

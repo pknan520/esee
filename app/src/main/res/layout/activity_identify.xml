@@ -142,6 +142,64 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/vertical_space"
+            android:padding="@dimen/item_padding"
+            android:background="@android:color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_normal_small"
+                android:textColor="@color/colorText"
+                android:text="a.本人承担此账号在小背篓平台上所有动作的责任；"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_normal_small"
+                android:textColor="@color/colorText"
+                android:text="b.本人对所上架商品的描述准确性负全部责任；"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_normal_small"
+                android:textColor="@color/colorText"
+                android:text="c.本人对售卖商品的数量和质量负全部责任；"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_normal_small"
+                android:textColor="@color/colorText"
+                android:text="d.本人负责安排订单商品的送达交付，并承担送达过程中的责任；"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_normal_small"
+                android:textColor="@color/colorText"
+                android:text="e.本人愿意接受小背篓的管理规则，并按有效成交订单金额的2%缴纳管理费。"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:button="@drawable/selector_check_box"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:checked="@={viewModel.isAgree}"
+                android:textSize="@dimen/text_normal"
+                android:textColor="@color/colorText"
+                android:paddingLeft="@dimen/item_padding"
+                android:text="本人接受以上规则"/>
+
+        </LinearLayout>
+
         <Button
             style="@style/SimpleOrangeButton"
             android:layout_width="match_parent"

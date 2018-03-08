@@ -5,6 +5,7 @@ import com.nong.nongo2o.entity.bean.ApiResponse;
 import com.nong.nongo2o.entity.bean.SalerInfo;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsComment;
+import com.nong.nongo2o.entity.domain.Order;
 
 import org.reactivestreams.Publisher;
 
@@ -124,4 +125,12 @@ public interface GoodsService {
      */
     @GET("user/goods/buyed")
     Observable<ApiResponse<ApiListResponse<Goods>>> getBoughtGoodsList(@Query("page") int page, @Query("pageSize") int pageSize);
+
+    /**
+     * 查看商品销售记录
+     *
+     * @param goodsCode 商品编码
+     */
+    @GET("goods/list")
+    Observable<ApiResponse<ApiListResponse<Order>>> getSaleRecordList(@Query("page") int page, @Query("pageSize") int pageSize, @Query("goodsCode") String goodsCode);
 }

@@ -9,10 +9,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentDynamicListBinding;
+import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.main.viewModel.dynamic.DynamicListVM;
 import com.nong.nongo2o.widget.recyclerView.StaggerItemDecoration;
 import com.trello.rxlifecycle2.components.RxFragment;

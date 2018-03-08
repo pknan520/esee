@@ -130,8 +130,8 @@ public class DynamicListVM implements ViewModel {
         if (viewStyle.notLogin.get()) {
             fragment.getActivity().startActivity(LoginActivity.newIntent(fragment.getActivity(), true));
         } else {
-            ((DynamicFragment) fragment.getParentFragment()).switchToAll();
-//            fragment.getActivity().startActivity(AddFocusActivity.newIntent(fragment.getActivity()));
+//            ((DynamicFragment) fragment.getParentFragment()).switchToAll();
+            fragment.getActivity().startActivity(AddFocusActivity.newIntent(fragment.getActivity()));
         }
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });

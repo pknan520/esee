@@ -34,7 +34,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="商品图片（最多9张）"
+                        android:text="商品图片（只限一张图片，请体现特点）"
                         android:textColor="@color/colorText"
                         android:textSize="@dimen/text_normal" />
 
@@ -69,7 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/vertical_space"
-                        android:hint="请输入商品名称"
+                        android:hint="产地 + 生产人 + 商品名称"
                         android:text="@={viewModel.goodsName}" />
 
                 </LinearLayout>

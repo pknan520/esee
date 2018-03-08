@@ -1,11 +1,13 @@
 package com.nong.nongo2o.module.personal.viewModel;
 
+import android.content.Intent;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.DrawableRes;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.hyphenate.chat.EMClient;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
@@ -14,11 +16,13 @@ import com.nong.nongo2o.entities.request.AddFocus;
 import com.nong.nongo2o.entities.response.Fans;
 import com.nong.nongo2o.entities.response.User;
 import com.nong.nongo2o.entity.domain.Follow;
+import com.nong.nongo2o.module.message.activity.ChatActivity;
 import com.nong.nongo2o.module.personal.activity.FansMgrActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.FocusUtils;
+import com.nong.nongo2o.uils.imUtils.IMUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -90,6 +94,25 @@ public class ItemFansListVM implements ViewModel {
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
     });
 
+    public final ReplyCommand contactClick = new ReplyCommand(() -> {
+        IMUtils.checkIMLogin(isSuccess -> {
+            if (isSuccess) {
+                String userName = status == FansMgrActivity.MY_FOCUS ? follow.getTarget().getId() : follow.getUser().getId();
+                if (userName.equals(EMClient.getInstance().getCurrentUser())) {
+                    Toast.makeText(fragment.getActivity(), "您不能自言自语了啦^.^", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(fragment.getActivity(), ChatActivity.class);
+                intent.putExtra("userId", userName);
+                fragment.getActivity().startActivity(intent);
+                fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+            } else {
+                Toast.makeText(fragment.getActivity(), "聊天可能有点问题，请稍候再试", Toast.LENGTH_SHORT).show();
+            }
+        });
+    });
+
     public final ReplyCommand focusOrNotClick = new ReplyCommand(() -> {
         switch (status) {
             case FansMgrActivity.MY_FOCUS:
@@ -100,7 +123,5 @@ public class ItemFansListVM implements ViewModel {
                 break;
         }
     });
-
-
 
 }

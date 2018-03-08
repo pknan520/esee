@@ -39,7 +39,7 @@
                         style="@style/TextListTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="主图（广告栏）" />
+                        android:text="主图（最多一张）" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/rv_banner"

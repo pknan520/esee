@@ -62,6 +62,15 @@ public interface CartService {
     Observable<ApiResponse<String>> deleteCart(@Query("id") String cartCode);
 
     /**
+     * 批量删除购物车
+     *
+     * @param ids 购物车Code
+     * @return 返回操作成功/失败
+     */
+    @DELETE("user/cart")
+    Observable<ApiResponse<String>> deleteMultiCart(@Query("ids") String ids);
+
+    /**
      * 批量更新购物车
      *
      * @param body UpdateCartBatchRequest

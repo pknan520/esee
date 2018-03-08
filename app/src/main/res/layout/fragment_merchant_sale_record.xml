@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.merchant.viewModel.MerchantSaleRecordVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="20dp"
+            android:text="暂时还有没评价哦^.^"
+            android:textSize="@dimen/text_normal"
+            android:visibility="@{viewModel.viewStyle.isEmpty ? View.VISIBLE : View.GONE}" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.viewStyle.isEmpty ? View.GONE : View.VISIBLE}"
+            app:itemBinding="@{viewModel.itemRecordBinding}"
+            app:items="@{viewModel.itemRecordVMs}"
+            app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
+
+    </LinearLayout>
+
+</layout>

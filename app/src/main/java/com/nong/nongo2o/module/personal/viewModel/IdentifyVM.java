@@ -65,6 +65,7 @@ public class IdentifyVM implements ViewModel {
     public final int idPicPlaceHolder2 = R.mipmap.idnumber_reverseside;
     public final ObservableField<String> idPic1 = new ObservableField<>();
     public final ObservableField<String> idPic2 = new ObservableField<>();
+    public final ObservableBoolean isAgree = new ObservableBoolean(false);
 
     private List<String> idPicList;
 
@@ -157,6 +158,11 @@ public class IdentifyVM implements ViewModel {
      * 提交认证
      */
     public final ReplyCommand submitClick = new ReplyCommand(() -> {
+        if (!isAgree.get()) {
+            Toast.makeText(activity, "如果需要提交实名验证，请勾选同意规则", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (UserInfo.getInstance().getUserType() == 10) {
             Toast.makeText(activity, "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
             return;

@@ -15,14 +15,14 @@
         android:background="@android:color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        app:clickCommand="@{viewModel.personalHomeClick}"
-        android:padding="@dimen/item_padding">
+        android:padding="@dimen/item_padding"
+        app:clickCommand="@{viewModel.personalHomeClick}">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:placeholderImageRes="@{viewModel.headPlaceHolder}"
-            app:glideUri="@{viewModel.headUri}" />
+            app:glideUri="@{viewModel.headUri}"
+            app:placeholderImageRes="@{viewModel.headPlaceHolder}" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -41,8 +41,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.summary}"
                 android:maxLines="2"
+                android:text="@{viewModel.summary}"
                 android:textColor="@color/colorComplementaryText"
                 android:textSize="@dimen/text_normal" />
 
@@ -51,23 +51,42 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:clickCommand="@{viewModel.focusOrNotClick}"
-            android:padding="@dimen/text_padding"
-            android:orientation="horizontal">
+            android:gravity="end"
+            android:orientation="vertical">
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/vertical_space"
-                app:placeholderImageRes="@{viewModel.viewStyle.hasFocus ? viewModel.isFocus : viewModel.unFocus}"/>
+                android:orientation="horizontal"
+                android:padding="@dimen/text_padding"
+                app:clickCommand="@{viewModel.focusOrNotClick}">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    app:placeholderImageRes="@{viewModel.viewStyle.hasFocus ? viewModel.isFocus : viewModel.unFocus}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/line_space"
+                    android:text="@{viewModel.viewStyle.hasFocus ? `取消关注` : `关注`}"
+                    android:textColor="@{viewModel.viewStyle.hasFocus ? @color/colorHintText : @color/colorComplementaryGreen}"
+                    android:textSize="@dimen/text_normal_small" />
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_normal_small"
-                android:layout_marginStart="@dimen/line_space"
-                android:text="@{viewModel.viewStyle.hasFocus ? `取消关注` : `关注`}"
-                android:textColor="@{viewModel.viewStyle.hasFocus ? @color/colorHintText : @color/colorComplementaryGreen}" />
+                android:drawablePadding="@dimen/line_space"
+                android:drawableStart="@mipmap/icon_kefu"
+                android:padding="@dimen/text_padding"
+                android:text="联系TA"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="13sp"
+                app:clickCommand="@{viewModel.contactClick}"/>
 
         </LinearLayout>
 

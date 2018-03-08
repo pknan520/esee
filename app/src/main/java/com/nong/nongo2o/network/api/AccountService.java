@@ -18,7 +18,7 @@ import retrofit2.http.Query;
 public interface AccountService {
 
     @GET("login")
-    Observable<ApiResponse<UserInfo>> login(@Query("openId") String openId);
+    Observable<ApiResponse<UserInfo>> login(@Query("openId") String openId, @Query("headImg") String headImg, @Query("nickName") String nickName);
 
     /**
      * 注册

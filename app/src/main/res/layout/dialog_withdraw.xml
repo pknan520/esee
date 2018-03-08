@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.main.viewModel.personal.PersonalVM.WithdrawDialogVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_round_white"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="可提现额度" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="@{`¥` + String.valueOf(viewModel.limit)}"
+                android:textColor="@color/colorComplementaryOrange"
+                android:textSize="@dimen/text_title"
+                tools:text="¥123.00" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="请输入提现金额" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:background="@drawable/border_gray"
+                android:gravity="end"
+                android:hint="请输入提现金额"
+                android:inputType="numberDecimal"
+                android:padding="@dimen/item_padding"
+                android:text="@={viewModel.money}"
+                android:textColorHint="@color/colorHintText"
+                android:textSize="@dimen/text_normal" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@drawable/shape_horizontal_divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                style="@style/SimpleTextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="@dimen/item_padding"
+                android:text="取消"
+                android:textColor="@color/colorComplementaryText"
+                app:clickCommand="@{viewModel.cancelClick}" />
+
+            <Button
+                style="@style/SimpleTextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="@dimen/item_padding"
+                android:text="确定"
+                android:textColor="@color/colorComplementaryText"
+                app:clickCommand="@{viewModel.confirmClick}" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

@@ -44,7 +44,8 @@ public class MerchantGoodsFragment extends RxFragment {
 
     public static final int EVA_ALL = 0, EVA_GOOD = 1, EVA_NORMAL = 2, EVA_BAD = 3;
     private static final String[] tabArray = {"商品", "详情", "评价"};
-    private static final String[] evaArray = {"全部", "好评", "中评", "差评"};
+//    private static final String[] evaArray = {"全部", "好评", "中评", "差评"};
+    private static final String[] evaArray = {"全部评价", "销售记录"};
 
     private FragmentMerchantGoodsBinding binding;
     private MerchantGoodsVM vm;
@@ -153,9 +154,9 @@ public class MerchantGoodsFragment extends RxFragment {
         //  评价
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_ALL));
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_GOOD));
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_NORMAL));
-        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_BAD));
+        fragmentList.add(MerchantSaleRecordFragment.newInstance((Goods) getArguments().getSerializable("good")));
+//        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_NORMAL));
+//        fragmentList.add(MerchantGoodsEvaluateFragment.newInstance((Goods) getArguments().getSerializable("good"), EVA_BAD));
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vpEvaluate.setAdapter(pagerAdapter);

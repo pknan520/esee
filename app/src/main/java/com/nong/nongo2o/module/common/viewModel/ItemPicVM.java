@@ -33,7 +33,7 @@ public class ItemPicVM implements ViewModel {
     private static final String TAG = "ItemPicVM";
 
     private Activity context;
-    private int maxSize = 9;
+    private int maxSize = 1;
     private ClickListener clickListener;
     private String uri;
     private ObservableList<ItemPicVM> list;
@@ -89,7 +89,7 @@ public class ItemPicVM implements ViewModel {
      * 从相册获取
      */
     private void addPicFromGallery() {
-        maxSize = 9 - (TextUtils.isEmpty(list.get(list.size() - 1).uri) ? list.size() - 1 : list.size());
+        maxSize = 1 - (TextUtils.isEmpty(list.get(list.size() - 1).uri) ? list.size() - 1 : list.size());
         RxGalleryFinal
                 .with(context)
                 .image()

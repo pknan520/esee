@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.WithdrawBillVM.ItemWithdrawBillVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding">
+
+            <ImageView
+                android:id="@+id/iv_head"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                app:glideUri="@{viewModel.headUri}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/iv_head"
+                android:text="@{viewModel.name}"
+                android:layout_marginStart="@dimen/line_space"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="@{viewModel.orderNo}"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_padding"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="提现"
+                android:layout_marginStart="@dimen/line_space"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                tools:text="¥ 2.00"
+                android:text="@{@string/rmb + ` ` + String.valueOf(viewModel.money)}"
+                android:layout_marginStart="@dimen/line_space"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/text_normal" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                tools:text="2018-03-07"
+                android:text="@{viewModel.time}"
+                android:textColor="@color/colorComplementaryText"
+                android:textSize="@dimen/text_normal" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

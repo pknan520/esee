@@ -31,6 +31,7 @@ public class MerchantGoodsEvaluateFragment extends RxFragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

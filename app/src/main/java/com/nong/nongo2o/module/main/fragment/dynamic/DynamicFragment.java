@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.databinding.FragmentDynamicBinding;
 import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
@@ -41,6 +43,7 @@ public class DynamicFragment extends RxFragment{
     private FragmentDynamicBinding binding;
 
     private DynamicMineFragment mineFragment;
+    private int currentPage = 0;
 
     public static DynamicFragment newInstance() {
         return new DynamicFragment();
@@ -61,6 +64,8 @@ public class DynamicFragment extends RxFragment{
 
     private void initToolbar() {
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+        setHasOptionsMenu(true);
+        getActivity().setTitle("");
         binding.toolbar.inflateMenu(R.menu.menu_dynamic);
         binding.toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
@@ -68,11 +73,13 @@ public class DynamicFragment extends RxFragment{
                     startActivityForResult(DynamicPublishActivity.newIntent(getActivity()), PUBLISH_RESULT);
                     getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
                     break;
+                case R.id.menu_add:
+                    getActivity().startActivity(AddFocusActivity.newIntent(getActivity()));
+                    getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                    break;
             }
             return true;
         });
-        getActivity().setTitle("");
-        setHasOptionsMenu(true);
     }
 
     private void initViewPager() {
@@ -85,6 +92,34 @@ public class DynamicFragment extends RxFragment{
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);
         binding.vp.setOffscreenPageLimit(2);
+        binding.vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                currentPage = position;
+//                ((AppCompatActivity)getActivity()).supportInvalidateOptionsMenu();
+                binding.toolbar.getMenu().clear();
+                switch (position) {
+                    case 0:
+                    case 1:
+                        binding.toolbar.inflateMenu(R.menu.menu_dynamic);
+                        break;
+                    case 2:
+                        binding.toolbar.inflateMenu(R.menu.menu_add);
+                        break;
+                }
+//                ((AppCompatActivity)getActivity()).supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         binding.tab.setupWithViewPager(binding.vp);
 
         for (int i = 0; i < tabArray.length; i++) {

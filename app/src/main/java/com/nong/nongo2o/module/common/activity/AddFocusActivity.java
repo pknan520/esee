@@ -18,6 +18,8 @@ import com.nong.nongo2o.module.common.fragment.AddFocusListFragment;
 
 public class AddFocusActivity extends RxBaseToolbarActivity {
 
+    private static final String TAG = "AddFocusActivity";
+
     private ActivityAddFocusBinding binding;
 
     public static Intent newIntent(Context context) {

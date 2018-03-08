@@ -8,11 +8,14 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityFansMgrBinding;
+import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.module.personal.fragment.FansListFragment;
 
@@ -73,6 +76,24 @@ public class FansMgrActivity extends RxBaseToolbarActivity {
                     tv.setText(tabArray[i]);
                 }
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add:
+                startActivity(AddFocusActivity.newIntent(this));
+                overridePendingTransition(R.anim.anim_right_in, 0);
+                return false;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

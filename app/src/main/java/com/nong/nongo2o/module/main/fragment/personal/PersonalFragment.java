@@ -1,6 +1,7 @@
 package com.nong.nongo2o.module.main.fragment.personal;
 
 import android.animation.Animator;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,9 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import com.nong.nongo2o.databinding.DialogInputExBinding;
+import com.nong.nongo2o.databinding.DialogWithdrawBinding;
 import com.nong.nongo2o.databinding.FragmentPersonalBinding;
 import com.nong.nongo2o.entity.bean.UserInfo;
 import com.nong.nongo2o.module.main.viewModel.personal.PersonalVM;
+import com.nong.nongo2o.module.personal.viewModel.DialogExVM;
 import com.trello.rxlifecycle2.components.RxFragment;
 
 import io.codetail.animation.ViewAnimationUtils;
@@ -28,6 +32,9 @@ public class PersonalFragment extends RxFragment {
 
     private FragmentPersonalBinding binding;
     private PersonalVM vm;
+
+    private DialogWithdrawBinding withdrawBinding;
+    private AlertDialog withdrawDialog;
 
     private LocalBroadcastManager lbm;
 
@@ -57,6 +64,8 @@ public class PersonalFragment extends RxFragment {
         binding.tvName.getPaint().setFakeBoldText(true);
         binding.tvBalance.getPaint().setFakeBoldText(true);
         binding.tvNowAsset.getPaint().setFakeBoldText(true);
+
+        initWithdrawDialog();
     }
 
     public void startWaveAnim() {
@@ -70,6 +79,27 @@ public class PersonalFragment extends RxFragment {
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.setDuration(1500);
         animator.start();
+    }
+
+    private void initWithdrawDialog() {
+        withdrawBinding = DialogWithdrawBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+        withdrawDialog = new AlertDialog.Builder(getActivity())
+                .setView(withdrawBinding.getRoot())
+                .create();
+    }
+
+    public void showWithdrawDialog() {
+        if (withdrawDialog != null && !withdrawDialog.isShowing()) {
+            withdrawBinding.setViewModel(vm.new WithdrawDialogVM());
+            withdrawDialog.show();
+        }
+    }
+
+    public void hideWithdrawDialog() {
+        if (withdrawDialog != null && withdrawDialog.isShowing()) {
+            withdrawDialog.dismiss();
+        }
     }
 
     /**

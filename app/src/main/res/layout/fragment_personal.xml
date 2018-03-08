@@ -150,8 +150,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/item_padding"
-                    android:visibility="gone"
-                    android:text="提现" />
+                    android:text="提现"
+                    clickCommand="@{viewModel.withdrawClick}"/>
 
             </LinearLayout>
             <!--订单栏-->
@@ -324,8 +324,8 @@
                 android:background="@android:color/white"
                 android:orientation="horizontal"
                 android:padding="@dimen/item_padding"
-                android:visibility="@{viewModel.viewStyle.isSaler ? View.GONE : View.VISIBLE }"
-                app:clickCommand="@{viewModel.toIdentifyClick}">
+                app:clickCommand="@{viewModel.toIdentifyClick}"
+                android:visibility="@{viewModel.viewStyle.isSaler ? View.GONE : View.VISIBLE }">
 
                 <TextView
                     android:layout_width="0dp"

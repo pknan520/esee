@@ -12,8 +12,10 @@ import com.google.gson.Gson;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.bean.SimpleUser;
 import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.entity.request.WithdrawReq;
 import com.nong.nongo2o.module.login.LoginActivity;
 import com.nong.nongo2o.module.main.fragment.personal.PersonalFragment;
 import com.nong.nongo2o.module.personal.activity.AddressMgrActivity;
@@ -39,6 +41,8 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.http.Url;
 
 /**
@@ -176,6 +180,8 @@ public class PersonalVM implements ViewModel {
         evaBadge.set(0);
     }
 
+    public final ReplyCommand withdrawClick = new ReplyCommand(() -> fragment.showWithdrawDialog());
+
     /**
      * 去账单
      */
@@ -246,5 +252,63 @@ public class PersonalVM implements ViewModel {
         else
             fragment.getActivity().startActivity(LoginActivity.newIntent(fragment.getActivity(), true));
         fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    }
+
+    public class WithdrawDialogVM implements ViewModel {
+
+        public final ObservableField<BigDecimal> limit = new ObservableField<>();
+        public final ObservableField<String> money = new ObservableField<>();
+
+        public WithdrawDialogVM() {
+            initData();
+        }
+
+        private void initData() {
+            limit.set(balance.get());
+        }
+
+        /**
+         * 取消按键
+         */
+        public final ReplyCommand cancelClick = new ReplyCommand(() -> fragment.hideWithdrawDialog());
+
+        /**
+         * 确认按键
+         */
+        public final ReplyCommand confirmClick = new ReplyCommand(this::withdraw);
+
+        private void withdraw() {
+            if (TextUtils.isEmpty(money.get())) {
+                Toast.makeText(fragment.getActivity(), "请输入提现金额", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            BigDecimal withdrawMoney = new BigDecimal(money.get());
+            if (withdrawMoney.compareTo(BigDecimal.ZERO) == 0
+                    || withdrawMoney.compareTo(BigDecimal.ZERO) == -1
+                    || withdrawMoney.compareTo(limit.get()) == 1) {
+                Toast.makeText(fragment.getActivity(), "请输入合法的提现金额", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            ((RxBaseActivity) fragment.getActivity()).showLoading();
+            WithdrawReq req = new WithdrawReq(withdrawMoney);
+            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+                    new Gson().toJson(req));
+            RetrofitHelper.getUserAPI()
+                    .withdraw(requestBody)
+                    .subscribeOn(Schedulers.io())
+                    .map(new ApiResponseFunc<>())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        limit.set(limit.get().subtract(withdrawMoney));
+                        balance.set(balance.get().subtract(withdrawMoney));
+                        fragment.hideWithdrawDialog();
+                        Toast.makeText(fragment.getActivity(), "提现成功", Toast.LENGTH_SHORT).show();
+                    }, throwable -> {
+                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
+        }
     }
 }

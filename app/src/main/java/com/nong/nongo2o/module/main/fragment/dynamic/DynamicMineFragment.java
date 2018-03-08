@@ -9,11 +9,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentDynamicMineBinding;
+import com.nong.nongo2o.module.common.activity.AddFocusActivity;
+import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.nong.nongo2o.module.main.viewModel.dynamic.DynamicMineVM;
 import com.nong.nongo2o.widget.recyclerView.LinearItemDecoration;
 import com.trello.rxlifecycle2.components.RxFragment;
@@ -23,6 +28,8 @@ import com.trello.rxlifecycle2.components.RxFragment;
  */
 
 public class DynamicMineFragment extends RxFragment {
+
+    public static final int PUBLISH_RESULT = 0;
 
     private FragmentDynamicMineBinding binding;
     private DynamicMineVM vm;

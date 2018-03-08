@@ -125,14 +125,14 @@ public class DynamicPublishVM implements ViewModel {
                     itemBannerVMs.add(itemBannerVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemBannerVMs));
                     bannerFileList.add(new File(bean.getOriginalPath()));
                 }
-                if (itemBannerVMs.size() > 9) {
+                if (itemBannerVMs.size() > 1) {
                     itemBannerVMs.remove(itemBannerVMs.size() - 1);
                 }
             }
 
             @Override
             public void removePic(ItemPicVM itemPicVM) {
-                if (itemBannerVMs.size() == 9 && !TextUtils.isEmpty(itemBannerVMs.get(8).imgUri.get())) {
+                if (itemBannerVMs.size() == 1 && !TextUtils.isEmpty(itemBannerVMs.get(0).imgUri.get())) {
                     //  如果原来已加满，则增加一个添加图片的按钮
                     itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
                 }
@@ -158,7 +158,7 @@ public class DynamicPublishVM implements ViewModel {
             for (String bannerUri : headerImgList) {
                 itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), bannerUri, bannerClickListener, itemBannerVMs));
             }
-            if (itemBannerVMs.size() < 9)
+            if (itemBannerVMs.size() < 1)
                 itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
         }
 
@@ -241,23 +241,23 @@ public class DynamicPublishVM implements ViewModel {
                         itemDescPicVMs.add(itemDescPicVMs.size() - 1, new ItemPicVM(fragment.getActivity(), "file://" + bean.getOriginalPath(), this, itemDescPicVMs));
                         newPicList.add(new File(bean.getOriginalPath()));
                     }
-                    if (itemDescPicVMs.size() > 9) {
+                    if (itemDescPicVMs.size() > 1) {
                         itemDescPicVMs.remove(itemDescPicVMs.size() - 1);
                     }
                 }
 
                 @Override
                 public void removePic(ItemPicVM itemPicVM) {
-                    if (itemDescPicVMs.size() == 9 && !TextUtils.isEmpty(itemDescPicVMs.get(8).imgUri.get())) {
+                    if (itemDescPicVMs.size() == 1 && !TextUtils.isEmpty(itemDescPicVMs.get(0).imgUri.get())) {
                         //  如果原来已加满，则增加一个添加图片的按钮
                         itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
                     }
 
                     int pos = itemDescPicVMs.indexOf(itemPicVM);
-                    if (!content.getImg().isEmpty() && pos < content.getImg().size()) {
+                    if (content != null && content.getImg() != null && !content.getImg().isEmpty() && pos < content.getImg().size()) {
                         content.getImg().remove(pos);
                     } else {
-                        newPicList.remove(pos - content.getImg().size());
+                        newPicList.remove(pos - (content == null ? 0 : content.getImg().size()));
                     }
                     itemDescPicVMs.remove(itemPicVM);
                 }
@@ -275,7 +275,7 @@ public class DynamicPublishVM implements ViewModel {
                     itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), uri, addDescPicListener, itemDescPicVMs));
                 }
             }
-            if (itemDescPicVMs.size() < 9) {
+            if (itemDescPicVMs.size() < 1) {
                 //  添加一个加号图片
                 itemDescPicVMs.add(new ItemPicVM(fragment.getActivity(), null, addDescPicListener, itemDescPicVMs));
             }
@@ -338,7 +338,7 @@ public class DynamicPublishVM implements ViewModel {
      * 发布按钮
      */
     public final ReplyCommand publishClick = new ReplyCommand(() -> {
-        if (itemBannerVMs.size() < 2) {
+        if (TextUtils.isEmpty(itemBannerVMs.get(0).imgUri.get())) {
             Toast.makeText(fragment.getActivity(), "请选择最少一张主图", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -363,7 +363,7 @@ public class DynamicPublishVM implements ViewModel {
 
     private boolean allContentEmpty() {
         for (ItemDescVM item : itemDescVMs) {
-            if (!TextUtils.isEmpty(item.desc.get()) || item.itemDescPicVMs.size() > 1) {
+            if (!TextUtils.isEmpty(item.desc.get()) || !TextUtils.isEmpty(item.itemDescPicVMs.get(0).imgUri.get())) {
                 return false;
             }
         }

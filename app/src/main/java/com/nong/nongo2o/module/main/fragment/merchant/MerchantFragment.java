@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.databinding.FragmentMerchantBinding;
+import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.trello.rxlifecycle2.components.RxFragment;
 
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ public class MerchantFragment extends RxFragment {
     }
 
     private void initView() {
+        initToolbar();
+
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(MerchantListFragment.newInstance(MERCHANT_FOCUS));
         fragmentList.add(MerchantListFragment.newInstance(MERCHANT_ALL));
@@ -61,6 +65,21 @@ public class MerchantFragment extends RxFragment {
                 }
             }
         }
+    }
+
+    private void initToolbar() {
+        setHasOptionsMenu(true);
+        getActivity().setTitle("");
+        binding.toolbar.inflateMenu(R.menu.menu_add);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_add:
+                    getActivity().startActivity(AddFocusActivity.newIntent(getActivity()));
+                    getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+                    break;
+            }
+            return true;
+        });
     }
 
     public void switchToAll() {

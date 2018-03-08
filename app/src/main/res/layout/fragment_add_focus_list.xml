@@ -31,6 +31,7 @@
                     android:background="@android:color/white"
                     android:divider="@drawable/shape_vertical_divider"
                     android:orientation="vertical"
+                    android:visibility="gone"
                     android:showDividers="middle">
 
                     <RelativeLayout
@@ -93,8 +94,8 @@
                     android:id="@+id/rv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:itemBinding="@{viewModel.itemMerchantListBinding}"
-                    app:items="@{viewModel.itemMerchantListVMs}"
+                    app:itemBinding="@{viewModel.itemUserBinding}"
+                    app:items="@{viewModel.itemUserVMs}"
                     app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
 
             </LinearLayout>

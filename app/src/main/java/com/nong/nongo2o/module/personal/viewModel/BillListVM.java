@@ -84,7 +84,7 @@ public class BillListVM implements ViewModel {
         viewStyle.isRefreshing.set(true);
 
         RetrofitHelper.getBillServiceAPI()
-                .getBillList(billTypeStr, page)
+                .getBillList(billTypeStr, page, pageSize)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())

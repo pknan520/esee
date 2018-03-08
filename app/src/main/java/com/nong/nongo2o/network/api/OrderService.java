@@ -76,4 +76,21 @@ public interface OrderService {
     @Headers({"Content-Type: application/json;charset=UTF-8"})
     @POST("user/canclepay")
     Observable<ApiResponse<String>> cancelPey(@Body RequestBody body);
+
+    /**
+     * 查看某人购买记录
+     *
+     * @param userCode 用户编码
+     */
+    @GET("user/order/list")
+    Observable<ApiResponse<ApiListResponse<Order>>> getBuyRecord(@Query("page") int page, @Query("pageSize") int pageSize, @Query("userCode") String userCode);
+
+    /**
+     * 查询订单详情
+     *
+     * @param orderCode 订单编码
+     */
+    @GET("user/order/detail")
+    Observable<ApiResponse<Order>> getOrderDetail(@Query("orderCode") String orderCode);
+
 }

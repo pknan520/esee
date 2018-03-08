@@ -6,6 +6,7 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.annotation.DrawableRes;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -259,11 +260,32 @@ public class CreateOrderVM implements ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(order -> {
                     ((RxBaseActivity) fragment.getActivity()).replaceFragment(R.id.fl, PayFragment.newInstance(order), PayFragment.TAG);
+                    deleteMultiCart();
                 }, throwable -> {
                     Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
 
+    /**
+     * 删除对应购物车
+     */
+    private void deleteMultiCart() {
+        StringBuilder sb = new StringBuilder();
+        if (orderDetails != null &&!orderDetails.isEmpty()) {
+            for (OrderDetail detail : orderDetails) {
+                sb.append(detail.getCartCode()).append(",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+        }
 
+        RetrofitHelper.getCartAPI()
+                .deleteMultiCart(sb.toString())
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    LocalBroadcastManager.getInstance(fragment.getActivity()).sendBroadcast(new Intent("updateCart"));
+                }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
 

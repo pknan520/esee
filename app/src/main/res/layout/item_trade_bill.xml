@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.TradeBillVM.ItemTradeBillVM" />
+
+        <import type="me.tatarka.bindingcollectionadapter2.LayoutManagers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        app:clickCommand="@{viewModel.itemClick}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/item_padding">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/iv_head"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:placeholderImageRes="@{viewModel.headPlaceHolder}"
+                app:roundAsCircle="true"
+                app:uri="@{viewModel.headUri}" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/item_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.name}"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:text="@{`订单号：` + viewModel.orderNo}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemBinding="@{viewModel.itemDetailBinding}"
+            app:items="@{viewModel.itemDetailVMs}"
+            app:layoutManager="@{LayoutManagers.linear()}"/>
+
+    </LinearLayout>
+
+</layout>

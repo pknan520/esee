@@ -34,7 +34,6 @@
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:visibility="gone"
         android:background="@drawable/ease_common_tab_bg" >
 
         <ImageView

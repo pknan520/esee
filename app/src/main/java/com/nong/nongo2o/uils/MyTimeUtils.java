@@ -16,7 +16,7 @@ public class MyTimeUtils {
     public static String formatTime(long createTime) {
         long currentTime = Calendar.getInstance().getTimeInMillis();
         long deltaT = currentTime - createTime;
-        Log.d("MyTimeUtils", "deltaT = : " + deltaT);
+//        Log.d("MyTimeUtils", "deltaT = : " + deltaT);
 
         if (deltaT < 60000) {
             return "刚刚";
@@ -37,7 +37,7 @@ public class MyTimeUtils {
         long currentTime = Calendar.getInstance().getTimeInMillis();
         long createTime = createDate.getTime();
         long deltaT = currentTime - createTime;
-        Log.d("MyTimeUtils", "deltaT = : " + deltaT);
+//        Log.d("MyTimeUtils", "deltaT = : " + deltaT);
 
         if (deltaT < 60000) {
             return "刚刚";

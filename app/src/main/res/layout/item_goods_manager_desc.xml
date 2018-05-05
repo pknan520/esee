@@ -42,7 +42,7 @@
             android:layout_marginBottom="@dimen/line_space"
             android:layout_marginTop="@dimen/line_space"
             android:background="@null"
-            android:hint="描述一下您的商品"
+            android:hint="建议把文字描述直接编辑在图片上"
             android:text="@={viewModel.goodsDesc}" />
 
     </LinearLayout>

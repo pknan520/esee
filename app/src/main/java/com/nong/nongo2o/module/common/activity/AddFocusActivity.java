@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.nong.nongo2o.R;
+import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityAddFocusBinding;
 import com.nong.nongo2o.module.common.fragment.AddFocusListFragment;
@@ -16,7 +17,7 @@ import com.nong.nongo2o.module.common.fragment.AddFocusListFragment;
  * Created by Administrator on 2017-7-19.
  */
 
-public class AddFocusActivity extends RxBaseToolbarActivity {
+public class AddFocusActivity extends RxBaseActivity {
 
     private static final String TAG = "AddFocusActivity";
 
@@ -26,20 +27,21 @@ public class AddFocusActivity extends RxBaseToolbarActivity {
         return new Intent(context, AddFocusActivity.class);
     }
 
-    @Override
-    protected ViewDataBinding getBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_focus);
-        return binding;
-    }
-
-    @Override
-    public boolean canBack() {
-        return true;
-    }
+//    @Override
+//    protected ViewDataBinding getBinding() {
+//        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_focus);
+//        return binding;
+//    }
+//
+//    @Override
+//    public boolean canBack() {
+//        return true;
+//    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_focus);
         initView();
     }
 
@@ -47,10 +49,10 @@ public class AddFocusActivity extends RxBaseToolbarActivity {
         replaceFragment(R.id.fl, AddFocusListFragment.newInstance(), AddFocusListFragment.TAG);
     }
 
-    public void setToolbarTitle(String title) {
-        setTitle("");
-        binding.tvToolbarTitle.setText(title);
-    }
+//    public void setToolbarTitle(String title) {
+//        setTitle("");
+//        binding.tvToolbarTitle.setText(title);
+//    }
 
     @Override
     public void onBackPressed() {

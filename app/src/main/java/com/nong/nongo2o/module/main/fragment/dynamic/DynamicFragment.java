@@ -66,7 +66,7 @@ public class DynamicFragment extends RxFragment{
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
         setHasOptionsMenu(true);
         getActivity().setTitle("");
-        binding.toolbar.inflateMenu(R.menu.menu_dynamic);
+        binding.toolbar.inflateMenu(R.menu.menu_add);
         binding.toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.publish_dynamic:
@@ -106,10 +106,10 @@ public class DynamicFragment extends RxFragment{
                 switch (position) {
                     case 0:
                     case 1:
-                        binding.toolbar.inflateMenu(R.menu.menu_dynamic);
+                        binding.toolbar.inflateMenu(R.menu.menu_add);
                         break;
                     case 2:
-                        binding.toolbar.inflateMenu(R.menu.menu_add);
+                        binding.toolbar.inflateMenu(R.menu.menu_dynamic);
                         break;
                 }
 //                ((AppCompatActivity)getActivity()).supportInvalidateOptionsMenu();

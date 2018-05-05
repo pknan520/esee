@@ -13,6 +13,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.DialogInputExBinding;
@@ -99,6 +101,9 @@ public class OrderDetailFragment extends RxBaseFragment {
     public void showExDialog(DialogExVM.DialogExListener listener) {
         if (exDialog != null && !exDialog.isShowing()) {
             exBinding.setViewModel(new DialogExVM(getActivity(), exDialog, listener));
+            Window window = exDialog.getWindow();
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.y = 80;
             exDialog.show();
         }
     }

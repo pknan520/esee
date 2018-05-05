@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityIdentifyBinding;
+import com.nong.nongo2o.module.personal.fragment.IdentifyFragment;
 import com.nong.nongo2o.module.personal.viewModel.IdentifyVM;
 
 /**
@@ -19,7 +20,6 @@ import com.nong.nongo2o.module.personal.viewModel.IdentifyVM;
 public class IdentifyActivity extends RxBaseToolbarActivity {
 
     private ActivityIdentifyBinding binding;
-    private IdentifyVM vm;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, IdentifyActivity.class);
@@ -40,17 +40,20 @@ public class IdentifyActivity extends RxBaseToolbarActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        vm = new IdentifyVM(this);
-        binding.setViewModel(vm);
     }
 
     private void initView() {
-        setTitle("");
+        replaceFragment(R.id.fl, IdentifyFragment.newInstance(), IdentifyFragment.TAG);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.anim_right_out);
+    }
+
+    public void setToolbarTitle(String title) {
+        setTitle("");
+        binding.tvToolbarTitle.setText(title);
     }
 }

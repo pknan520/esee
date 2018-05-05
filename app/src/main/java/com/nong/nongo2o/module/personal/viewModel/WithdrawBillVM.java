@@ -127,7 +127,7 @@ public class WithdrawBillVM implements ViewModel {
         private void initData() {
             headUri.set(bill.getUser().getAvatar());
             name.set(bill.getUser().getUserNick());
-            orderNo.set(bill.getBillCode());
+            orderNo.set(bill.getBusinessObject().getOrderCode());
 
             money.set(bill.getBillMoney());
             time.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(bill.getCreateTime()));

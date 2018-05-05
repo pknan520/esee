@@ -1,5 +1,6 @@
 package com.nong.nongo2o.module.login.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.nong.nongo2o.base.RxBaseFragment;
 import com.nong.nongo2o.databinding.FragmentBindMobileBinding;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.response.WxAccessToken;
 import com.nong.nongo2o.entity.response.WxInfo;
 import com.nong.nongo2o.module.login.viewModel.BindMobileVM;
@@ -19,6 +21,7 @@ import com.nong.nongo2o.module.login.viewModel.BindMobileVM;
 public class BindMobileFragment extends RxBaseFragment {
 
     public static final String TAG = "BindMobileFragment";
+    public static final int GET_AREA = 100;
 
     private FragmentBindMobileBinding binding;
     private BindMobileVM vm;
@@ -58,5 +61,17 @@ public class BindMobileFragment extends RxBaseFragment {
     public void onDestroy() {
         binding.btnTime.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case GET_AREA:
+                if (resultCode == -1) {
+                    vm.setCities((City) data.getSerializableExtra("cityP"), (City) data.getSerializableExtra("cityC"),
+                            (City) data.getSerializableExtra("cityD"), (City) data.getSerializableExtra("cityS"));
+                }
+                break;
+        }
     }
 }

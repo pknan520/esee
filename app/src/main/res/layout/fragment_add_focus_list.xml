@@ -9,99 +9,54 @@
             type="com.nong.nongo2o.module.common.viewModel.AddFocusListVM" />
     </data>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:refreshing="@{viewModel.viewStyle.isRefreshing}"
-        app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+        android:orientation="vertical">
 
-        <android.support.v4.widget.NestedScrollView
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
 
-            <LinearLayout
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab"
+                style="@style/MainTopTab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+            app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <!--本地好友-->
+                android:layout_height="match_parent">
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/vertical_space"
-                    android:background="@android:color/white"
-                    android:divider="@drawable/shape_vertical_divider"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    android:showDividers="middle">
-
-                    <RelativeLayout
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <!--推荐关注列表-->
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/item_padding">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="@dimen/line_space"
-                            android:text="通讯录好友"
-                            android:textColor="@color/colorText"
-                            android:textSize="@dimen/text_normal" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:drawableEnd="@mipmap/right_grey"
-                            android:drawablePadding="@dimen/line_space"
-                            android:text="@{String.valueOf(viewModel.numOfLocalFriends) + @string/num_of_local_friends}"
-                            android:textColor="@color/colorComplementaryText"
-                            android:textSize="@dimen/text_normal_small" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/item_padding">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="@dimen/line_space"
-                            android:text="微信好友"
-                            android:textColor="@color/colorText"
-                            android:textSize="@dimen/text_normal" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:drawableEnd="@mipmap/right_grey"
-                            android:drawablePadding="@dimen/line_space"
-                            android:text="邀请好友"
-                            android:textColor="@color/colorComplementaryText"
-                            android:textSize="@dimen/text_normal_small" />
-
-                    </RelativeLayout>
+                        android:layout_height="match_parent"
+                        app:itemBinding="@{viewModel.itemUserBinding}"
+                        app:items="@{viewModel.itemUserVMs}"
+                        app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
 
                 </LinearLayout>
-                <!--推荐关注列表-->
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:itemBinding="@{viewModel.itemUserBinding}"
-                    app:items="@{viewModel.itemUserVMs}"
-                    app:onLoadMoreCommand="@{viewModel.onLoadMoreCommand}" />
 
-            </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
 
-        </android.support.v4.widget.NestedScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
 </layout>

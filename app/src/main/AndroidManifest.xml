@@ -91,6 +91,7 @@
         <activity android:name=".module.personal.activity.FansMgrActivity" />
         <activity android:name=".module.common.activity.SelectAreaActivity" />
         <activity android:name=".module.personal.activity.InviteActivity" />
+        <activity android:name=".module.personal.activity.WithdrawActivity" />
         <!-- Message -->
         <activity android:name=".module.message.activity.SysMsgActivity" />
         <activity android:name=".module.message.activity.ChatActivity" />

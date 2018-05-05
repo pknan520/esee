@@ -13,7 +13,6 @@ import com.nong.nongo2o.R;
 import com.nong.nongo2o.module.common.activity.AddFocusActivity;
 import com.nong.nongo2o.module.common.adapter.MyFragmentPagerAdapter;
 import com.nong.nongo2o.databinding.FragmentMerchantBinding;
-import com.nong.nongo2o.module.dynamic.activity.DynamicPublishActivity;
 import com.trello.rxlifecycle2.components.RxFragment;
 
 import java.util.ArrayList;

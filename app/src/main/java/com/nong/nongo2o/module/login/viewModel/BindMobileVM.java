@@ -13,11 +13,14 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.entity.bean.ApiResponse;
 import com.nong.nongo2o.entity.bean.UserInfo;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.request.CreateUserRequest;
 import com.nong.nongo2o.entity.response.WxAccessToken;
 import com.nong.nongo2o.entity.response.WxInfo;
+import com.nong.nongo2o.module.common.activity.SelectAreaActivity;
 import com.nong.nongo2o.module.login.fragment.BindMobileFragment;
 import com.nong.nongo2o.module.main.MainActivity;
+import com.nong.nongo2o.module.personal.fragment.AddressEditFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.service.InitDataService;
@@ -44,6 +47,9 @@ public class BindMobileVM implements ViewModel {
 
     public final ObservableField<String> mobile = new ObservableField<>();
     public final ObservableField<String> validCode = new ObservableField<>();
+    public final ObservableField<String> city = new ObservableField<>();
+
+    private City cityP, cityC, cityD;
 
     public BindMobileVM(BindMobileFragment fragment, WxAccessToken wxAccessToken, WxInfo wxInfo) {
         this.fragment = fragment;
@@ -57,6 +63,7 @@ public class BindMobileVM implements ViewModel {
 
     public class ViewStyle {
         public final ObservableBoolean btnTimeClickable = new ObservableBoolean(false);
+        public final ObservableBoolean hasSelectArea = new ObservableBoolean(false);
     }
 
     /**
@@ -91,6 +98,25 @@ public class BindMobileVM implements ViewModel {
     }
 
     /**
+     * 选择城市
+     */
+    public final ReplyCommand selectCityClick = new ReplyCommand(() -> {
+        fragment.startActivityForResult(SelectAreaActivity.newIntent(fragment.getActivity()), AddressEditFragment.GET_AREA);
+        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
+
+    /**
+     * 设置城市
+     */
+    public void setCities(City cityP, City cityC, City cityD, City cityS) {
+        viewStyle.hasSelectArea.set(true);
+        this.cityP = cityP;
+        this.cityC = cityC;
+        this.cityD = cityD;
+        city.set(cityP.getCity_name() + " " + cityC.getCity_name() + " " + cityD.getCity_name());
+    }
+
+    /**
      * 提交注册
      */
     public final ReplyCommand bindClick = new ReplyCommand(this::bindMobile);
@@ -106,6 +132,11 @@ public class BindMobileVM implements ViewModel {
             return;
         }
 
+        if (cityP == null || cityC == null || cityD == null) {
+            Toast.makeText(fragment.getActivity(), "请选择你的所属地", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         CreateUserRequest request = new CreateUserRequest();
         request.setOpenId(wxInfo.getOpenid());
         request.setPhone(mobile.get());
@@ -115,6 +146,7 @@ public class BindMobileVM implements ViewModel {
         request.setSex(wxInfo.getSex());
         request.setLocation(wxInfo.getProvince());
         request.setAvatar(wxInfo.getHeadimgurl());
+        request.setConsigneeAddress(cityP.getCity_name() + cityC.getCity_name() + cityD.getCity_name());
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
                 new Gson().toJson(request));

@@ -37,6 +37,7 @@ public class AddFocusListVM implements ViewModel {
     public final ObservableList<ItemUserVM> itemUserVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemUserVM> itemUserBinding = ItemBinding.of(BR.viewModel, R.layout.item_user_list);
 
+    private String searchVal = "";
     private final int pageSize = 10;
     private int total;
 
@@ -56,17 +57,20 @@ public class AddFocusListVM implements ViewModel {
      * 初始化数据
      */
     private void initData() {
-        getUserList(1, true);
+        getUserList(searchVal, 1, true);
     }
 
     /**
      * 查询用户列表
      */
-    private void getUserList(int page, boolean isForce) {
+    public void getUserList(String searchVal, int page, boolean isForce) {
         viewStyle.isRefreshing.set(true);
+        if (isForce) {
+            this.searchVal = searchVal;
+        }
 
         RetrofitHelper.getUserAPI()
-                .getUserList(1, page, pageSize)
+                .getUserList(1, page, pageSize, searchVal)
                 .subscribeOn(Schedulers.io())
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,7 +92,7 @@ public class AddFocusListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        getUserList(1, true);
+        getUserList(searchVal, 1, true);
     }
 
     /**
@@ -98,7 +102,7 @@ public class AddFocusListVM implements ViewModel {
 
     private void loadMoreData() {
         if (itemUserVMs.size() < total) {
-            getUserList(itemUserVMs.size() / pageSize + 1, false);
+            getUserList(searchVal,itemUserVMs.size() / pageSize + 1, false);
         } else {
             Toast.makeText(fragment.getActivity(), "已经到底了^.^", Toast.LENGTH_SHORT).show();
         }

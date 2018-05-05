@@ -27,6 +27,7 @@ import com.nong.nongo2o.module.personal.activity.InviteActivity;
 import com.nong.nongo2o.module.personal.activity.OrderCenterActivity;
 import com.nong.nongo2o.module.personal.activity.PersonalHomeActivity;
 import com.nong.nongo2o.module.personal.activity.SettingActivity;
+import com.nong.nongo2o.module.personal.activity.WithdrawActivity;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
 import com.nong.nongo2o.uils.BeanUtils;
@@ -180,7 +181,10 @@ public class PersonalVM implements ViewModel {
         evaBadge.set(0);
     }
 
-    public final ReplyCommand withdrawClick = new ReplyCommand(() -> fragment.showWithdrawDialog());
+    /**
+     * 去提现
+     */
+    public final ReplyCommand withdrawClick = new ReplyCommand(() -> startActivityClick(WithdrawActivity.newIntent(fragment.getActivity())));
 
     /**
      * 去账单
@@ -205,22 +209,30 @@ public class PersonalVM implements ViewModel {
     /**
      * 去待付款订单
      */
-    public final ReplyCommand toUnPaidOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 1)));
+    public final ReplyCommand toUnPaidOrderClick = new ReplyCommand(() ->
+            startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 0))
+    );
 
     /**
      * 去待发货订单
      */
-    public final ReplyCommand toUnSendOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 2)));
+    public final ReplyCommand toUnSendOrderClick = new ReplyCommand(() ->
+            startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), viewStyle.isMerchantMode.get() ? 0 : 1))
+    );
 
     /**
      * 去待收货订单
      */
-    public final ReplyCommand toUnReceiveOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 3)));
+    public final ReplyCommand toUnReceiveOrderClick = new ReplyCommand(() ->
+            startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), viewStyle.isMerchantMode.get() ? 1 : 2))
+    );
 
     /**
      * 去待评价订单
      */
-    public final ReplyCommand toUnEvaOrderClick = new ReplyCommand(() -> startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), 4)));
+    public final ReplyCommand toUnEvaOrderClick = new ReplyCommand(() ->
+            startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), viewStyle.isMerchantMode.get() ? 2 : 3))
+    );
 
     /**
      * 去地址管理
@@ -278,37 +290,37 @@ public class PersonalVM implements ViewModel {
         public final ReplyCommand confirmClick = new ReplyCommand(this::withdraw);
 
         private void withdraw() {
-            if (TextUtils.isEmpty(money.get())) {
-                Toast.makeText(fragment.getActivity(), "请输入提现金额", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            BigDecimal withdrawMoney = new BigDecimal(money.get());
-            if (withdrawMoney.compareTo(BigDecimal.ZERO) == 0
-                    || withdrawMoney.compareTo(BigDecimal.ZERO) == -1
-                    || withdrawMoney.compareTo(limit.get()) == 1) {
-                Toast.makeText(fragment.getActivity(), "请输入合法的提现金额", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            ((RxBaseActivity) fragment.getActivity()).showLoading();
-            WithdrawReq req = new WithdrawReq(withdrawMoney);
-            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
-                    new Gson().toJson(req));
-            RetrofitHelper.getUserAPI()
-                    .withdraw(requestBody)
-                    .subscribeOn(Schedulers.io())
-                    .map(new ApiResponseFunc<>())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(resp -> {
-                        limit.set(limit.get().subtract(withdrawMoney));
-                        balance.set(balance.get().subtract(withdrawMoney));
-                        fragment.hideWithdrawDialog();
-                        Toast.makeText(fragment.getActivity(), "提现成功", Toast.LENGTH_SHORT).show();
-                    }, throwable -> {
-                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
-                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
+//            if (TextUtils.isEmpty(money.get())) {
+//                Toast.makeText(fragment.getActivity(), "请输入提现金额", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            BigDecimal withdrawMoney = new BigDecimal(money.get());
+//            if (withdrawMoney.compareTo(BigDecimal.ZERO) == 0
+//                    || withdrawMoney.compareTo(BigDecimal.ZERO) == -1
+//                    || withdrawMoney.compareTo(limit.get()) == 1) {
+//                Toast.makeText(fragment.getActivity(), "请输入合法的提现金额", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            ((RxBaseActivity) fragment.getActivity()).showLoading();
+//            WithdrawReq req = new WithdrawReq(withdrawMoney);
+//            RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
+//                    new Gson().toJson(req));
+//            RetrofitHelper.getUserAPI()
+//                    .withdraw(requestBody)
+//                    .subscribeOn(Schedulers.io())
+//                    .map(new ApiResponseFunc<>())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(resp -> {
+//                        limit.set(limit.get().subtract(withdrawMoney));
+//                        balance.set(balance.get().subtract(withdrawMoney));
+//                        fragment.hideWithdrawDialog();
+//                        Toast.makeText(fragment.getActivity(), "提现成功", Toast.LENGTH_SHORT).show();
+//                    }, throwable -> {
+//                        Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+//                        ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+//                    }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
         }
     }
 }

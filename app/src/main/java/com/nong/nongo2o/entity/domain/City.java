@@ -43,5 +43,8 @@ public class City extends Model{
         this.city_name = city_name;
     }
 
-    
+    public City(String city_code, String city_name) {
+        this.city_code = city_code;
+        this.city_name = city_name;
+    }
 }

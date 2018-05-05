@@ -171,6 +171,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_space"
+                    android:visibility="gone"
                     android:background="@android:color/white"
                     android:orientation="horizontal"
                     android:padding="@dimen/text_padding">

@@ -235,17 +235,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 onBackPressed();
             }
         });
-        titleBar.setRightLayoutClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (chatType == EaseConstant.CHATTYPE_SINGLE) {
-                    emptyHistory();
-                } else {
-                    toGroupDetails();
-                }
-            }
-        });
+//        titleBar.setRightLayoutClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                if (chatType == EaseConstant.CHATTYPE_SINGLE) {
+//                    emptyHistory();
+//                } else {
+//                    toGroupDetails();
+//                }
+//            }
+//        });
 
         setRefreshLayoutListener();
         

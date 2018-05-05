@@ -70,41 +70,26 @@ public class OrderCenterVM implements ViewModel {
                     .subscribe(resp -> {
                         for(Map<String,Object> countMap : resp){
                             switch ((int)Double.parseDouble(countMap.get("order_status").toString()) ){
-                                case 0:
-                                    itemTabVMs.get(1).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                    break;
-                                case 1:
-                                    itemTabVMs.get(2).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-                                    break;
-                                case 2:
+                                case 0: //  待付款
                                     if (!isMerchantMode) {
-                                        itemTabVMs.get(3).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
+                                        itemTabVMs.get(0).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
                                     }
                                     break;
-                                case 3:
-                                    if (!isMerchantMode) {
-                                        itemTabVMs.get(4).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                    }
+                                case 1: //  待发货
+                                    itemTabVMs.get(isMerchantMode ? 0 : 1).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
                                     break;
-                                case 4:
-                                    if (!isMerchantMode) {
-                                        itemTabVMs.get(5).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                    }
+                                case 2: //  待收货
+                                    itemTabVMs.get(isMerchantMode ? 1 : 2).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
                                     break;
-                                case 5:
-                                    if (isMerchantMode) {
-                                        itemTabVMs.get(6).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                    }
+                                case 3: //  待评价
+                                    itemTabVMs.get(isMerchantMode ? 2 : 3).tabBadgeText.set((int) Double.parseDouble(countMap.get("count").toString()));
                                     break;
-//                                case 6:
-//                                    itemTabVMs.get(7).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-//                                    break;
-//                                case 7:
-//                                    itemTabVMs.get(8).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-//                                    break;
-//                                case -1:
-//                                    itemTabVMs.get(9).tabBadgeText.set((int)Double.parseDouble(countMap.get("count").toString()));
-//                                    break;
+                                case 5: //  退款申请
+                                    itemTabVMs.get(isMerchantMode ? 3 : 4).tabBadgeText.set(itemTabVMs.get(isMerchantMode ? 3 : 4).tabBadgeText.get() + (int) Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 6: //  退款中
+                                    itemTabVMs.get(isMerchantMode ? 3 : 4).tabBadgeText.set(itemTabVMs.get(isMerchantMode ? 3 : 4).tabBadgeText.get() + (int)Double.parseDouble(countMap.get("count").toString()));
+                                    break;
                             }
                         }
 //                        int total = 0;

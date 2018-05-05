@@ -86,6 +86,33 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:padding="@dimen/item_padding"
+                android:background="@drawable/border_gray"
+                app:clickCommand="@{viewModel.selectCityClick}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="所在地区    "
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/vertical_space"
+                    android:drawableEnd="@mipmap/right_grey"
+                    android:text="@{viewModel.city}"
+                    android:textColor="@{viewModel.viewStyle.hasSelectArea ? @color/colorText : @color/colorHintText}"
+                    android:textSize="@dimen/text_normal" />
+
+            </LinearLayout>
+
             <Button
                 style="@style/SimplePrimaryButton"
                 android:layout_width="match_parent"

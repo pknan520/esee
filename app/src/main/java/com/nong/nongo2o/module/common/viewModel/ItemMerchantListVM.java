@@ -52,11 +52,6 @@ public class ItemMerchantListVM implements ViewModel {
     public final ObservableList<ItemMerchantGoodsListVM> itemPicVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemMerchantGoodsListVM> itemPicBinding = ItemBinding.of(BR.viewModel, R.layout.item_merchant_goods_list);
 
-    // TODO: 2017-9-13 容错的构造方法，以后删除
-    public ItemMerchantListVM(Fragment fragment) {
-        this.fragment = fragment;
-    }
-
     public ItemMerchantListVM(Fragment fragment, SalerInfo saler) {
         this.fragment = fragment;
         this.saler = saler;

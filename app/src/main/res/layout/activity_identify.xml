@@ -4,9 +4,6 @@
 
     <data>
 
-        <variable
-            name="viewModel"
-            type="com.nong.nongo2o.module.personal.viewModel.IdentifyVM" />
     </data>
 
     <LinearLayout
@@ -18,197 +15,22 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="@color/colorPrimary">
 
             <TextView
+                android:id="@+id/tv_toolbar_title"
                 style="@style/TextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="实名认证" />
+                android:layout_gravity="center"/>
 
         </android.support.v7.widget.Toolbar>
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/item_padding"
-            android:text="请填写真实个人信息"
-            android:textColor="@color/colorText"
-            android:textSize="@dimen/text_normal" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:orientation="horizontal"
-            android:padding="@dimen/item_padding">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="用户姓名"
-                android:textColor="@color/colorText"
-                android:textSize="@dimen/text_normal" />
-
-            <EditText
-                style="@style/EditNormal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/vertical_space"
-                android:hint="请输入真实姓名"
-                app:isEditable="@{!viewModel.viewStyle.isAuthing}"
-                android:text="@={viewModel.name}" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/colorDivider" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:orientation="horizontal"
-            android:padding="@dimen/item_padding">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="身份证号"
-                android:textColor="@color/colorText"
-                android:textSize="@dimen/text_normal" />
-
-            <EditText
-                style="@style/EditNormal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/vertical_space"
-                android:hint="请输入身份证号码"
-                app:isEditable="@{!viewModel.viewStyle.isAuthing}"
-                android:text="@={viewModel.idNo}" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/vertical_space"
-            android:background="@android:color/white"
-            android:orientation="vertical"
-            android:padding="@dimen/item_padding">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="身份证照片"
-                android:textColor="@color/colorText"
-                android:textSize="@dimen/text_normal" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/line_space"
-                android:orientation="horizontal"
-                android:paddingEnd="50dp"
-                android:paddingStart="50dp">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="75dp"
-                    android:layout_weight="1"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:clickCommand="@{viewModel.idFaceClick}"
-                    app:placeholderImageRes="@{viewModel.idPicPlaceHolder1}"
-                    app:glideUri="@{viewModel.idPic1}" />
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_weight="1"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    app:clickCommand="@{viewModel.idReverssideClick}"
-                    app:placeholderImageRes="@{viewModel.idPicPlaceHolder2}"
-                    app:glideUri="@{viewModel.idPic2}" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="@dimen/vertical_space"
-            android:padding="@dimen/item_padding"
-            android:background="@android:color/white">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_normal_small"
-                android:textColor="@color/colorText"
-                android:text="a.本人承担此账号在小背篓平台上所有动作的责任；"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_normal_small"
-                android:textColor="@color/colorText"
-                android:text="b.本人对所上架商品的描述准确性负全部责任；"/>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_normal_small"
-                android:textColor="@color/colorText"
-                android:text="c.本人对售卖商品的数量和质量负全部责任；"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_normal_small"
-                android:textColor="@color/colorText"
-                android:text="d.本人负责安排订单商品的送达交付，并承担送达过程中的责任；"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_normal_small"
-                android:textColor="@color/colorText"
-                android:text="e.本人愿意接受小背篓的管理规则，并按有效成交订单金额的2%缴纳管理费。"/>
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:button="@drawable/selector_check_box"
-                android:layout_marginTop="@dimen/vertical_space"
-                android:checked="@={viewModel.isAgree}"
-                android:textSize="@dimen/text_normal"
-                android:textColor="@color/colorText"
-                android:paddingLeft="@dimen/item_padding"
-                android:text="本人接受以上规则"/>
-
-        </LinearLayout>
-
-        <Button
-            style="@style/SimpleOrangeButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:padding="@dimen/item_padding"
-            android:text="提交资料"
-            android:textSize="15sp"
-            app:clickCommand="@{viewModel.submitClick}" />
+            android:layout_height="match_parent"
+            android:id="@+id/fl"/>
 
     </LinearLayout>
 

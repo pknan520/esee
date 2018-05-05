@@ -25,7 +25,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="125dp"
-                android:background="@color/colorPrimary"
+                android:background="@{viewModel.viewStyle.isMerchantMode ? @color/colorComplementaryOrange : @color/colorPrimary}"
                 android:padding="@dimen/activity_margin"
                 app:clickCommand="@{viewModel.toPersonalHomeClick}">
 
@@ -143,6 +143,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/item_padding"
                     android:text="账单"
+                    android:visibility="gone"
                     app:clickCommand="@{viewModel.toBillClick}" />
 
                 <Button

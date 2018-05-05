@@ -54,6 +54,8 @@ public class SimpleUser extends PagingEntity {
      */
     private String profile;
 
+    private String phone;
+
     public SimpleUser() { }
 
     public String getProfile() {
@@ -146,5 +148,13 @@ public class SimpleUser extends PagingEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

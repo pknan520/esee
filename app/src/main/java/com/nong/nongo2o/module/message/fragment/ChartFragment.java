@@ -1,5 +1,7 @@
 package com.nong.nongo2o.module.message.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -73,6 +75,26 @@ public class ChartFragment extends EaseChatFragment implements EaseChatFragment.
                         }, throwable -> Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
             }
         }
+
+        //  电话信息
+        RetrofitHelper.getUserAPI()
+                .profile(userId)
+                .subscribeOn(Schedulers.io())
+                .map(new ApiResponseFunc<>())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    if (user.getUserType() == 1 && !TextUtils.isEmpty(user.getPhone())) {
+                        titleBar.setRightLayoutVisibility(View.VISIBLE);
+                        titleBar.setRightImageResource(R.mipmap.bar_call);
+                        titleBar.setRightLayoutClickListener(v -> {
+                            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + user.getPhone()));
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        });
+                    } else {
+                        titleBar.setRightLayoutVisibility(View.GONE);
+                    }
+                }, throwable -> Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     @Override

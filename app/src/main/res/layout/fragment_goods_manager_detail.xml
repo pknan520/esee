@@ -60,7 +60,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="标题    "
+                        android:text="商品名称"
                         android:textColor="@color/colorText"
                         android:textSize="@dimen/text_normal" />
 
@@ -69,8 +69,37 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/vertical_space"
-                        android:hint="产地 + 生产人 + 商品名称"
+                        android:hint="20个汉字以内"
+                        android:maxLength="20"
                         android:text="@={viewModel.goodsName}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_space"
+                    android:background="@android:color/white"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="产地"
+                        android:textColor="@color/colorText"
+                        android:textSize="@dimen/text_normal" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/vertical_space"
+                        android:drawableEnd="@mipmap/right_grey"
+                        android:text="@{viewModel.city}"
+                        android:textColor="@{viewModel.viewStyle.hasSelectArea ? @color/colorText : @color/colorHintText}"
+                        android:textSize="@dimen/text_normal"
+                        app:clickCommand="@{viewModel.selectCityClick}" />
 
                 </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.nong.nongo2o.module.personal.fragment;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.databinding.FragmentGoodsManagerDetailBinding;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.module.common.CancelDialogListener;
 import com.nong.nongo2o.module.common.ConfirmDialogListener;
@@ -26,6 +28,7 @@ import com.trello.rxlifecycle2.components.RxFragment;
 public class GoodsManagerDetailFragment extends RxFragment {
 
     public static final String TAG = "GoodsManagerDetailFragment";
+    public static final int GET_AREA = 100;
 
     private GoodsManagerDetailVM vm;
     private FragmentGoodsManagerDetailBinding binding;
@@ -90,5 +93,17 @@ public class GoodsManagerDetailFragment extends RxFragment {
                     if (confirm != null) confirm.onConfirm();
                 })
                 .show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case GET_AREA:
+                if (resultCode == -1 && vm != null) {
+                    vm.setCities((City) data.getSerializableExtra("cityP"), (City) data.getSerializableExtra("cityC"),
+                            (City) data.getSerializableExtra("cityD"));
+                }
+                break;
+        }
     }
 }

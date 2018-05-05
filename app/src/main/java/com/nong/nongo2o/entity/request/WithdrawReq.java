@@ -1,6 +1,6 @@
 package com.nong.nongo2o.entity.request;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by PANYJ7 on 2018-3-6.
@@ -8,17 +8,17 @@ import java.math.BigDecimal;
 
 public class WithdrawReq {
 
-    private BigDecimal withdrawMoney;
+    private List<String> orderIds;
 
-    public WithdrawReq(BigDecimal withdrawMoney) {
-        this.withdrawMoney = withdrawMoney;
+    public WithdrawReq(List<String> orderIds) {
+        this.orderIds = orderIds;
     }
 
-    public BigDecimal getWithdrawMoney() {
-        return withdrawMoney;
+    public List<String> getOrderIds() {
+        return orderIds;
     }
 
-    public void setWithdrawMoney(BigDecimal withdrawMoney) {
-        this.withdrawMoney = withdrawMoney;
+    public void setOrderIds(List<String> orderIds) {
+        this.orderIds = orderIds;
     }
 }

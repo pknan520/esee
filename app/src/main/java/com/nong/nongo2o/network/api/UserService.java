@@ -257,5 +257,5 @@ public interface UserService {
      * @return
      */
     @GET("saler/search")
-    Observable<ApiResponse<ApiListResponse<SimpleUser>>> getUserList(@Query("userStatus") int userStatus, @Query("page") int page, @Query("pageSize") int pageSize);
+    Observable<ApiResponse<ApiListResponse<SimpleUser>>> getUserList(@Query("userStatus") int userStatus, @Query("page") int page, @Query("pageSize") int pageSize, @Query("searchVal") String searchVal);
 }

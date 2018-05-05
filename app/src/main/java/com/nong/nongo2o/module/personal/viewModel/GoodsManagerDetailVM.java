@@ -2,6 +2,7 @@ package com.nong.nongo2o.module.personal.viewModel;
 
 import android.content.Intent;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
 import android.support.v4.content.LocalBroadcastManager;
@@ -16,14 +17,15 @@ import com.kelin.mvvmlight.command.ReplyCommand;
 import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
+import com.nong.nongo2o.entity.domain.City;
 import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.Goods;
 import com.nong.nongo2o.entity.domain.GoodsSpec;
 import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Moment;
-import com.nong.nongo2o.module.common.CancelDialogListener;
-import com.nong.nongo2o.module.common.ConfirmDialogListener;
+import com.nong.nongo2o.module.common.activity.SelectAreaActivity;
 import com.nong.nongo2o.module.common.viewModel.ItemPicVM;
+import com.nong.nongo2o.module.personal.fragment.AddressEditFragment;
 import com.nong.nongo2o.module.personal.fragment.GoodsManagerDetailFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
@@ -63,6 +65,9 @@ public class GoodsManagerDetailVM implements ViewModel {
     public final ItemBinding<ItemPicVM> itemBannerBinding = ItemBinding.of(BR.viewModel, R.layout.item_pic);
     //  商品名称
     public final ObservableField<String> goodsName = new ObservableField<>();
+    //  产地
+    public final ObservableField<String> city = new ObservableField<>();
+    private City cityP, cityC, cityD;
     //  商品规格
     public final ObservableList<ItemStandardVM> itemStandardVMs = new ObservableArrayList<>();
     public final ItemBinding<ItemStandardVM> itemStandardBinding = ItemBinding.of(BR.viewModel, R.layout.item_goods_manager_standard);
@@ -94,6 +99,12 @@ public class GoodsManagerDetailVM implements ViewModel {
             //  初始有一个空白的商品描述
             itemDescVMs.add(new ItemDescVM());
         }
+    }
+
+    public final ViewStyle viewStyle = new ViewStyle();
+
+    public class ViewStyle {
+        public final ObservableBoolean hasSelectArea = new ObservableBoolean(false);
     }
 
     /**
@@ -147,6 +158,16 @@ public class GoodsManagerDetailVM implements ViewModel {
             itemBannerVMs.add(new ItemPicVM(fragment.getActivity(), null, bannerClickListener, itemBannerVMs));
 
         goodsName.set(goods.getTitle());
+        //  产地
+        if (!TextUtils.isEmpty(goods.getProvinceCode()) && !TextUtils.isEmpty(goods.getProvinceName()) && !TextUtils.isEmpty(goods.getCityCode())
+                && !TextUtils.isEmpty(goods.getCityName()) && !TextUtils.isEmpty(goods.getAreaCode()) && !TextUtils.isEmpty(goods.getAreaName())) {
+            cityP = new City(goods.getProvinceCode(), goods.getProvinceName());
+            cityC = new City(goods.getCityCode(), goods.getCityName());
+            cityD = new City(goods.getAreaCode(), goods.getAreaName());
+            setCities(cityP, cityC, cityD);
+        } else {
+            city.set("请选择产地城市");
+        }
 
         if (goods.getGoodsSpecs() != null && goods.getGoodsSpecs().size() > 0) {
             for (GoodsSpec spec : goods.getGoodsSpecs()) {
@@ -169,7 +190,25 @@ public class GoodsManagerDetailVM implements ViewModel {
             //  初始有一个空白的商品描述
             itemDescVMs.add(new ItemDescVM());
         }
+    }
 
+    /**
+     * 选择城市
+     */
+    public final ReplyCommand selectCityClick = new ReplyCommand(() -> {
+        fragment.startActivityForResult(SelectAreaActivity.newIntent(fragment.getActivity()), AddressEditFragment.GET_AREA);
+        fragment.getActivity().overridePendingTransition(R.anim.anim_right_in, 0);
+    });
+
+    /**
+     * 设置城市
+     */
+    public void setCities(City cityP, City cityC, City cityD) {
+        viewStyle.hasSelectArea.set(true);
+        this.cityP = cityP;
+        this.cityC = cityC;
+        this.cityD = cityD;
+        city.set(cityP.getCity_name() + " " + cityC.getCity_name() + " " + cityD.getCity_name());
     }
 
     /**
@@ -183,6 +222,11 @@ public class GoodsManagerDetailVM implements ViewModel {
 
         if (TextUtils.isEmpty(goodsName.get())) {
             Toast.makeText(fragment.getActivity(), "请输入商品名称", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (cityP == null || cityC == null || cityD == null) {
+            Toast.makeText(fragment.getActivity(), "请选择产地区域", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -293,6 +337,14 @@ public class GoodsManagerDetailVM implements ViewModel {
         good.setPrice(specList.get(0).getPrice());
         good.setCovers(new Gson().toJson(covers));
         good.setTitle(goodsName.get());
+        //  产地
+        good.setProvinceCode(cityP.getCity_code());
+        good.setProvinceName(cityP.getCity_name());
+        good.setCityCode(cityC.getCity_code());
+        good.setCityName(cityC.getCity_name());
+        good.setAreaCode(cityD.getCity_code());
+        good.setAreaName(cityD.getCity_name());
+
         good.setGoodsSpecs(specList);
         good.setDetail(new Gson().toJson(contentList));
         //  默认运费

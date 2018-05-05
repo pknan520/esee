@@ -322,7 +322,8 @@ public class OrderListVM implements ViewModel {
                     break;
                 case 1:
                     //  商家：确认发货
-                    send();
+                    ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment.getParentFragment(),
+                            OrderDetailFragment.newInstance(order, isMerchantMode), OrderDetailFragment.TAG);
                     break;
                 case 2:
                     //  买家：确认收货

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.WithdrawVM.ItemWithdrawOrderVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:divider="@drawable/shape_vertical_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <ImageView
+                android:id="@+id/iv_head"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:glideUri="@{viewModel.headUri}"
+                app:placeholderImageRes="@{viewModel.headPlaceHolder}" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/line_space"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.name}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal"
+                    tools:text="名字" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.orderNo}"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal"
+                    tools:text="订单号askldaslkdjasljdkasljd" />
+
+            </LinearLayout>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/text_padding"
+                android:button="@drawable/selector_check_box"
+                android:checked="@{viewModel.isCheck}"
+                app:clickCommand="@{viewModel.checkClick}"
+                android:visibility="@{viewModel.viewStyle.applyWithdraw ? View.VISIBLE : View.GONE}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@{viewModel.status}"
+                tools:text="退款中"
+                android:textColor="@color/colorComplementaryGreen"
+                android:visibility="@{viewModel.viewStyle.applyWithdraw ? View.GONE : View.VISIBLE}"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/item_padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="订单金额"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="@{@string/rmb + ` ` + String.valueOf(viewModel.orderMoney)}"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/text_normal"
+                    tools:text="¥ 2.00" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:orientation="horizontal"
+                android:visibility="@{viewModel.viewStyle.hasRefund ? View.VISIBLE : View.GONE}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="退款金额"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="@{@string/rmb + ` ` + String.valueOf(viewModel.refundMoney)}"
+                    android:textColor="@color/colorComplementaryText"
+                    android:textSize="@dimen/text_normal"
+                    tools:text="¥ 2.00" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="可提现金额"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_normal" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{@string/rmb + ` ` + String.valueOf(viewModel.withdrawMoney)}"
+                android:textColor="@color/colorComplementaryGreen"
+                android:textSize="@dimen/text_normal"
+                tools:text="¥ 2.00" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

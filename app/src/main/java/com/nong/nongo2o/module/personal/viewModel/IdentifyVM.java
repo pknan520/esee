@@ -19,6 +19,8 @@ import com.nong.nongo2o.entity.domain.FileResponse;
 import com.nong.nongo2o.entity.domain.User;
 import com.nong.nongo2o.entity.request.UpdateUserRequest;
 import com.nong.nongo2o.module.personal.activity.IdentifyActivity;
+import com.nong.nongo2o.module.personal.fragment.AgreementFragment;
+import com.nong.nongo2o.module.personal.fragment.IdentifyFragment;
 import com.nong.nongo2o.network.RetrofitHelper;
 import com.nong.nongo2o.network.auxiliary.ApiConstants;
 import com.nong.nongo2o.network.auxiliary.ApiResponseFunc;
@@ -55,7 +57,7 @@ import static android.R.attr.fragment;
 
 public class IdentifyVM implements ViewModel {
 
-    private IdentifyActivity activity;
+    private IdentifyFragment fragment;
 
     public final ObservableField<String> name = new ObservableField<>();
     public final ObservableField<String> idNo = new ObservableField<>();
@@ -69,8 +71,8 @@ public class IdentifyVM implements ViewModel {
 
     private List<String> idPicList;
 
-    public IdentifyVM(IdentifyActivity activity) {
-        this.activity = activity;
+    public IdentifyVM(IdentifyFragment fragment) {
+        this.fragment = fragment;
 
         initData();
     }
@@ -96,16 +98,24 @@ public class IdentifyVM implements ViewModel {
                         idNo.set(user.getIdNumber());
                         idPic1.set(ApiConstants.PIC_URL.substring(0, ApiConstants.PIC_URL.length() - 1) + user.getIdFront());
                         idPic2.set(ApiConstants.PIC_URL.substring(0, ApiConstants.PIC_URL.length() - 1) + user.getIdBack());
-                    }, throwable -> Toast.makeText(activity, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                    }, throwable -> Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
+
+    /**
+     * 用户协议
+     */
+    public final ReplyCommand agreementClick = new ReplyCommand(() -> {
+        ((RxBaseActivity) fragment.getActivity()).switchFragment(R.id.fl, fragment,
+                AgreementFragment.newInstance(), AgreementFragment.TAG);
+    });
 
     /**
      * 身份证照片正面
      */
     public final ReplyCommand idFaceClick = new ReplyCommand(() -> {
         if (UserInfo.getInstance().getUserType() == 10) {
-            Toast.makeText(activity, "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -117,7 +127,7 @@ public class IdentifyVM implements ViewModel {
      */
     public final ReplyCommand idReverssideClick = new ReplyCommand(() -> {
         if (UserInfo.getInstance().getUserType() == 10) {
-            Toast.makeText(activity, "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -125,20 +135,20 @@ public class IdentifyVM implements ViewModel {
     });
 
     private void checkCameraPermissions(ObservableField<String> picUri, int pos) {
-        new RxPermissions(activity)
+        new RxPermissions(fragment.getActivity())
                 .request(Manifest.permission.CAMERA)
                 .subscribe(granted -> {
                     if (granted) {
                         selectPic(picUri, pos);
                     } else {
-                        Toast.makeText(activity, "拒绝权限将不能打开相册", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(fragment.getActivity(), "拒绝权限将不能打开相册", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void selectPic(ObservableField<String> picUri, int pos) {
         RxGalleryFinal
-                .with(activity)
+                .with(fragment.getActivity())
                 .image()
                 .radio()
 //                .crop()
@@ -159,31 +169,31 @@ public class IdentifyVM implements ViewModel {
      */
     public final ReplyCommand submitClick = new ReplyCommand(() -> {
         if (!isAgree.get()) {
-            Toast.makeText(activity, "如果需要提交实名验证，请勾选同意规则", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), "如果需要提交实名验证，请勾选同意规则", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (UserInfo.getInstance().getUserType() == 10) {
-            Toast.makeText(activity, "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), "正在审核中，请不要修改", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (TextUtils.isEmpty(name.get()) || TextUtils.isEmpty(idNo.get())) {
-            Toast.makeText(activity, "请填写完整的身份资料", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), "请填写完整的身份资料", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (idPicList.size() < 2) {
-            Toast.makeText(activity, "请上传身份证照片", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), "请上传身份证照片", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        activity.showLoading();
+        ((RxBaseActivity) fragment.getActivity()).showLoading();
 
         Observable.just(idPicList)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .map(files -> Luban.with(activity).load(files).get())
+                .map(files -> Luban.with(fragment.getActivity()).load(files).get())
                 .map(files -> {
                     Map<String, RequestBody> picMap = new LinkedHashMap<>();
                     for (File file : files) {
@@ -212,11 +222,11 @@ public class IdentifyVM implements ViewModel {
                 .map(new ApiResponseFunc<>())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    Toast.makeText(activity, "资料提交成功，请等待审核", Toast.LENGTH_SHORT).show();
-                    activity.finish();
+                    Toast.makeText(fragment.getActivity(), "资料提交成功，请等待审核", Toast.LENGTH_SHORT).show();
+                    fragment.getActivity().finish();
                 }, throwable -> {
-                    Toast.makeText(activity, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    activity.dismissLoading();
-                }, () -> activity.dismissLoading());
+                    Toast.makeText(fragment.getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    ((RxBaseActivity) fragment.getActivity()).dismissLoading();
+                }, () -> ((RxBaseActivity) fragment.getActivity()).dismissLoading());
     });
 }

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.viewModel.WithdrawVM" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{viewModel.viewStyle.isEmpty ? View.VISIBLE : View.GONE}"
+            app:clickCommand="@{viewModel.onRefreshCommand}">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:placeholderImageRes="@{viewModel.emptyImg}" />
+
+        </LinearLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:refreshing="@{viewModel.viewStyle.isRefreshing}"
+            app:onRefreshCommand="@{viewModel.onRefreshCommand}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:itemBinding="@{viewModel.itemBinding}"
+                app:items="@{viewModel.itemVMs}"
+                app:onLoadMoreCommand="@{viewModel.onLoadMoreData}" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/colorDivider"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_padding"
+            android:background="@android:color/white"
+            android:visibility="@{viewModel.viewStyle.applyWithdraw ? View.VISIBLE : View.GONE}">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/text_padding"
+                android:layout_centerVertical="true"
+                android:button="@drawable/selector_check_box"
+                android:text="全选"
+                android:checked="@{viewModel.allCheck}"
+                app:clickCommand="@{viewModel.allCheckClick}" />
+
+            <Button
+                style="@style/SimpleOrangeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/vertical_space"
+                android:background="@drawable/shape_round_primary_button"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:text="提现"
+                app:clickCommand="@{viewModel.withdrawClick}" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</layout>

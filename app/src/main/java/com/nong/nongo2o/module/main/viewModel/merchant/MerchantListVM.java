@@ -199,7 +199,7 @@ public class MerchantListVM implements ViewModel {
         if (itemMerchantListVMs.size() < total) {
             getMerchantList(itemMerchantListVMs.size() / pageSize + 1, false);
         } else {
-            Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
         }
     }
 

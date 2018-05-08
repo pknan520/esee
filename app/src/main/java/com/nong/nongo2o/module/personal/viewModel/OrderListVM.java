@@ -177,7 +177,7 @@ public class OrderListVM implements ViewModel {
         private void initData() {
             if (order != null) {
                 request = new UpdateOrderRequest();
-                BeanUtils.Copy(request, order, true);
+                BeanUtils.Copy(request, order, false);
 
                 if (isMerchantMode) {
                     //  商家看买家信息
@@ -210,7 +210,7 @@ public class OrderListVM implements ViewModel {
                             btnL.set("退款");
                             btnR.set("确认发货");
                         } else {
-                            btnL.set("申请退款");
+                            btnL.set("取消订单");
                         }
                         break;
                     case 2:
@@ -221,18 +221,17 @@ public class OrderListVM implements ViewModel {
                     case 3:
                         status.set("待评价");
                         if (!isMerchantMode)
+                            btnL.set("售后退款");
                             btnR.set("评价订单");
                         break;
                     case 4:
                         status.set("已完成");
-                        if (!isMerchantMode)
-                            btnL.set("售后退款");
                         break;
                     case 5:
                         status.set("退款申请");
                         if (isMerchantMode) {
-                            btnL.set("驳回申请");
-                            btnR.set("同意申请");
+                            btnL.set("取消");
+                            btnR.set("退款处理");
                         }
                         break;
                     case 6:
@@ -291,19 +290,22 @@ public class OrderListVM implements ViewModel {
                             refund("商家退款", order.getTotalPrice());
                         });
                     else
-                        fragment.showRefundDialog(order, false, false, (reason, money) -> {
-                            applyRefund(reason);
+//                        fragment.showRefundDialog(order, false, false, (reason, money) -> {
+//                            applyRefund(reason);
+//                        }
+                        fragment.showConfirmDialog("确认取消订单并退款？", () -> {
+                            refund("未发货退款", order.getTotalPrice());
                         });
                     break;
-                case 4:
+                case 3:
                     //  买家：售后退款
-                    fragment.showRefundDialog(order, isMerchantMode, false, (reason, money) -> {
+                    fragment.showRefundDialog(order, isMerchantMode, false, order.getApplyReason(), (reason, money) -> {
                         applyRefund(reason);
                     });
                     break;
                 case 5:
                     //  商家：驳回退款
-                    fragment.showRefundDialog(order, isMerchantMode, false, (reason, money) -> {
+                    fragment.showRefundDialog(order, isMerchantMode, false, order.getApplyReason(), (reason, money) -> {
                         disagreeRefund(reason);
                     });
                     break;
@@ -338,7 +340,7 @@ public class OrderListVM implements ViewModel {
                     break;
                 case 5:
                     //  商家：同意退款
-                    fragment.showRefundDialog(order, isMerchantMode, true, this::refund);
+                    fragment.showRefundDialog(order, isMerchantMode, true, order.getApplyReason(), this::refund);
                     break;
             }
         });

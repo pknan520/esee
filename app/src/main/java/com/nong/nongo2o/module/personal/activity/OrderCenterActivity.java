@@ -3,14 +3,17 @@ package com.nong.nongo2o.module.personal.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.kelin.mvvmlight.base.ViewModel;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseToolbarActivity;
 import com.nong.nongo2o.databinding.ActivityOrderCenterBinding;
 import com.nong.nongo2o.entity.domain.Order;
+import com.nong.nongo2o.module.main.viewModel.MainVM;
 import com.nong.nongo2o.module.personal.fragment.OrderDetailFragment;
 import com.nong.nongo2o.module.personal.fragment.OrderListTotalFragment;
 
@@ -21,6 +24,7 @@ import com.nong.nongo2o.module.personal.fragment.OrderListTotalFragment;
 public class OrderCenterActivity extends RxBaseToolbarActivity {
 
     private ActivityOrderCenterBinding binding;
+    private MyViewModel vm;
     private boolean isMerchantMode;
 
     public static Intent newIntent(Context context, Order order, boolean isMerchantMode) {
@@ -40,6 +44,7 @@ public class OrderCenterActivity extends RxBaseToolbarActivity {
     @Override
     protected ViewDataBinding getBinding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_order_center);
+        vm = new MyViewModel(getIntent().getBooleanExtra("isMerchantMode", false));
         return binding;
     }
 
@@ -53,6 +58,7 @@ public class OrderCenterActivity extends RxBaseToolbarActivity {
         super.onCreate(savedInstanceState);
         isMerchantMode = getIntent().getBooleanExtra("isMerchantMode", false);
         initView();
+        binding.setViewModel(vm);
     }
 
     private void initView() {
@@ -72,5 +78,18 @@ public class OrderCenterActivity extends RxBaseToolbarActivity {
     public void setToolbarTitle(String title) {
         setTitle("");
         binding.tvToolbarTitle.setText(title);
+    }
+
+    public class MyViewModel implements ViewModel {
+
+        public MyViewModel(boolean isMerchantMode) {
+            viewStyle.isMerchantMode.set(isMerchantMode);
+        }
+
+        public final ViewStyle viewStyle = new ViewStyle();
+
+        public class ViewStyle {
+            public final ObservableBoolean isMerchantMode = new ObservableBoolean(false);
+        }
     }
 }

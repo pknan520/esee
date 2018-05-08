@@ -25,6 +25,7 @@ public class DialogRefundVM implements ViewModel {
 
     public final ObservableField<BigDecimal> total = new ObservableField<>();
     public final ObservableField<String> refund = new ObservableField<>();
+    public final ObservableField<String> applyReason = new ObservableField<>();
     public final ObservableField<String> reason = new ObservableField<>();
 
     public interface DialogRefundListener {
@@ -38,7 +39,7 @@ public class DialogRefundVM implements ViewModel {
         public final ObservableBoolean isAgree = new ObservableBoolean(false);
     }
 
-    public DialogRefundVM(Context context, AlertDialog dialog, DialogRefundListener listener, Order order, boolean isSaler, boolean isAgree) {
+    public DialogRefundVM(Context context, AlertDialog dialog, DialogRefundListener listener, Order order, boolean isSaler, boolean isAgree, String applyReason) {
         this.context = context;
         this.dialog = dialog;
         this.listener = listener;
@@ -46,6 +47,7 @@ public class DialogRefundVM implements ViewModel {
         total.set(order.getTotalPrice());
         viewStyle.isSaler.set(isSaler);
         viewStyle.isAgree.set(isAgree);
+        this.applyReason.set(applyReason);
     }
 
     /**

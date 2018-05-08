@@ -81,27 +81,40 @@ public class PersonalHomeFragment extends RxFragment {
         binding.collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT);
         binding.collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
 
+        boolean isSeller = ((SimpleUser) getArguments().getSerializable("user")).getUserType() == 1;
+
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
-        if (((SimpleUser) getArguments().getSerializable("user")).getUserType() == 1) {
+        if (isSeller) {
             fragmentList.add(PersonalGoodsFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+            fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+            fragmentList.add(PersonalBuyFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
         } else {
+            fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
             fragmentList.add(PersonalBuyFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
         }
+//        fragmentList.add(PersonalDynamicFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+//        if (isSeller) {
+//            fragmentList.add(PersonalGoodsFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+//        } else {
+//            fragmentList.add(PersonalBuyFragment.newInstance((SimpleUser) getArguments().getSerializable("user")));
+//        }
 
         MyFragmentPagerAdapter pagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragmentList);
         binding.vp.setAdapter(pagerAdapter);
         binding.vp.setOffscreenPageLimit(1);
         binding.tab.setupWithViewPager(binding.vp);
 
-        String[] tabArray = {"TA的动态", ((SimpleUser) getArguments().getSerializable("user")).getUserType() == 1 ? "TA的宝贝" : "购买宝贝"};
-        for (int i = 0; i < tabArray.length; i++) {
+//        String[] tabArray = {"TA的动态", ((SimpleUser) getArguments().getSerializable("user")).getUserType() == 1 ? "TA的宝贝" : "购买宝贝"};
+        String[] sellerTab = {"TA的宝贝", "TA的动态", "购买宝贝"};
+        String[] cusTab = {"TA的动态", "购买宝贝"};
+
+        for (int i = 0; i < (isSeller ? sellerTab.length : cusTab.length); i++) {
             TabLayout.Tab tab = binding.tab.getTabAt(i);
             if (tab != null) {
                 tab.setCustomView(R.layout.item_goods_tap);
                 if (tab.getCustomView() != null) {
                     TextView tv = (TextView) tab.getCustomView().findViewById(R.id.tv);
-                    tv.setText(tabArray[i]);
+                    tv.setText(isSeller ? sellerTab[i] : cusTab[i]);
                 }
             }
         }

@@ -66,6 +66,7 @@ public class PersonalVM implements ViewModel {
     public final ObservableField<Integer> deliveryBadge = new ObservableField<>();
     public final ObservableField<Integer> takeoverBadge = new ObservableField<>();
     public final ObservableField<Integer> evaBadge = new ObservableField<>();
+    public final ObservableField<Integer> refundBadge = new ObservableField<>();
 //    public final ObservableField<String> authenticationStatus = new ObservableField<>();
 
     public PersonalVM(PersonalFragment fragment) {
@@ -147,14 +148,21 @@ public class PersonalVM implements ViewModel {
                                     deliveryBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
                                     break;
                                 case 2:
-                                    if (!viewStyle.isMerchantMode.get()) {
+//                                    if (!viewStyle.isMerchantMode.get()) {
                                         takeoverBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                    }
+//                                    }
                                     break;
                                 case 3:
-                                    if (!viewStyle.isMerchantMode.get()) {
+//                                    if (!viewStyle.isMerchantMode.get()) {
                                         evaBadge.set((int) Double.parseDouble(countMap.get("count").toString()));
-                                    }
+//                                    }
+                                    break;
+
+                                case 5: //  退款申请
+                                    refundBadge.set(refundBadge.get() + (int) Double.parseDouble(countMap.get("count").toString()));
+                                    break;
+                                case 6: //  退款中
+                                    refundBadge.set(refundBadge.get() + (int) Double.parseDouble(countMap.get("count").toString()));
                                     break;
                             }
                         }
@@ -179,6 +187,7 @@ public class PersonalVM implements ViewModel {
         deliveryBadge.set(0);
         takeoverBadge.set(0);
         evaBadge.set(0);
+        refundBadge.set(0);
     }
 
     /**
@@ -232,6 +241,13 @@ public class PersonalVM implements ViewModel {
      */
     public final ReplyCommand toUnEvaOrderClick = new ReplyCommand(() ->
             startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), viewStyle.isMerchantMode.get() ? 2 : 3))
+    );
+
+    /**
+     * 去退款中订单
+     */
+    public final ReplyCommand toRefundClick = new ReplyCommand(() ->
+            startActivityClick(OrderCenterActivity.newIntent(fragment.getActivity(), viewStyle.isMerchantMode.get(), viewStyle.isMerchantMode.get() ? 3 : 4))
     );
 
     /**

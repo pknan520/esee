@@ -137,9 +137,9 @@ public class OrderListFragment extends RxBaseFragment {
                 .create();
     }
 
-    public void showRefundDialog(Order order, boolean isSaler, boolean isAgree, DialogRefundVM.DialogRefundListener listener) {
+    public void showRefundDialog(Order order, boolean isSaler, boolean isAgree, String applyReason, DialogRefundVM.DialogRefundListener listener) {
         if (refundDialog != null && ! refundDialog.isShowing()) {
-            refundBinding.setViewModel(new DialogRefundVM(getActivity(), refundDialog, listener, order, isSaler, isAgree));
+            refundBinding.setViewModel(new DialogRefundVM(getActivity(), refundDialog, listener, order, isSaler, isAgree, applyReason));
             refundDialog.show();
         }
     }

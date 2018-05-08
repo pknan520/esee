@@ -125,9 +125,9 @@ public class OrderDetailFragment extends RxBaseFragment {
                 .create();
     }
 
-    public void showRefundDialog(Order order, boolean isSaler, boolean isAgree, DialogRefundVM.DialogRefundListener listener) {
+    public void showRefundDialog(Order order, boolean isSaler, boolean isAgree, String applyReason, DialogRefundVM.DialogRefundListener listener) {
         if (refundDialog != null && ! refundDialog.isShowing()) {
-            refundBinding.setViewModel(new DialogRefundVM(getActivity(), refundDialog, listener, order, isSaler, isAgree));
+            refundBinding.setViewModel(new DialogRefundVM(getActivity(), refundDialog, listener, order, isSaler, isAgree, applyReason));
             refundDialog.show();
         }
     }
@@ -162,6 +162,7 @@ public class OrderDetailFragment extends RxBaseFragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction("paySuccess");
         filter.addAction("payFail");
+        filter.addAction("updateOrderList");
         lbm.registerReceiver(payReceiver, filter);
     }
 
@@ -172,6 +173,13 @@ public class OrderDetailFragment extends RxBaseFragment {
                 Order order = (Order) getArguments().getSerializable("order");
                 if (order != null) {
                     order.setOrderStatus(1);
+//                    vm = new OrderDetailVM(OrderDetailFragment.this, order, getArguments().getBoolean("isMerchantMode"));
+                    vm.iniData();
+                }
+            } else if (intent.getAction().equals("updateOrderList")) {
+                Order order = (Order) getArguments().getSerializable("order");
+                if (order != null) {
+                    order.setOrderStatus(4);
 //                    vm = new OrderDetailVM(OrderDetailFragment.this, order, getArguments().getBoolean("isMerchantMode"));
                     vm.iniData();
                 }

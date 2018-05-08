@@ -4,6 +4,10 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.nong.nongo2o.module.personal.activity.OrderCenterActivity.MyViewModel" />
+
     </data>
 
     <LinearLayout
@@ -16,7 +20,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
+            android:background="@{viewModel.viewStyle.isMerchantMode ? @color/colorComplementaryOrange : @color/colorPrimary}">
 
             <TextView
                 style="@style/TextTitle"

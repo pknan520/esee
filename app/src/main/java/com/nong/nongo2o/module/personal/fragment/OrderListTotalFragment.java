@@ -39,10 +39,10 @@ public class OrderListTotalFragment extends RxFragment {
 //    private static String[] statuses = {"-99", "0", "1", "2", "3", "4", "5", "6", "7", "-1"};
 
     private static String[] cusTabArray = {"待付款", "待发货", "待收货", "待评价", "退款中", "已完成", "已取消"};
-    private static String[] cusStatuses = {"0", "1", "2", "3", "5,6", "4,7,8,9,10", "-1"};
+    private static String[] cusStatuses = {"0", "1", "2", "3", "5,6", "4,8,9,10", "-1,7"};
 
     private static String[] sellerTabArray = {"待发货", "待收货", "待评价", "退款中", "已完成", "已提现", "已取消"};
-    private static String[] sellerStatuses = {"1", "2", "3", "5,6", "4,7,8,9", "10", "-1"};
+    private static String[] sellerStatuses = {"1", "2", "3", "5,6", "4,8,9", "10", "-1,7"};
 
     private FragmentOrderListTotalBinding binding;
     private OrderCenterVM vm;

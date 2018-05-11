@@ -145,9 +145,14 @@ public class OrderDetailVM implements ViewModel {
                     break;
                 case 3:
                     orderStatus.set("待评价");
-                    if (!isMerchantMode)
-                        btnL.set("售后退款");
+                    if (!isMerchantMode) {
+                        if (order.getPreStatus() == 5 || order.getPreStatus() == 6 || order.getPreStatus() == 7) {
+                            btnL.set("");
+                        } else {
+                            btnL.set("售后退款");
+                        }
                         btnR.set("评价订单");
+                    }
                     break;
                 case 4:
                     orderStatus.set("已完成");
@@ -155,7 +160,7 @@ public class OrderDetailVM implements ViewModel {
                 case 5:
                     orderStatus.set("退款申请");
                     if (isMerchantMode) {
-                        btnL.set("取消");
+//                        btnL.set("取消");
                         btnR.set("退款处理");
                     }
                     break;
@@ -164,6 +169,27 @@ public class OrderDetailVM implements ViewModel {
                     break;
                 case 7:
                     orderStatus.set("已退款");
+                    break;
+                case 8:
+                    if (isMerchantMode) {
+                        orderStatus.set("可提现");
+                    } else {
+                        orderStatus.set("已完成");
+                    }
+                    break;
+                case 9:
+                    if (isMerchantMode) {
+                        orderStatus.set("提现中");
+                    } else {
+                        orderStatus.set("已完成");
+                    }
+                    break;
+                case 10:
+                    if (isMerchantMode) {
+                        orderStatus.set("已提现");
+                    } else {
+                        orderStatus.set("已完成");
+                    }
                     break;
             }
 

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hyphenate.chat.EMClient;
 import com.kelin.mvvmlight.base.ViewModel;
 import com.kelin.mvvmlight.command.ReplyCommand;
@@ -18,6 +19,7 @@ import com.nong.nongo2o.BR;
 import com.nong.nongo2o.R;
 import com.nong.nongo2o.base.RxBaseActivity;
 import com.nong.nongo2o.entity.domain.City;
+import com.nong.nongo2o.entity.domain.ImgTextContent;
 import com.nong.nongo2o.entity.domain.Order;
 import com.nong.nongo2o.entity.domain.OrderDetail;
 import com.nong.nongo2o.entity.request.CreatePaymentRequest;
@@ -82,7 +84,9 @@ public class OrderDetailVM implements ViewModel {
     public final ObservableField<String> exName = new ObservableField<>();
     public final ObservableField<String> exNumber = new ObservableField<>();
     //  售后信息
-    public final ObservableField<String> afterSaleReason = new ObservableField<>();
+    public final ObservableField<String> applyReason = new ObservableField<>();
+    public final ObservableField<String> afterSaleImgUrl = new ObservableField<>();
+    public final ObservableField<String> auditInfo = new ObservableField<>();
     public final ObservableField<BigDecimal> afterSaleMoney = new ObservableField<>();
     //  物流轨迹
 //    public final ObservableList<ItemTransListVM> itemTransListVMs = new ObservableArrayList<>();
@@ -105,6 +109,8 @@ public class OrderDetailVM implements ViewModel {
         public final ObservableBoolean btnVisi = new ObservableBoolean(false);
         public final ObservableBoolean showLogisticsInfo = new ObservableBoolean(false);
         public final ObservableBoolean isSelf = new ObservableBoolean(false);
+
+        public final ObservableBoolean showAfterSale = new ObservableBoolean(false);
     }
 
     /**
@@ -243,14 +249,31 @@ public class OrderDetailVM implements ViewModel {
             orderInfo.set("共" + goodsNum + "件，合计¥" + total.add(freight) + "（含运费¥" + freight + "）");
             moneyInfo.set("应收：¥" + total.add(freight));
 
-            if (isMerchantMode && !TextUtils.isEmpty(order.getApplyReason())) {
-                afterSaleReason.set("退款原因：" + order.getApplyReason());
-            } else if (!isMerchantMode && !TextUtils.isEmpty(order.getAuditInfo())) {
-                afterSaleReason.set("商家审核：" + order.getAuditInfo());
+            if ((order.getApplyReason() == null || TextUtils.isEmpty(order.getApplyReason())) &&
+                    (order.getAuditInfo() == null || TextUtils.isEmpty(order.getAuditInfo())) &&
+                    (order.getRefundAmount() == null || TextUtils.isEmpty(String.valueOf(order.getRefundAmount())))) {
+                viewStyle.showAfterSale.set(false);
+            } else {
+                if (order.getApplyReason() != null && order.getApplyReason().startsWith("{") && order.getApplyReason().endsWith("}")) {
+                    ImgTextContent content = new Gson().fromJson(order.getApplyReason(), new TypeToken<ImgTextContent>() {
+                    }.getType());
+                    applyReason.set("退款原因：" + content.getContent());
+                    if (content.getImg() != null && !content.getImg().isEmpty()) {
+                        afterSaleImgUrl.set(content.getImg().get(0));
+                    }
+                } else {
+                    applyReason.set("退款原因：" + (order.getApplyReason() == null ? "没有填写退款原因" : order.getApplyReason()));
+                }
+                auditInfo.set("商家审核：" + (order.getAuditInfo() == null ? "没有填写审批内容" : order.getAuditInfo()));
+                afterSaleMoney.set(order.getRefundAmount());
+                viewStyle.showAfterSale.set(true);
             }
-            afterSaleMoney.set(order.getRefundAmount());
         }
     }
+
+    public final ReplyCommand picClick = new ReplyCommand(() -> {
+
+    });
 
     /**
      * 跳转地址管理
@@ -317,13 +340,13 @@ public class OrderDetailVM implements ViewModel {
                 break;
             case 3:
                 //  买家：售后退款
-                fragment.showRefundDialog(order, isMerchantMode, false,  order.getApplyReason(), (reason, money) -> {
+                fragment.showRefundDialog(order, isMerchantMode, false, order.getApplyReason(), (reason, money) -> {
                     applyRefund(reason);
                 });
                 break;
             case 5:
                 //  商家：驳回退款
-                fragment.showRefundDialog(order, isMerchantMode, false,  order.getApplyReason(), (reason, money) -> {
+                fragment.showRefundDialog(order, isMerchantMode, false, order.getApplyReason(), (reason, money) -> {
                     disagreeRefund(reason);
                 });
                 break;

@@ -321,6 +321,16 @@ public class GoodsManagerDetailVM implements ViewModel {
                 }
                 hasAdd += item.getNewPicList().size();
             }
+        } else {
+            for (int i = 0; i < itemDescVMs.size(); i++) {
+                ItemDescVM item = itemDescVMs.get(i);
+                if (contentList == null || contentList.size() < (i + 1)) {
+                    contentList.add(new ImgTextContent());
+                }
+                ImgTextContent content = contentList.get(i);
+
+                content.setContent(item.goodsDesc.get());
+            }
         }
 
         List<GoodsSpec> specList = new ArrayList<>();

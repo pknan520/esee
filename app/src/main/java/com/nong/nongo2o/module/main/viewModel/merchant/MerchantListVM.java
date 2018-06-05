@@ -58,6 +58,7 @@ public class MerchantListVM implements ViewModel {
 
     private int pageSize = 10;
     private int total = 0;
+    private int rowsQty = 0;
 
     public MerchantListVM(MerchantListFragment fragment, int type) {
         this.fragment = fragment;
@@ -145,6 +146,7 @@ public class MerchantListVM implements ViewModel {
                             } else {
                                 total -= 1;
                             }
+                            rowsQty += 1;
                         }
                         viewStyle.isEmpty.set(itemMerchantListVMs.isEmpty());
                     }, throwable -> {
@@ -168,6 +170,7 @@ public class MerchantListVM implements ViewModel {
                             } else {
                                 total -= 1;
                             }
+                            rowsQty += 1;
                         }
                         viewStyle.isEmpty.set(itemMerchantListVMs.isEmpty());
                     }, throwable -> {
@@ -183,7 +186,10 @@ public class MerchantListVM implements ViewModel {
     public final ReplyCommand onRefreshCommand = new ReplyCommand(this::refreshData);
 
     private void refreshData() {
-        if (!viewStyle.notLogin.get()) getMerchantList(1, true);
+        if (!viewStyle.notLogin.get()) {
+            getMerchantList(1, true);
+            rowsQty = 0;
+        }
         else viewStyle.isRefreshing.set(false);
     }
 
@@ -197,7 +203,7 @@ public class MerchantListVM implements ViewModel {
      */
     private void onLoadMoreCommand() {
         if (itemMerchantListVMs.size() < total) {
-            getMerchantList(itemMerchantListVMs.size() / pageSize + 1, false);
+            getMerchantList(rowsQty / pageSize + 1, false);
         } else {
 //            Toast.makeText(fragment.getActivity(), "没有更多内容啦^.^", Toast.LENGTH_SHORT).show();
         }

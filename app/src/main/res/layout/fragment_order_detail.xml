@@ -163,7 +163,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:itemBinding="@{viewModel.itemGoodsBinding}"
-                        app:items="@{viewModel.itemGoodsVMs}" />
+                        app:items="@{viewModel.itemGoodsVMs}"/>
                     <!--运费-->
                     <TextView
                         android:layout_width="match_parent"
@@ -313,7 +313,7 @@
                     android:divider="@drawable/shape_vertical_divider"
                     android:orientation="vertical"
                     android:showDividers="middle"
-                    android:visibility="@{TextUtils.isEmpty(viewModel.afterSaleReason) ? View.GONE : View.VISIBLE}">
+                    android:visibility="@{viewModel.viewStyle.showAfterSale ? View.VISIBLE : View.GONE}">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -333,7 +333,25 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             tools:text="这既是审核原因"
-                            android:text="@{viewModel.afterSaleReason}"
+                            android:text="@{viewModel.applyReason}"
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/text_normal" />
+
+                        <cn.finalteam.rxgalleryfinal.ui.widget.SquareImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="3dp"
+                            android:padding="3dp"
+                            android:scaleType="centerCrop"
+                            app:clickCommand="@{viewModel.picClick}"
+                            app:glideUri="@{viewModel.afterSaleImgUrl}"
+                            android:visibility="@{TextUtils.isEmpty(viewModel.afterSaleImgUrl) ? View.GONE : View.VISIBLE}"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="这既是审核原因"
+                            android:text="@{viewModel.auditInfo}"
                             android:textColor="@color/colorText"
                             android:textSize="@dimen/text_normal" />
 

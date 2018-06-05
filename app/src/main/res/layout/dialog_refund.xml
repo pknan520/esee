@@ -16,7 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/shape_round_white"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -98,12 +99,39 @@
             android:layout_margin="@dimen/item_padding"
             android:background="@drawable/border_gray"
             android:gravity="start"
-            android:hint="@{viewModel.viewStyle.isSaler ? @string/pls_enter_audit_info : @string/pls_enter_apply_reason'}"
+            android:hint="@{viewModel.viewStyle.isSaler ? @string/pls_enter_audit_info : @string/pls_enter_apply_reason}"
             android:inputType="text"
             android:padding="@dimen/text_padding"
             android:text="@={viewModel.reason}"
             android:textColorHint="@color/colorHintText"
             android:textSize="@dimen/text_normal" />
+
+        <cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="@dimen/item_padding"
+            android:visibility="@{viewModel.viewStyle.showPic ? View.VISIBLE : View.GONE}">
+
+            <cn.finalteam.rxgalleryfinal.ui.widget.SquareImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="3dp"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                app:clickCommand="@{viewModel.picClick}"
+                app:glideUri="@{viewModel.imgUri}"
+                app:placeholderImageRes="@{viewModel.placeHolder}" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:padding="5dp"
+                android:src="@mipmap/fabu_img_delete"
+                android:visibility="@{viewModel.viewStyle.canDelete ? View.VISIBLE : View.GONE}"
+                app:clickCommand="@{viewModel.deleteClick}" />
+
+        </cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout>
 
         <View
             android:layout_width="match_parent"

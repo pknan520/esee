@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MVVMLib/MVVMLib.iml" filepath="$PROJECT_DIR$/MVVMLib/MVVMLib.iml" />
-      <module fileurl="file://E:\AndroidStudioProjects\esee-android\NongO2O.iml" filepath="E:\AndroidStudioProjects\esee-android\NongO2O.iml" />
+      <module fileurl="file://E:/AndroidStudioProjects/esee-android/NongO2O.iml" filepath="E:/AndroidStudioProjects/esee-android/NongO2O.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/easeui/easeui.iml" filepath="$PROJECT_DIR$/easeui/easeui.iml" />
       <module fileurl="file://$PROJECT_DIR$/esee-android.iml" filepath="$PROJECT_DIR$/esee-android.iml" />

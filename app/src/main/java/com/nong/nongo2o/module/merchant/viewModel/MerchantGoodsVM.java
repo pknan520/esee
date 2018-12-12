@@ -309,7 +309,7 @@ public class MerchantGoodsVM implements ViewModel {
 
         public WxShareDialogVM() {
             WXWebpageObject webpage = new WXWebpageObject();
-            webpage.webpageUrl = "http://www.exhua.net/www/m/good-detail.html?goodsCode=" + good.getGoodsCode();
+            webpage.webpageUrl = "http://www.exhua.net/mp/goodsDetail?goodsCode=" + good.getGoodsCode();
 
             WXMediaMessage msg = new WXMediaMessage(webpage);
             msg.title = "小背篓|" + good.getTitle();

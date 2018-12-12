@@ -139,6 +139,7 @@ public class BindMobileVM implements ViewModel {
 
         CreateUserRequest request = new CreateUserRequest();
         request.setOpenId(wxInfo.getOpenid());
+        request.setUnionId(wxInfo.getUnionid());
         request.setPhone(mobile.get());
         request.setValidCode(validCode.get());
         request.setUserName(wxInfo.getNickname());

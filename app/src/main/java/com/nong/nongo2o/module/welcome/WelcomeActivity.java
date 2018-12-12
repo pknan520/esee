@@ -136,7 +136,7 @@ public class WelcomeActivity extends RxBaseActivity {
                                         SPUtils.put(this, "WX_ACCESS_TOKEN", wxAccessToken.getAccess_token());
                                         SPUtils.put(this, "WX_REFRESH_TOKEN", wxAccessToken.getRefresh_token());
                                         SPUtils.put(this, "WX_ACCESS_EXPIRE", wxAccessToken.getExpires_in() * 1000 + Calendar.getInstance().getTimeInMillis());
-                                        SPUtils.put(this, "WX_REFRESH_EXPIRE", 30 * 24 * 60 * 1000 + Calendar.getInstance().getTimeInMillis());
+                                        SPUtils.put(this, "WX_REFRESH_EXPIRE", 29L * 24 * 60 * 60 * 1000 + Calendar.getInstance().getTimeInMillis());
                                         return RetrofitHelper.getWxServiceAPI().getWxInfo(wxAccessToken.getAccess_token(), wxAccessToken.getOpenid());
                                     })
                                     .flatMap(wxInfo -> {

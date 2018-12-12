@@ -407,6 +407,8 @@ public class OrderDetailVM implements ViewModel {
     private void refund(String reason, BigDecimal money) {
         CreatePaymentRequest req = new CreatePaymentRequest();
         req.setOrderCode(order.getOrderCode());
+        req.setPaymentPrice(money);
+        req.setRemark(reason);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("Content-Type, application/json"),
                 new Gson().toJson(req));

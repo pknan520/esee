@@ -27,8 +27,8 @@ android {
         applicationId "com.nong.nongo2o"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 1218
-        versionName "1.2.18"
+        versionCode 1221
+        versionName "1.2.21"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
